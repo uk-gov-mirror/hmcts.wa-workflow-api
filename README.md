@@ -1,6 +1,5 @@
 # wa-workflow-api
 
-
 [![Build Status](https://travis-ci.org/hmcts/wa-workflow-api.svg?branch=master)](https://travis-ci.org/hmcts/wa-workflow-api)
 
 ## Notes
