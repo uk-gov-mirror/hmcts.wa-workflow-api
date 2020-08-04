@@ -1,7 +1,7 @@
 apiVersion: v2
 appVersion: "1.0"
 description: A Helm chart for wa-workflow-api App
-name: wa-wa-workflow-api
+name: wa-workflow-api
 home: https://github.com/hmcts/wa-workflow-api
 version: 0.0.1
 maintainers:
