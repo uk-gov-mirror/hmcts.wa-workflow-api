@@ -2,6 +2,11 @@ server:
   port: 8099
 
 management:
+  health:
+    probes:
+      enabled: true
+    livenessstate:
+      enabled: true
   endpoint:
     health:
       show-details: "always"
