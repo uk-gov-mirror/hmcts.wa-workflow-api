@@ -5,10 +5,6 @@ management:
   health:
     probes:
       enabled: true
-    livenessstate:
-      enabled: true
-    readinessstate:
-      enabled: true
   endpoint:
     health:
       show-details: "always"
