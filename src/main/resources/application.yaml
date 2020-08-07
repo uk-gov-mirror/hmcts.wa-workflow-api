@@ -14,7 +14,7 @@ management:
       exposure:
         include: health, info, prometheus
 
-testProperty: ${testsecret:defaultValue}
+testProperty: ${AN_ALIASED_VALUE:defaultValue}
 
 #logging:
 #  level:
