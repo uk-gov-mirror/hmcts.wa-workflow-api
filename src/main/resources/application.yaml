@@ -14,6 +14,8 @@ management:
       exposure:
         include: health, info, prometheus
 
+testProperty: ${testsecret:defaultValue}
+
 #logging:
 #  level:
 #    org.springframework: debug
