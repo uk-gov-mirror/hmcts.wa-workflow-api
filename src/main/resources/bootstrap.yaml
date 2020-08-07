@@ -4,5 +4,5 @@ spring:
       enabled: true
       prefixed: false
       paths: /mnt/secrets/wa
-        aliases:
-          testsecret: AN_ALIASED_VALUE
+      aliases:
+        testsecret: AN_ALIASED_VALUE
