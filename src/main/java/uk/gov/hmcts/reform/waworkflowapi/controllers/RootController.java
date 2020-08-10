@@ -30,6 +30,6 @@ public class RootController {
      */
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
-        return ok("Welcome to wa-workflow-api [" + testProperty + "] 2");
+        return ok("Welcome to wa-workflow-api [" + testProperty + "] 3");
     }
 }
