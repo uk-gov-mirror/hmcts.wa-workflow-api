@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 public class RootController {
 
+    private final Logger log = LoggerFactory.getLogger(RootController.class);
     private final String testProperty;
 
     public RootController(@Value("${testProperty}") String testProperty) {
@@ -30,6 +33,7 @@ public class RootController {
      */
     @GetMapping("/")
     public ResponseEntity<String> welcome() {
-        return ok("Welcome to wa-workflow-api [" + testProperty + "] 3");
+        log.info("Root controller");
+        return ok("Welcome to wa-workflow-api [" + testProperty + "] 4");
     }
 }
