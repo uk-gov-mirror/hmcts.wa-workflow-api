@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.waworkflowapi.Application;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
-    private boolean enableSwagger;
+    private final boolean enableSwagger;
 
     public SwaggerConfiguration(@Value("${enableSwagger}") boolean enableSwagger) {
         this.enableSwagger = enableSwagger;
