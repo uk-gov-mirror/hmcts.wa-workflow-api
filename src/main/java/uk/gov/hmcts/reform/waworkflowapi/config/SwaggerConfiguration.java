@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -12,11 +13,17 @@ import uk.gov.hmcts.reform.waworkflowapi.Application;
 @Configuration
 @EnableSwagger2
 public class SwaggerConfiguration {
+    private boolean enableSwagger;
+
+    public SwaggerConfiguration(@Value("${enableSwagger}") boolean enableSwagger) {
+        this.enableSwagger = enableSwagger;
+    }
 
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
             .useDefaultResponseMessages(false)
+            .enable(enableSwagger)
             .select()
             .apis(RequestHandlerSelectors.basePackage(Application.class.getPackage().getName() + ".controllers"))
             .paths(PathSelectors.any())
