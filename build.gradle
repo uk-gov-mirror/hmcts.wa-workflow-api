@@ -1,3 +1,12 @@
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath("net.serenity-bdd:serenity-gradle-plugin:2.2.12")
+  }
+}
+
 plugins {
   id 'application'
   id 'checkstyle'
@@ -10,6 +19,9 @@ plugins {
   id 'org.sonarqube' version '3.0'
 }
 
+apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin: 'idea'
+
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
@@ -19,10 +31,19 @@ allprojects {
 }
 
 sourceSets {
-  functionalTest {
+  testUtils {
     java {
       compileClasspath += main.output
       runtimeClasspath += main.output
+      srcDir file('src/testUtils/java')
+    }
+    resources.srcDir file('src/testUtils/resources')
+  }
+
+  functionalTest {
+    java {
+      compileClasspath += testUtils.output
+      runtimeClasspath += testUtils.output
       srcDir file('src/functionalTest/java')
     }
     resources.srcDir file('src/functionalTest/resources')
@@ -30,8 +51,8 @@ sourceSets {
 
   integrationTest {
     java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
+      compileClasspath += testUtils.output
+      runtimeClasspath += testUtils.output
       srcDir file('src/integrationTest/java')
     }
     resources.srcDir file('src/integrationTest/resources')
@@ -44,6 +65,19 @@ sourceSets {
       srcDir file('src/smokeTest/java')
     }
     resources.srcDir file('src/smokeTest/resources')
+  }
+}
+
+idea {
+  module {
+    sourceDirs += project.sourceSets.testUtils.java.srcDirs
+    resourceDirs += project.sourceSets.testUtils.resources.srcDirs
+    testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
+    testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
+    testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+    testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
+    testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
+    testResourceDirs += project.sourceSets.smokeTest.resources.srcDirs
   }
 }
 
@@ -115,6 +149,8 @@ sonarqube {
     property "sonar.projectName", "Reform :: wa-workflow-api"
     property "sonar.projectKey", "uk.gov.hmcts.reform:wa-workflow-api"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+
+    property "sonar.exclusions", "src/testUtils/java/uk/gov/hmcts/reform/waworkflowapi/api/**"
   }
 }
 
@@ -164,7 +200,8 @@ def versions = [
   junitPlatform   : '1.6.2',
   reformLogging   : '5.1.5',
   springBoot      : springBoot.class.package.implementationVersion,
-  springfoxSwagger: '2.9.2'
+  springfoxSwagger: '2.9.2',
+  serenity        : '2.2.12'
 ]
 
 ext.libraries = [
@@ -203,10 +240,24 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
+  testCompile group: 'pl.pojo', name: 'pojo-tester', version: '0.7.6'
+  testCompile group: 'com.google.guava', name: 'guava-testlib', version: '29.0-jre'
+  testCompile group: 'com.jparams', name: 'to-string-verifier', version: '1.4.8'
+
+
+  testUtilsImplementation sourceSets.main.runtimeClasspath
+
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
+  functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+  functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+  functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+  functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+  functionalTestImplementation sourceSets.main.runtimeClasspath
+  functionalTestImplementation "org.junit.vintage:junit-vintage-engine:${versions.junit}"
+  functionalTestImplementation sourceSets.test.runtimeClasspath
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath

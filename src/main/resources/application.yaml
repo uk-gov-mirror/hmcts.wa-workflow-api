@@ -14,7 +14,6 @@ management:
       exposure:
         include: health, info, prometheus
 
-testProperty: ${AN_ALIASED_VALUE:defaultValue}
 enableSwagger: ${ENABLE_SWAGGER:true}
 
 #logging:
