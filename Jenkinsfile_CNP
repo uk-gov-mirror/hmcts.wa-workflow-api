@@ -8,4 +8,8 @@ def component = "workflow-api"
 
 withPipeline(type, product, component) {
     disableLegacyDeployment()
+
+    after(  'functionalTest') {
+      steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+    }
 }
