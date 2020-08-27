@@ -10,9 +10,9 @@ public final class CreateTaskRequestCreator {
     private CreateTaskRequestCreator() {
     }
 
-    public static CreateTaskRequest appealSubmittedCreateTaskRequest() {
+    public static CreateTaskRequest appealSubmittedCreateTaskRequest(String caseId) {
         return aCreateTaskRequest()
-            .withCaseId("1234567890")
+            .withCaseId(caseId)
             .withTransition(
                 aTransition()
                     .withPreState("appealStarted")
@@ -24,12 +24,12 @@ public final class CreateTaskRequestCreator {
     }
 
     public static String appealSubmittedCreateTaskRequestString() {
-        return asJsonString(appealSubmittedCreateTaskRequest());
+        return asJsonString(appealSubmittedCreateTaskRequest("1234567890"));
     }
 
-    public static CreateTaskRequest unmappedCreateTaskRequest() {
+    public static CreateTaskRequest unmappedCreateTaskRequest(String caseId) {
         return aCreateTaskRequest()
-            .withCaseId("1234567890")
+            .withCaseId(caseId)
             .withTransition(
                 aTransition()
                     .withPreState("appealStarted")
@@ -41,6 +41,6 @@ public final class CreateTaskRequestCreator {
     }
 
     public static String unmappedCreateTaskRequestString() {
-        return asJsonString(unmappedCreateTaskRequest());
+        return asJsonString(unmappedCreateTaskRequest("1234567890"));
     }
 }

@@ -15,14 +15,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
-class CamundaTest {
+class CamundaGetTaskTest {
 
     private DmnEngine dmnEngine;
 
@@ -66,7 +64,7 @@ class CamundaTest {
     }
 
     private DmnDecisionTableResult evaluateDmn(String eventId, String postState) {
-        try (InputStream inputStream = Files.newInputStream(Paths.get("camunda/getTaskId.dmn"))) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("getTaskId.dmn")) {
             DmnDecision decision = dmnEngine.parseDecision("getTask", inputStream);
 
             VariableMap variables = new VariableMapImpl();

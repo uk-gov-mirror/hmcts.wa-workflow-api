@@ -3,18 +3,13 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task;
-import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskManagerService;
-
-import java.util.Optional;
+import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskService;
 
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
@@ -22,13 +17,11 @@ import static org.springframework.http.ResponseEntity.noContent;
 @RestController
 public class CreateTaskController {
 
-    private final Logger log = LoggerFactory.getLogger(CreateTaskController.class);
-
-    private final TaskManagerService taskManagerService;
+    private final TaskService taskService;
 
     @Autowired
-    public CreateTaskController(TaskManagerService taskManagerService) {
-        this.taskManagerService = taskManagerService;
+    public CreateTaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @PostMapping(path = "/tasks", consumes = { MediaType.APPLICATION_JSON_VALUE})
@@ -38,10 +31,10 @@ public class CreateTaskController {
         @ApiResponse(code = 204, message = "No new task was created for the transition")
     })
     public ResponseEntity createTask(@RequestBody CreateTaskRequest createTaskRequest) {
-        Optional<Task> task = taskManagerService.getTask(createTaskRequest.getTransition());
-        log.info("Got task [" + task + "]");
-
-        return task.map(taskEnum -> created(null).build())
-            .orElse(noContent().build());
+        if (taskService.createTask(createTaskRequest.getTransition(), createTaskRequest.getCaseId())) {
+            return created(null).build();
+        } else {
+            return noContent().build();
+        }
     }
 }
