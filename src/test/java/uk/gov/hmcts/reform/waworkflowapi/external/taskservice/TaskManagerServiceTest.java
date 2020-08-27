@@ -15,13 +15,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCESS_APPLICATION;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
 
 @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
 public class TaskManagerServiceTest {
 
-    public static final String STRING_TYPE = "String";
     private CamundaClient camundaClient;
     private TaskManagerService underTest;
     private String expectedTask;
@@ -35,14 +35,14 @@ public class TaskManagerServiceTest {
         expectedTask = PROCESS_APPLICATION.getId();
         transition = new Transition("startState", "eventName", "endState");
         dmnRequest = new DmnRequest<>(new GetTaskDmnRequest(
-            new DmnValue(transition.getEventId(), STRING_TYPE),
-            new DmnValue(transition.getPostState(), STRING_TYPE)
+            dmnStringValue(transition.getEventId()),
+            dmnStringValue(transition.getPostState())
         ));
     }
 
     @Test
     public void getsATaskBasedOnTransition() {
-        List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(new DmnValue(expectedTask, STRING_TYPE)));
+        List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(dmnStringValue(expectedTask)));
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 
         Optional<Task> task = underTest.getTask(transition);
@@ -62,7 +62,7 @@ public class TaskManagerServiceTest {
 
     @Test
     public void getsMultipleTasksBasedOnTransitionWhichIsInvalid() {
-        GetTaskDmnResult dmnResult = new GetTaskDmnResult(new DmnValue(expectedTask, STRING_TYPE));
+        GetTaskDmnResult dmnResult = new GetTaskDmnResult(dmnStringValue(expectedTask));
         List<GetTaskDmnResult> ts = asList(dmnResult, dmnResult);
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 

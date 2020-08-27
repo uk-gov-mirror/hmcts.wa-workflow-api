@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
 
 @Component
@@ -23,8 +24,8 @@ public class TaskManagerService {
     @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
     public Optional<Task> getTask(Transition transition) {
         DmnRequest<GetTaskDmnRequest> requestParameters = new DmnRequest<>(new GetTaskDmnRequest(
-            new DmnValue(transition.getEventId(), "String"),
-            new DmnValue(transition.getPostState(), "String")
+            dmnStringValue(transition.getEventId()),
+            dmnStringValue(transition.getPostState())
         ));
 
         List<GetTaskDmnResult> dmnResults = camundaClient.getTask(requestParameters);

@@ -6,6 +6,10 @@ public class DmnValue {
     private String value;
     private String type;
 
+    public static DmnValue dmnStringValue(String value) {
+        return new DmnValue(value, "String");
+    }
+
     private DmnValue() {
     }
 
