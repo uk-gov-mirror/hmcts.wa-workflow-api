@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCES
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
 
 @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
-public class TaskManagerServiceTest {
+class TaskManagerServiceTest {
 
     private CamundaClient camundaClient;
     private TaskManagerService underTest;
@@ -41,7 +41,7 @@ public class TaskManagerServiceTest {
     }
 
     @Test
-    public void getsATaskBasedOnTransition() {
+    void getsATaskBasedOnTransition() {
         List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(dmnStringValue(expectedTask)));
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 
@@ -51,7 +51,7 @@ public class TaskManagerServiceTest {
     }
 
     @Test
-    public void noTasksForTransition() {
+    void noTasksForTransition() {
         List<GetTaskDmnResult> ts = emptyList();
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 
@@ -61,7 +61,7 @@ public class TaskManagerServiceTest {
     }
 
     @Test
-    public void getsMultipleTasksBasedOnTransitionWhichIsInvalid() {
+    void getsMultipleTasksBasedOnTransitionWhichIsInvalid() {
         GetTaskDmnResult dmnResult = new GetTaskDmnResult(dmnStringValue(expectedTask));
         List<GetTaskDmnResult> ts = asList(dmnResult, dmnResult);
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);

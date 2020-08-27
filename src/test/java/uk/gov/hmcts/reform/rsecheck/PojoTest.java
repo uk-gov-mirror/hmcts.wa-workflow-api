@@ -26,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static pl.pojo.tester.api.assertion.Assertions.assertPojoMethodsForAll;
 
 @SuppressWarnings({"unchecked", "PMD.JUnitTestsShouldIncludeAssert", "PMD.DataflowAnomalyAnalysis", "PMD.EqualsNull", "PMD.AvoidInstantiatingObjectsInLoops"})
-public class PojoTest {
+class PojoTest {
 
     private final Class[] classesToTest = {
         Transition.class,
@@ -60,7 +60,7 @@ public class PojoTest {
     }
 
     @Test
-    public void equalsTest() {
+    void equalsTest() {
         for (Class classUnderTest : classesToTest) {
             if (!asList(ignoreEquals).contains(classUnderTest)) {
                 Object newInstance = objectGenerator.createNewInstance(classUnderTest);
@@ -90,7 +90,7 @@ public class PojoTest {
     }
 
     @Test
-    public void verifyToStringTest() {
+    void verifyToStringTest() {
         ToStringVerifier.forClasses(classesToTest).verify();
     }
 }

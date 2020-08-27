@@ -22,7 +22,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
-public class CamundaTest {
+class CamundaTest {
 
     private DmnEngine dmnEngine;
 
@@ -49,7 +49,7 @@ public class CamundaTest {
         "anything, finalBundling, createHearingBundle",
         "anything, preHearing, startDecisionsAndReasonsDocument"
     })
-    public void shouldGetTaskIdTest(String eventId, String postState, String taskId) {
+    void shouldGetTaskIdTest(String eventId, String postState, String taskId) {
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmn(eventId, postState);
 
         DmnDecisionRuleResult singleResult = dmnDecisionTableResult.getSingleResult();
@@ -59,7 +59,7 @@ public class CamundaTest {
 
     @DisplayName("transition unmapped")
     @Test
-    public void transitionUnampped() {
+    void transitionUnampped() {
         DmnDecisionTableResult dmnDecisionRuleResults = evaluateDmn("anything", "anything");
 
         assertThat(dmnDecisionRuleResults.isEmpty(), is(true));

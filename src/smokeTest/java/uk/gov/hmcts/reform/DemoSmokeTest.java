@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DemoSmokeTest {
+class DemoSmokeTest {
     @Test
-    public void exampleOfTest() {
+    void exampleOfTest() {
         assertTrue(System.currentTimeMillis() > 0, "Example of Unit Test");
     }
 }

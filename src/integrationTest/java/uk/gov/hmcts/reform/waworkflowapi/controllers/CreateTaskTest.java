@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCES
 @SpringBootTest
 @AutoConfigureMockMvc
 @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-public class CreateTaskTest {
+class CreateTaskTest {
 
     @Autowired
     private transient MockMvc mockMvc;
@@ -39,7 +39,7 @@ public class CreateTaskTest {
 
     @DisplayName("Should create task with 201 response")
     @Test
-    public void createsTaskForTransition() throws Exception {
+    void createsTaskForTransition() throws Exception {
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest();
         when(camundaClient.getTask(createGetTaskDmnRequest(createTaskRequest)))
             .thenReturn(createGetTaskResponse());
@@ -52,7 +52,7 @@ public class CreateTaskTest {
 
     @DisplayName("Should not create task with 204 response")
     @Test
-    public void doesNotCreateTaskForTransition() throws Exception {
+    void doesNotCreateTaskForTransition() throws Exception {
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest();
         when(camundaClient.getTask(createGetTaskDmnRequest(createTaskRequest)))
             .thenReturn(emptyList());
