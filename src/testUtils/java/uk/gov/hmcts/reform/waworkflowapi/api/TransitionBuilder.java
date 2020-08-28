@@ -3,9 +3,9 @@ package uk.gov.hmcts.reform.waworkflowapi.api;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
 public final class TransitionBuilder {
-    private String startState;
-    private String eventName;
-    private String endState;
+    private String preState;
+    private String eventId;
+    private String postState;
 
     private TransitionBuilder() {
     }
@@ -14,22 +14,22 @@ public final class TransitionBuilder {
         return new TransitionBuilder();
     }
 
-    public TransitionBuilder withStartState(String startState) {
-        this.startState = startState;
+    public TransitionBuilder withPreState(String preState) {
+        this.preState = preState;
         return this;
     }
 
-    public TransitionBuilder withEventName(String eventName) {
-        this.eventName = eventName;
+    public TransitionBuilder withEventId(String eventId) {
+        this.eventId = eventId;
         return this;
     }
 
-    public TransitionBuilder withEndState(String endState) {
-        this.endState = endState;
+    public TransitionBuilder withPostState(String postState) {
+        this.postState = postState;
         return this;
     }
 
     public Transition build() {
-        return new Transition(startState, eventName, endState);
+        return new Transition(preState, eventId, postState);
     }
 }

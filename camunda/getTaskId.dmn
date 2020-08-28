@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:camunda="http://camunda.org/schema/1.0/dmn" id="Definitions_05eqz0r" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
+  <decision id="getTask" name="Decision 1">
+    <decisionTable id="DecisionTable_0jtevuc" hitPolicy="FIRST">
+      <input id="Input_1" label="Event Id" camunda:inputVariable="eventId">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0gxli97" label="Post event state" camunda:inputVariable="postEventState">
+        <inputExpression id="LiteralExpression_0dijl5x" typeRef="string">
+          <text></text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="Task Name" name="taskId" typeRef="string" />
+      <rule id="DecisionRule_1fenvxm">
+        <inputEntry id="UnaryTests_09nq8bu">
+          <text>"submitAppeal"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0aldx9i">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0tbxmk0">
+          <text>"processApplication"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_046wm6a">
+        <inputEntry id="UnaryTests_02g9rgn">
+          <text>"submitTimeExtension"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0jwdel0">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_00bhd5h">
+          <text>"decideOnTimeExtension"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0gm0jgu">
+        <inputEntry id="UnaryTests_03i96yg">
+          <text>"uploadHomeOfficeBundle"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1q3wn6f">
+          <text>"awaitingRespondentEvidence"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1f28uac">
+          <text>"reviewRespondentEvidence"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0wvehb6">
+        <inputEntry id="UnaryTests_0x28q3j">
+          <text>"submitCase"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0yx1m24">
+          <text>"caseUnderReview"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_07cq9vh">
+          <text>"reviewAppealSkeletonArgument"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_12seemc">
+        <inputEntry id="UnaryTests_1y0vrr4">
+          <text>"submitReasonsForAppeal"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_013pm46">
+          <text>"reasonsForAppealSubmitted"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_19yxcio">
+          <text>"reviewReasonsForAppeal"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0oelx3m">
+        <inputEntry id="UnaryTests_11avvlg">
+          <text>"submitClarifyingQuestionAnswers"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1h2ddc9">
+          <text>"clarifyingQuestionsAnswersSubmitted"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0li58ot">
+          <text>"reviewClarifyingQuestionsAnswers"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1qug6sw">
+        <inputEntry id="UnaryTests_1keumr9">
+          <text>"submitCmaRequirements"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0px8mx6">
+          <text>"cmaRequirementsSubmitted"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_11ipdmd">
+          <text>"reviewCmaRequirements"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0odg0q4">
+        <inputEntry id="UnaryTests_0x449ig">
+          <text>"listCma"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1lwznn4">
+          <text>"cmaListed"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ksn1uz">
+          <text>"attendCma"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1tpr9e2">
+        <inputEntry id="UnaryTests_0jppcim">
+          <text>"uploadHomeOfficeAppealResponse"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1eotwou">
+          <text>"respondentReview"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1qn921m">
+          <text>"reviewRespondentResponse"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_02svucz">
+        <inputEntry id="UnaryTests_1gh1dkz">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1jw5p9b">
+          <text>"prepareForHearing"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0a8r2w4">
+          <text>"createCaseSummary"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1p1dgii">
+        <inputEntry id="UnaryTests_1sl3ymc">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_094ouxj">
+          <text>"finalBundling"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_19tg089">
+          <text>"createHearingBundle"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0rscfh8">
+        <inputEntry id="UnaryTests_1qn90yh">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1yw134u">
+          <text>"preHearing"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1gs16f8">
+          <text>"startDecisionsAndReasonsDocument"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

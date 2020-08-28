@@ -6,28 +6,29 @@ import java.util.Objects;
 
 public class Transition {
     @ApiModelProperty(example = "caseCreated", required = true, notes = "The state the case was in before the event fired", position = 0)
-    private final String startState;
+    private final String preState;
     @ApiModelProperty(example = "submitCaseEvent", required = true, notes = "The event that triggered the transition", position = 1)
-    private final String eventName;
-    @ApiModelProperty(example = "caseSubmitted", required = true, notes = "The state the case was in after the event fired", position = 2)
-    private final String endState;
+    private final String eventId;
+    @ApiModelProperty(
+        example = "caseSubmitted", required = true, notes = "The state the case was in after the event fired", position = 2)
+    private final String postState;
 
-    public Transition(String startState, String eventName, String endState) {
-        this.startState = startState;
-        this.eventName = eventName;
-        this.endState = endState;
+    public Transition(String preState, String eventId, String postState) {
+        this.preState = preState;
+        this.eventId = eventId;
+        this.postState = postState;
     }
 
-    public String getStartState() {
-        return startState;
+    public String getPreState() {
+        return preState;
     }
 
-    public String getEventName() {
-        return eventName;
+    public String getEventId() {
+        return eventId;
     }
 
-    public String getEndState() {
-        return endState;
+    public String getPostState() {
+        return postState;
     }
 
     @Override
@@ -39,22 +40,22 @@ public class Transition {
             return false;
         }
         Transition that = (Transition) object;
-        return Objects.equals(startState, that.startState)
-               && Objects.equals(eventName, that.eventName)
-               && Objects.equals(endState, that.endState);
+        return Objects.equals(preState, that.preState)
+               && Objects.equals(eventId, that.eventId)
+               && Objects.equals(postState, that.postState);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startState, eventName, endState);
+        return Objects.hash(preState, eventId, postState);
     }
 
     @Override
     public String toString() {
         return "Transition{"
-               + "startState='" + startState + '\''
-               + ", eventName='" + eventName + '\''
-               + ", endState='" + endState + '\''
+               + "preState='" + preState + '\''
+               + ", eventId='" + eventId + '\''
+               + ", postState='" + postState + '\''
                + '}';
     }
 }

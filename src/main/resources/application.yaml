@@ -16,6 +16,10 @@ management:
 
 enableSwagger: ${ENABLE_SWAGGER:true}
 
+camunda:
+  url: ${CAMUNDA_URL:http://localhost:8080/engine-rest}
+  getTaskDmnId: getTask
+
 #logging:
 #  level:
 #    org.springframework: debug

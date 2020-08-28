@@ -15,9 +15,9 @@ public final class CreateTaskRequestCreator {
             .withCaseId("1234567890")
             .withTransition(
                 aTransition()
-                    .withStartState("appealCreated")
-                    .withEventName("submitAppeal")
-                    .withEndState("appealSubmitted")
+                    .withPreState("appealStarted")
+                    .withEventId("submitAppeal")
+                    .withPostState("appealSubmitted")
                     .build()
             )
             .build();
@@ -25,5 +25,22 @@ public final class CreateTaskRequestCreator {
 
     public static String appealSubmittedCreateTaskRequestString() {
         return asJsonString(appealSubmittedCreateTaskRequest());
+    }
+
+    public static CreateTaskRequest unmappedCreateTaskRequest() {
+        return aCreateTaskRequest()
+            .withCaseId("1234567890")
+            .withTransition(
+                aTransition()
+                    .withPreState("appealStarted")
+                    .withEventId("editAppeal")
+                    .withPostState("appealStarted")
+                    .build()
+            )
+            .build();
+    }
+
+    public static String unmappedCreateTaskRequestString() {
+        return asJsonString(unmappedCreateTaskRequest());
     }
 }
