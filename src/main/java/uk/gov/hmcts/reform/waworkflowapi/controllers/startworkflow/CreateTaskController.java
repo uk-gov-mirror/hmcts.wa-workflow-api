@@ -20,14 +20,14 @@ import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 
 @RestController
-public class StartWorkflowController {
+public class CreateTaskController {
 
-    private final Logger log = LoggerFactory.getLogger(StartWorkflowController.class);
+    private final Logger log = LoggerFactory.getLogger(CreateTaskController.class);
 
     private final TaskManagerService taskManagerService;
 
     @Autowired
-    public StartWorkflowController(TaskManagerService taskManagerService) {
+    public CreateTaskController(TaskManagerService taskManagerService) {
         this.taskManagerService = taskManagerService;
     }
 
@@ -37,7 +37,7 @@ public class StartWorkflowController {
         @ApiResponse(code = 201, message = "A new task has been created for the transition"),
         @ApiResponse(code = 204, message = "No new task was created for the transition")
     })
-    public ResponseEntity createTaskWorkflow(@RequestBody CreateTaskRequest createTaskRequest) {
+    public ResponseEntity createTask(@RequestBody CreateTaskRequest createTaskRequest) {
         Optional<Task> task = taskManagerService.getTask(createTaskRequest.getTransition());
         log.info("Got task [" + task + "]");
 
