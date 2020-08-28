@@ -68,10 +68,9 @@ class PojoTest {
     @Test
     void equalsTest() {
         for (Class classUnderTest : classesToTest) {
+            Object newInstance = objectGenerator.createNewInstance(classUnderTest);
+            equalsTester.addEqualityGroup(newInstance).testEquals();
             if (!asList(ignoreEquals).contains(classUnderTest)) {
-                Object newInstance = objectGenerator.createNewInstance(classUnderTest);
-                equalsTester.addEqualityGroup(newInstance).testEquals();
-
                 Object anotherInstance = objectGenerator.createNewInstance(classUnderTest);
                 assertThat(
                     "Check instance: " + newInstance + "\nequals another instance: " + anotherInstance,
@@ -92,6 +91,14 @@ class PojoTest {
                     );
                 }
             }
+        }
+    }
+
+    @Test
+    void checkHashCodeDoesNotChange() {
+        for (Class classUnderTest : classesToTest) {
+            Object newInstance = objectGenerator.createNewInstance(classUnderTest);
+            assertThat("Hashcode does not change", newInstance.hashCode(), is(newInstance.hashCode()));
         }
     }
 
