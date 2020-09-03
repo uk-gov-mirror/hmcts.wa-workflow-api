@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,10 +80,11 @@ class TaskClientServiceTest {
     void createsATask() {
         String ccdId = "ccd_id";
         String group = "TCW";
-        underTest.createTask(ccdId, new TaskToCreate(PROCESS_APPLICATION, group));
+        String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        underTest.createTask(ccdId, new TaskToCreate(PROCESS_APPLICATION, group), dueDate);
 
         Mockito.verify(camundaClient).sendMessage(
-            new SendMessageRequest("createTaskMessage", new ProcessVariables(ccdId, PROCESS_APPLICATION, group))
+            new SendMessageRequest("createTaskMessage", new ProcessVariables(ccdId, PROCESS_APPLICATION, group, dueDate))
         );
     }
 }

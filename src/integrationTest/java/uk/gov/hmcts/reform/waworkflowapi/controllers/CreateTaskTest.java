@@ -57,7 +57,12 @@ class CreateTaskTest {
         verify(camundaClient).sendMessage(
             new SendMessageRequest(
                 "createTaskMessage",
-                new ProcessVariables(createTaskRequest.getCaseId(), PROCESS_APPLICATION, "TCW")
+                new ProcessVariables(
+                    createTaskRequest.getCaseId(),
+                    PROCESS_APPLICATION,
+                    "TCW",
+                    createTaskRequest.getDueDate()
+                )
             )
         );
     }

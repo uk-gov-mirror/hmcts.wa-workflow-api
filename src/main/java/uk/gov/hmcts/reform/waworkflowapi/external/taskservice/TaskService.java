@@ -15,11 +15,11 @@ public class TaskService {
         this.taskClientService = taskClientService;
     }
 
-    public boolean createTask(Transition transition, String caseId) {
+    public boolean createTask(Transition transition, String caseId, String dueDate) {
         Optional<TaskToCreate> taskOptional = taskClientService.getTask(transition);
 
         return taskOptional.map(taskToCreate -> {
-            taskClientService.createTask(caseId, taskToCreate);
+            taskClientService.createTask(caseId, taskToCreate, dueDate);
 
             return true;
         }).orElse(false);

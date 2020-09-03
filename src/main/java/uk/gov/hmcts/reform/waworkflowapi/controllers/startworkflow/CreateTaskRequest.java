@@ -8,10 +8,12 @@ public class CreateTaskRequest {
     @ApiModelProperty(example = "abc1234567890", required = true, notes = "The case id in CCD")
     private final String caseId;
     private final Transition transition;
+    private final String dueDate;
 
-    public CreateTaskRequest(String caseId, Transition transition) {
+    public CreateTaskRequest(String caseId, Transition transition, String dueDate) {
         this.caseId = caseId;
         this.transition = transition;
+        this.dueDate = dueDate;
     }
 
     public String getCaseId() {
@@ -20,6 +22,10 @@ public class CreateTaskRequest {
 
     public Transition getTransition() {
         return transition;
+    }
+
+    public String getDueDate() {
+        return dueDate;
     }
 
     @Override
@@ -32,7 +38,8 @@ public class CreateTaskRequest {
         }
         CreateTaskRequest that = (CreateTaskRequest) object;
         return Objects.equals(caseId, that.caseId)
-               && Objects.equals(transition, that.transition);
+               && Objects.equals(transition, that.transition)
+               && Objects.equals(dueDate, that.dueDate);
     }
 
     @Override
@@ -45,6 +52,7 @@ public class CreateTaskRequest {
         return "CreateTaskRequest{"
                + "caseId='" + caseId + '\''
                + ", transition=" + transition
+               + ", dueDate=" + dueDate
                + '}';
     }
 }

@@ -8,11 +8,13 @@ public class ProcessVariables {
     private final DmnValue ccdId;
     private final DmnValue task;
     private final DmnValue group;
+    private final DmnValue dueDate;
 
-    public ProcessVariables(String ccdId, Task task, String group) {
+    public ProcessVariables(String ccdId, Task task, String group, String dueDate) {
         this.ccdId = dmnStringValue(ccdId);
         this.task = dmnStringValue(task.getId());
         this.group = dmnStringValue(group);
+        this.dueDate = dmnStringValue(dueDate);
     }
 
     public DmnValue getCcdId() {
@@ -27,6 +29,10 @@ public class ProcessVariables {
         return group;
     }
 
+    public DmnValue getDueDate() {
+        return dueDate;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -38,7 +44,8 @@ public class ProcessVariables {
         ProcessVariables that = (ProcessVariables) object;
         return Objects.equals(ccdId, that.ccdId)
                && Objects.equals(task, that.task)
-               && Objects.equals(group, that.group);
+               && Objects.equals(group, that.group)
+               && Objects.equals(dueDate, that.dueDate);
     }
 
     @Override
@@ -52,6 +59,7 @@ public class ProcessVariables {
                + "ccdId=" + ccdId
                + ", task=" + task
                + ", group=" + group
+               + ", dueDate=" + dueDate
                + '}';
     }
 }

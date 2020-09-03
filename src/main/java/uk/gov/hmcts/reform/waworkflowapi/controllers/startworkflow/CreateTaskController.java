@@ -31,7 +31,7 @@ public class CreateTaskController {
         @ApiResponse(code = 204, message = "No new task was created for the transition")
     })
     public ResponseEntity createTask(@RequestBody CreateTaskRequest createTaskRequest) {
-        if (taskService.createTask(createTaskRequest.getTransition(), createTaskRequest.getCaseId())) {
+        if (taskService.createTask(createTaskRequest.getTransition(), createTaskRequest.getCaseId(), createTaskRequest.getDueDate())) {
             return created(null).build();
         } else {
             return noContent().build();

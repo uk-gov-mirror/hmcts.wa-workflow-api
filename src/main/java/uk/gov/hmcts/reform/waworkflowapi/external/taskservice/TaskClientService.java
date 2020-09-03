@@ -40,11 +40,12 @@ public class TaskClientService {
         throw new IllegalStateException("Should have exactly one task for transition");
     }
 
-    public void createTask(String ccdId, TaskToCreate taskToCreate) {
+    public void createTask(String ccdId, TaskToCreate taskToCreate, String dueDate) {
         ProcessVariables processVariables = new ProcessVariables(
             ccdId,
             taskToCreate.getTask(),
-            taskToCreate.getGroup()
+            taskToCreate.getGroup(),
+            dueDate
         );
         camundaClient.sendMessage(new SendMessageRequest("createTaskMessage", processVariables));
     }
