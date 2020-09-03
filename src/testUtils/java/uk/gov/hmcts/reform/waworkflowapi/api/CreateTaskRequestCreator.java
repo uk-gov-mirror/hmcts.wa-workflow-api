@@ -22,6 +22,19 @@ public final class CreateTaskRequestCreator {
                     .withPostState("appealSubmitted")
                     .build()
             )
+            .build();
+    }
+
+    public static CreateTaskRequest appealSubmittedCreateTaskRequestWithDueDate(String caseId) {
+        return aCreateTaskRequest()
+            .withCaseId(caseId)
+            .withTransition(
+                aTransition()
+                    .withPreState("appealStarted")
+                    .withEventId("submitAppeal")
+                    .withPostState("appealSubmitted")
+                    .build()
+            )
             .withDueDate(ZonedDateTime.now().plusDays(2))
             .build();
     }
