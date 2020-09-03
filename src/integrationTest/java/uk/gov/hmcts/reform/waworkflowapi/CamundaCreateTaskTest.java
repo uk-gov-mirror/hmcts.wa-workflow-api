@@ -83,7 +83,7 @@ public class CamundaCreateTaskTest {
     @Deployment(resources = { "create_task.bpmn", "getOverdueTask.dmn" })
     public void overdueAndOverdueTaskIsCreated() {
         ProcessInstance processInstance = startCreateTaskProcess(
-            of("taskId", "uploadRespondentEvidence", "group", EXPECTED_GROUP, "dueDate", DUE_DATE_STRING)
+            of("taskId", "provideRespondentEvidence", "group", EXPECTED_GROUP, "dueDate", DUE_DATE_STRING)
         );
 
         assertThat(processInstance).isStarted()

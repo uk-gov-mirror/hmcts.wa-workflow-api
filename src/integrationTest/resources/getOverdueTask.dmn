@@ -11,12 +11,78 @@
       <output id="OutputClause_0l5ezm8" label="Group" name="group" typeRef="string" />
       <rule id="DecisionRule_0r5llam">
         <inputEntry id="UnaryTests_08zv4eq">
-          <text>"uploadRespondentEvidence"</text>
+          <text>"provideRespondentEvidence"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1b66afm">
           <text>"followUpOverdueRespondentEvidence"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0wln9if">
+          <text>"TCW"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1cvwlqt">
+        <inputEntry id="UnaryTests_1f446xm">
+          <text>"provideCaseBuilding"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1tbhfyp">
+          <text>"followUpOverdueCaseBuilding"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0n62pfk">
+          <text>"TCW"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_06ja87r">
+        <inputEntry id="UnaryTests_16370hj">
+          <text>"provideReasonsForAppeal"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0taq1ci">
+          <text>"followUpOverdueReasonsForAppeal"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1oeju8y">
+          <text>"TCW"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_065z1ps">
+        <inputEntry id="UnaryTests_14ywblz">
+          <text>"provideClarifyingAnswers"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0m1ycyd">
+          <text>"followUpOverdueClarifyingAnswers"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_17m7v9t">
+          <text>"TCW"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0q22bds">
+        <inputEntry id="UnaryTests_0ngobq4">
+          <text>"provideCmaRequirements"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0omngq8">
+          <text>"followUpOverdueCmaRequirements"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_153ewk4">
+          <text>"TCW"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ynjokj">
+        <inputEntry id="UnaryTests_01f5lpp">
+          <text>"provideRespondentReview"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1dtslco">
+          <text>"followUpOverdueRespondentReview"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_01g5vk0">
+          <text>"TCW"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1cpw47c">
+        <inputEntry id="UnaryTests_0mu2lnf">
+          <text>"provideHearingRequirements"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1hcyh6e">
+          <text>"followUpOverdueHearingRequirements"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_07xrbh4">
           <text>"TCW"</text>
         </outputEntry>
       </rule>

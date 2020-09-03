@@ -34,7 +34,13 @@ class CamundaGetOverdueTaskTest {
     @DisplayName("Get overdue task")
     @ParameterizedTest(name = "\"{0}\" should go to \"{1}\"")
     @CsvSource({
-        "uploadRespondentEvidence, followUpOverdueRespondentEvidence"
+        "provideRespondentEvidence, followUpOverdueRespondentEvidence, TCW",
+        "provideCaseBuilding, followUpOverdueCaseBuilding, TCW",
+        "provideReasonsForAppeal, followUpOverdueReasonsForAppeal, TCW",
+        "provideClarifyingAnswers, followUpOverdueClarifyingAnswers, TCW",
+        "provideCmaRequirements, followUpOverdueCmaRequirements, TCW",
+        "provideRespondentReview, followUpOverdueRespondentReview, TCW",
+        "provideHearingRequirements, followUpOverdueHearingRequirements, TCW"
     })
     void shouldGetOverdueTaskIdTest(String taskId, String overdueTaskId) {
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmn(taskId);

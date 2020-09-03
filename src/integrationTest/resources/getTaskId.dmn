@@ -190,10 +190,94 @@
           <text>"awaitingRespondentEvidence"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1inmd5d">
-          <text>"uploadRespondentEvidence"</text>
+          <text>"provideRespondentEvidence"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_10iwep1">
-          <text>"respondent"</text>
+          <text>"external"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1cryksr">
+        <inputEntry id="UnaryTests_0w065lg">
+          <text>"requestCaseBuilding"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ed3gjs">
+          <text>"caseBuilding"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1452s6m">
+          <text>"provideCaseBuilding"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0xikhzp">
+          <text>"external"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1puaqjc">
+        <inputEntry id="UnaryTests_0e1x2w0">
+          <text>"requestReasonsForAppeal"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_04z2n2c">
+          <text>"awaitingReasonsForAppeal"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1bqkvmf">
+          <text>"provideReasonsForAppeal"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1l5fl2v">
+          <text>"external"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_18csya4">
+        <inputEntry id="UnaryTests_0ozvc9e">
+          <text>"sendDirectionWithQuestions"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0d66g4c">
+          <text>"awaitingClarifyingQuestionsAnswers"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_102r1wb">
+          <text>"provideClarifyingAnswers"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0u68a06">
+          <text>"external"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ilfnvo">
+        <inputEntry id="UnaryTests_17nkudc">
+          <text>"requestCmaRequirements"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0e1boej">
+          <text>"awaitingCmaRequirements"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1hzz7kp">
+          <text>"provideCmaRequirements"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_11hjg6x">
+          <text>"external"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_170q68k">
+        <inputEntry id="UnaryTests_0zgp0zs">
+          <text>"requestRespondentReview"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0zhnvxq">
+          <text>"respondentReview"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0tbr4e0">
+          <text>"provideRespondentReview"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1k5wucv">
+          <text>"external"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ft10ad">
+        <inputEntry id="UnaryTests_1imhsea">
+          <text>"requestHearingRequirements"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1ubf1h8">
+          <text>"submitHearingRequirements"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1enn7s8">
+          <text>"provideHearingRequirements"</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_14xa26a">
+          <text>"external"</text>
         </outputEntry>
       </rule>
     </decisionTable>

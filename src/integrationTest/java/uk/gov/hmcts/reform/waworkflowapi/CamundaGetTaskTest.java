@@ -46,7 +46,13 @@ class CamundaGetTaskTest {
         "anything, prepareForHearing, createCaseSummary, TCW",
         "anything, finalBundling, createHearingBundle, TCW",
         "anything, preHearing, startDecisionsAndReasonsDocument, TCW",
-        "requestRespondentEvidence, awaitingRespondentEvidence, uploadRespondentEvidence, respondent"
+        "requestRespondentEvidence, awaitingRespondentEvidence, provideRespondentEvidence, external",
+        "requestCaseBuilding, caseBuilding, provideCaseBuilding, external",
+        "requestReasonsForAppeal, awaitingReasonsForAppeal, provideReasonsForAppeal, external",
+        "sendDirectionWithQuestions, awaitingClarifyingQuestionsAnswers, provideClarifyingAnswers, external",
+        "requestCmaRequirements, awaitingCmaRequirements, provideCmaRequirements, external",
+        "requestRespondentReview, respondentReview, provideRespondentReview, external",
+        "requestHearingRequirements, submitHearingRequirements, provideHearingRequirements, external"
     })
     void shouldGetTaskIdTest(String eventId, String postState, String taskId, String group) {
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmn(eventId, postState);
