@@ -13,4 +13,7 @@ import java.util.List;
 public interface CamundaClient {
     @PostMapping(value = "/decision-definition/key/getTask/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
     List<GetTaskDmnResult> getTask(DmnRequest<GetTaskDmnRequest> requestParameters);
+
+    @PostMapping(value = "/message", produces = MediaType.APPLICATION_JSON_VALUE)
+    void sendMessage(SendMessageRequest sendMessageRequest);
 }

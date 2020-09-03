@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
 import java.util.List;
@@ -20,10 +21,10 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCES
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
 
 @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
-class TaskManagerServiceTest {
+class TaskClientServiceTest {
 
     private CamundaClient camundaClient;
-    private TaskManagerService underTest;
+    private TaskClientService underTest;
     private String expectedTask;
     private Transition transition;
     private DmnRequest<GetTaskDmnRequest> dmnRequest;
@@ -31,7 +32,7 @@ class TaskManagerServiceTest {
     @BeforeEach
     void setUp() {
         camundaClient = mock(CamundaClient.class);
-        underTest = new TaskManagerService(camundaClient);
+        underTest = new TaskClientService(camundaClient);
         expectedTask = PROCESS_APPLICATION.getId();
         transition = new Transition("startState", "eventName", "endState");
         dmnRequest = new DmnRequest<>(new GetTaskDmnRequest(
@@ -69,5 +70,15 @@ class TaskManagerServiceTest {
         assertThrows(IllegalStateException.class, () -> {
             underTest.getTask(transition);
         });
+    }
+
+    @Test
+    void createsATask() {
+        String ccdId = "ccd_id";
+        underTest.createTask(ccdId, PROCESS_APPLICATION);
+
+        Mockito.verify(camundaClient).sendMessage(
+            new SendMessageRequest("createTaskMessage", new ProcessVariables(ccdId, PROCESS_APPLICATION))
+        );
     }
 }

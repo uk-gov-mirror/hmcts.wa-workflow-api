@@ -11,11 +11,11 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dm
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
 
 @Component
-public class TaskManagerService {
+public class TaskClientService {
     private final CamundaClient camundaClient;
 
     @Autowired
-    public TaskManagerService(
+    public TaskClientService(
         @Autowired CamundaClient camundaClient
     ) {
         this.camundaClient = camundaClient;
@@ -36,5 +36,9 @@ public class TaskManagerService {
             return Optional.of(taskForId(dmnResults.get(0).getTaskId().getValue()));
         }
         throw new IllegalStateException("Should have exactly one task for transition");
+    }
+
+    public void createTask(String ccdId, Task taskToCreate) {
+        camundaClient.sendMessage(new SendMessageRequest("createTaskMessage", new ProcessVariables(ccdId, taskToCreate)));
     }
 }

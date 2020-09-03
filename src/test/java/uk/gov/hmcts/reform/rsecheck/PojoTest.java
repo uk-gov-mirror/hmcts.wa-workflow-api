@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnResult;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.GetTaskDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.GetTaskDmnResult;
+import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.ProcessVariables;
+import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
 
 import java.util.List;
 
@@ -35,12 +37,16 @@ class PojoTest {
         DmnResult.class,
         DmnValue.class,
         GetTaskDmnRequest.class,
-        GetTaskDmnResult.class
+        GetTaskDmnResult.class,
+        SendMessageRequest.class,
+        ProcessVariables.class
     };
     // Cannot test equals for generic classes
     private final Class[] ignoreEquals = {
         DmnRequest.class,
-        DmnResult.class
+        DmnResult.class,
+        SendMessageRequest.class,
+        ProcessVariables.class
     };
     private final ObjectGenerator objectGenerator = new ObjectGenerator(
         DefaultFieldValueChanger.INSTANCE,
@@ -62,10 +68,9 @@ class PojoTest {
     @Test
     void equalsTest() {
         for (Class classUnderTest : classesToTest) {
+            Object newInstance = objectGenerator.createNewInstance(classUnderTest);
+            equalsTester.addEqualityGroup(newInstance).testEquals();
             if (!asList(ignoreEquals).contains(classUnderTest)) {
-                Object newInstance = objectGenerator.createNewInstance(classUnderTest);
-                equalsTester.addEqualityGroup(newInstance).testEquals();
-
                 Object anotherInstance = objectGenerator.createNewInstance(classUnderTest);
                 assertThat(
                     "Check instance: " + newInstance + "\nequals another instance: " + anotherInstance,
@@ -86,6 +91,14 @@ class PojoTest {
                     );
                 }
             }
+        }
+    }
+
+    @Test
+    void checkHashCodeDoesNotChange() {
+        for (Class classUnderTest : classesToTest) {
+            Object newInstance = objectGenerator.createNewInstance(classUnderTest);
+            assertThat("Hashcode does not change", newInstance.hashCode(), is(newInstance.hashCode()));
         }
     }
 

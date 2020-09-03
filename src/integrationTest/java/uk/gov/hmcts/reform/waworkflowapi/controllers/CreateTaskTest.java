@@ -13,11 +13,16 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.CamundaClient;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.GetTaskDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.GetTaskDmnResult;
+import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.ProcessVariables;
+import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,7 +45,7 @@ class CreateTaskTest {
     @DisplayName("Should create task with 201 response")
     @Test
     void createsTaskForTransition() throws Exception {
-        CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest();
+        CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest("1234567890");
         when(camundaClient.getTask(createGetTaskDmnRequest(createTaskRequest)))
             .thenReturn(createGetTaskResponse());
         mockMvc.perform(
@@ -48,12 +53,19 @@ class CreateTaskTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(createTaskRequest))
         ).andExpect(status().isCreated()).andReturn();
+
+        verify(camundaClient).sendMessage(
+            new SendMessageRequest(
+                "createTaskMessage",
+                new ProcessVariables(createTaskRequest.getCaseId(), PROCESS_APPLICATION)
+            )
+        );
     }
 
     @DisplayName("Should not create task with 204 response")
     @Test
     void doesNotCreateTaskForTransition() throws Exception {
-        CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest();
+        CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest("1234567890");
         when(camundaClient.getTask(createGetTaskDmnRequest(createTaskRequest)))
             .thenReturn(emptyList());
         mockMvc.perform(
@@ -61,6 +73,8 @@ class CreateTaskTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(createTaskRequest))
         ).andExpect(status().isNoContent()).andReturn();
+
+        verify(camundaClient, never()).sendMessage(any(SendMessageRequest.class));
     }
 
     private DmnRequest<GetTaskDmnRequest> createGetTaskDmnRequest(CreateTaskRequest createTaskRequest) {

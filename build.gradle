@@ -251,7 +251,12 @@ dependencies {
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+  //for testing Camunda config will move out of this project
   integrationTestImplementation group: 'org.camunda.bpm.dmn', name: 'camunda-engine-dmn', version: '7.13.0'
+  integrationTestImplementation group: 'org.camunda.bpm.assert', name: 'camunda-bpm-assert', version: '7.0.0'
+  integrationTestImplementation group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.13.0'
+  integrationTestImplementation group: 'com.h2database', name: 'h2', version: '1.4.200'
+
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
