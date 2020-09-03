@@ -21,13 +21,13 @@ class TaskServiceTest {
     private TaskClientService taskClientService;
     private TaskService underTest;
     private Transition someTransition;
-    private Task taskToCreate;
+    private Task taskBeingCreated;
 
     @BeforeEach
     void setUp() {
         someCcdId = "ccdId";
         someTransition = new Transition("preState", "eventId", "postState");
-        taskToCreate = PROCESS_APPLICATION;
+        taskBeingCreated = PROCESS_APPLICATION;
 
         taskClientService = mock(TaskClientService.class);
         underTest = new TaskService(taskClientService);
@@ -37,6 +37,7 @@ class TaskServiceTest {
     void createsATask() {
         taskClientService = mock(TaskClientService.class);
         underTest = new TaskService(taskClientService);
+        TaskToCreate taskToCreate = new TaskToCreate(this.taskBeingCreated, "TCW");
         when(taskClientService.getTask(someTransition)).thenReturn(Optional.of(taskToCreate));
 
         boolean createdTask = underTest.createTask(someTransition, someCcdId);
@@ -52,7 +53,7 @@ class TaskServiceTest {
         boolean createdTask = underTest.createTask(someTransition, someCcdId);
 
         assertThat("Should not have created a task", createdTask, CoreMatchers.is(false));
-        verify(taskClientService, never()).createTask(any(String.class), any(Task.class));
+        verify(taskClientService, never()).createTask(any(String.class), any(TaskToCreate.class));
     }
 
 }

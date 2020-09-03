@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.GetTaskDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.GetTaskDmnResult;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.ProcessVariables;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
+import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskToCreate;
 
 import java.util.List;
 
@@ -39,14 +40,16 @@ class PojoTest {
         GetTaskDmnRequest.class,
         GetTaskDmnResult.class,
         SendMessageRequest.class,
-        ProcessVariables.class
+        ProcessVariables.class,
+        TaskToCreate.class
     };
     // Cannot test equals for generic classes
     private final Class[] ignoreEquals = {
         DmnRequest.class,
         DmnResult.class,
         SendMessageRequest.class,
-        ProcessVariables.class
+        ProcessVariables.class,
+        TaskToCreate.class
     };
     private final ObjectGenerator objectGenerator = new ObjectGenerator(
         DefaultFieldValueChanger.INSTANCE,

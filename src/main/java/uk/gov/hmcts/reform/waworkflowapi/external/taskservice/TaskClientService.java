@@ -22,7 +22,7 @@ public class TaskClientService {
     }
 
     @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-    public Optional<Task> getTask(Transition transition) {
+    public Optional<TaskToCreate> getTask(Transition transition) {
         DmnRequest<GetTaskDmnRequest> requestParameters = new DmnRequest<>(new GetTaskDmnRequest(
             dmnStringValue(transition.getEventId()),
             dmnStringValue(transition.getPostState())
@@ -33,12 +33,19 @@ public class TaskClientService {
         if (dmnResults.isEmpty()) {
             return Optional.empty();
         } else if (dmnResults.size() == 1) {
-            return Optional.of(taskForId(dmnResults.get(0).getTaskId().getValue()));
+            Task task = taskForId(dmnResults.get(0).getTaskId().getValue());
+            String group = dmnResults.get(0).getGroup().getValue();
+            return Optional.of(new TaskToCreate(task, group));
         }
         throw new IllegalStateException("Should have exactly one task for transition");
     }
 
-    public void createTask(String ccdId, Task taskToCreate) {
-        camundaClient.sendMessage(new SendMessageRequest("createTaskMessage", new ProcessVariables(ccdId, taskToCreate)));
+    public void createTask(String ccdId, TaskToCreate taskToCreate) {
+        ProcessVariables processVariables = new ProcessVariables(
+            ccdId,
+            taskToCreate.getTask(),
+            taskToCreate.getGroup()
+        );
+        camundaClient.sendMessage(new SendMessageRequest("createTaskMessage", processVariables));
     }
 }

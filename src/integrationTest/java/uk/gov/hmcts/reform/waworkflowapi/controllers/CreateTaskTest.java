@@ -57,7 +57,7 @@ class CreateTaskTest {
         verify(camundaClient).sendMessage(
             new SendMessageRequest(
                 "createTaskMessage",
-                new ProcessVariables(createTaskRequest.getCaseId(), PROCESS_APPLICATION)
+                new ProcessVariables(createTaskRequest.getCaseId(), PROCESS_APPLICATION, "TCW")
             )
         );
     }
@@ -87,6 +87,6 @@ class CreateTaskTest {
     }
 
     private List<GetTaskDmnResult> createGetTaskResponse() {
-        return singletonList(new GetTaskDmnResult(dmnStringValue(PROCESS_APPLICATION.getId())));
+        return singletonList(new GetTaskDmnResult(dmnStringValue(PROCESS_APPLICATION.getId()), dmnStringValue("TCW")));
     }
 }

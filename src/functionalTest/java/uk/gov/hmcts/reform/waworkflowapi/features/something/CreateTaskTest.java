@@ -40,15 +40,29 @@ public class CreateTaskTest {
             .then()
             .statusCode(HttpStatus.CREATED_201);
 
-        given()
+        Object taskId = given()
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task")
             .param("processVariables", "ccdId_eq_" + caseId)
             .when()
             .get()
+            .prettyPeek()
             .then()
-            .body("size()", is(1));
+            .body("size()", is(1))
+            .body("[0].name", is("Process Task"))
+            .extract()
+            .path("[0].id");
+
+        given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .baseUri(camundaUrl)
+            .basePath("/task/" + taskId + "/identity-links?type=candidate")
+            .when()
+            .get()
+            .prettyPeek()
+            .then()
+            .body("[0].groupId", is("TCW"));
     }
 
     @Test

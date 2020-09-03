@@ -28,6 +28,7 @@ class TaskClientServiceTest {
     private String expectedTask;
     private Transition transition;
     private DmnRequest<GetTaskDmnRequest> dmnRequest;
+    private static final String GROUP = "TCW";
 
     @BeforeEach
     void setUp() {
@@ -43,12 +44,13 @@ class TaskClientServiceTest {
 
     @Test
     void getsATaskBasedOnTransition() {
-        List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(dmnStringValue(expectedTask)));
+        List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(dmnStringValue(expectedTask),
+                                                                       dmnStringValue(GROUP)));
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 
-        Optional<Task> task = underTest.getTask(transition);
+        Optional<TaskToCreate> task = underTest.getTask(transition);
 
-        assertThat(task, is(Optional.of(taskForId(expectedTask))));
+        assertThat(task, is(Optional.of(new TaskToCreate(taskForId(expectedTask), GROUP))));
     }
 
     @Test
@@ -56,14 +58,14 @@ class TaskClientServiceTest {
         List<GetTaskDmnResult> ts = emptyList();
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 
-        Optional<Task> task = underTest.getTask(transition);
+        Optional<TaskToCreate> task = underTest.getTask(transition);
 
         assertThat(task, is(Optional.empty()));
     }
 
     @Test
     void getsMultipleTasksBasedOnTransitionWhichIsInvalid() {
-        GetTaskDmnResult dmnResult = new GetTaskDmnResult(dmnStringValue(expectedTask));
+        GetTaskDmnResult dmnResult = new GetTaskDmnResult(dmnStringValue(expectedTask), dmnStringValue("TCW"));
         List<GetTaskDmnResult> ts = asList(dmnResult, dmnResult);
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 
@@ -75,10 +77,11 @@ class TaskClientServiceTest {
     @Test
     void createsATask() {
         String ccdId = "ccd_id";
-        underTest.createTask(ccdId, PROCESS_APPLICATION);
+        String group = "TCW";
+        underTest.createTask(ccdId, new TaskToCreate(PROCESS_APPLICATION, group));
 
         Mockito.verify(camundaClient).sendMessage(
-            new SendMessageRequest("createTaskMessage", new ProcessVariables(ccdId, PROCESS_APPLICATION))
+            new SendMessageRequest("createTaskMessage", new ProcessVariables(ccdId, PROCESS_APPLICATION, group))
         );
     }
 }

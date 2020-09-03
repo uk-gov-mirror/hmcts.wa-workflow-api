@@ -7,10 +7,12 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dm
 public class ProcessVariables {
     private final DmnValue ccdId;
     private final DmnValue task;
+    private final DmnValue group;
 
-    public ProcessVariables(String ccdId, Task task) {
+    public ProcessVariables(String ccdId, Task task, String group) {
         this.ccdId = dmnStringValue(ccdId);
         this.task = dmnStringValue(task.getId());
+        this.group = dmnStringValue(group);
     }
 
     public DmnValue getCcdId() {
@@ -19,6 +21,10 @@ public class ProcessVariables {
 
     public DmnValue getTask() {
         return task;
+    }
+
+    public DmnValue getGroup() {
+        return group;
     }
 
     @Override
@@ -31,7 +37,8 @@ public class ProcessVariables {
         }
         ProcessVariables that = (ProcessVariables) object;
         return Objects.equals(ccdId, that.ccdId)
-               && Objects.equals(task, that.task);
+               && Objects.equals(task, that.task)
+               && Objects.equals(group, that.group);
     }
 
     @Override
@@ -44,6 +51,7 @@ public class ProcessVariables {
         return "ProcessVariables{"
                + "ccdId=" + ccdId
                + ", task=" + task
+               + ", group=" + group
                + '}';
     }
 }
