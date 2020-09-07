@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.appealSubmittedCreateTaskRequest;
+import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.appealSubmittedCreateTaskRequestWithDueDate;
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreatorObjectMapper.asJsonString;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCESS_APPLICATION;
@@ -42,9 +43,9 @@ class CreateTaskTest {
     @MockBean
     private CamundaClient camundaClient;
 
-    @DisplayName("Should create task with 201 response")
+    @DisplayName("Should create task with default due date and 201 response")
     @Test
-    void createsTaskForTransition() throws Exception {
+    void createsTaskForTransitionWithoutDueDate() throws Exception {
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest("1234567890");
         when(camundaClient.getTask(createGetTaskDmnRequest(createTaskRequest)))
             .thenReturn(createGetTaskResponse());
@@ -57,7 +58,37 @@ class CreateTaskTest {
         verify(camundaClient).sendMessage(
             new SendMessageRequest(
                 "createTaskMessage",
-                new ProcessVariables(createTaskRequest.getCaseId(), PROCESS_APPLICATION)
+                new ProcessVariables(
+                    createTaskRequest.getCaseId(),
+                    PROCESS_APPLICATION,
+                    "TCW",
+                    null
+                )
+            )
+        );
+    }
+
+    @DisplayName("Should create task with 201 response")
+    @Test
+    void createsTaskForTransitionAndDueDate() throws Exception {
+        CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequestWithDueDate("1234567890");
+        when(camundaClient.getTask(createGetTaskDmnRequest(createTaskRequest)))
+            .thenReturn(createGetTaskResponse());
+        mockMvc.perform(
+            post("/tasks")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(asJsonString(createTaskRequest))
+        ).andExpect(status().isCreated()).andReturn();
+
+        verify(camundaClient).sendMessage(
+            new SendMessageRequest(
+                "createTaskMessage",
+                new ProcessVariables(
+                    createTaskRequest.getCaseId(),
+                    PROCESS_APPLICATION,
+                    "TCW",
+                    createTaskRequest.getDueDate()
+                )
             )
         );
     }
@@ -87,6 +118,6 @@ class CreateTaskTest {
     }
 
     private List<GetTaskDmnResult> createGetTaskResponse() {
-        return singletonList(new GetTaskDmnResult(dmnStringValue(PROCESS_APPLICATION.getId())));
+        return singletonList(new GetTaskDmnResult(dmnStringValue(PROCESS_APPLICATION.getId()), dmnStringValue("TCW")));
     }
 }

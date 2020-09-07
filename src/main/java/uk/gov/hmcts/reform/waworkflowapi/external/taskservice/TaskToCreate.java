@@ -2,23 +2,20 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 
 import java.util.Objects;
 
-public class GetTaskDmnResult {
-    private DmnValue taskId;
-    private DmnValue group;
+public class TaskToCreate {
+    private final Task task;
+    private final String group;
 
-    private GetTaskDmnResult() {
-    }
-
-    public GetTaskDmnResult(DmnValue taskId, DmnValue group) {
-        this.taskId = taskId;
+    public TaskToCreate(Task task, String group) {
+        this.task = task;
         this.group = group;
     }
 
-    public DmnValue getTaskId() {
-        return taskId;
+    public Task getTask() {
+        return task;
     }
 
-    public DmnValue getGroup() {
+    public String getGroup() {
         return group;
     }
 
@@ -30,21 +27,21 @@ public class GetTaskDmnResult {
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        GetTaskDmnResult that = (GetTaskDmnResult) object;
-        return Objects.equals(taskId, that.taskId)
+        TaskToCreate that = (TaskToCreate) object;
+        return task == that.task
                && Objects.equals(group, that.group);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskId);
+        return Objects.hash(task, group);
     }
 
     @Override
     public String toString() {
-        return "GetTaskDmnResult{"
-               + "taskId=" + taskId
-               + ", group=" + group
+        return "TaskToCreate{"
+               + "task=" + task
+               + ", group='" + group + '\''
                + '}';
     }
 }

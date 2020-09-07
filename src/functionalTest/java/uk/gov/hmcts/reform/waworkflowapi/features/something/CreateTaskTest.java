@@ -12,6 +12,7 @@ import static net.serenitybdd.rest.SerenityRest.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.appealSubmittedCreateTaskRequest;
+import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.appealSubmittedCreateTaskRequestWithDueDate;
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.unmappedCreateTaskRequest;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
@@ -28,7 +29,7 @@ public class CreateTaskTest {
     }
 
     @Test
-    public void transitionCreatesATask() {
+    public void transitionCreatesATaskWithDefaultDueDate() {
         given()
             .relaxedHTTPSValidation()
             .contentType(APPLICATION_JSON_VALUE)
@@ -40,15 +41,67 @@ public class CreateTaskTest {
             .then()
             .statusCode(HttpStatus.CREATED_201);
 
-        given()
+        Object taskId = given()
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task")
             .param("processVariables", "ccdId_eq_" + caseId)
             .when()
             .get()
+            .prettyPeek()
             .then()
-            .body("size()", is(1));
+            .body("size()", is(1))
+            .body("[0].name", is("Process Task"))
+            .extract()
+            .path("[0].id");
+
+        given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .baseUri(camundaUrl)
+            .basePath("/task/" + taskId + "/identity-links?type=candidate")
+            .when()
+            .get()
+            .prettyPeek()
+            .then()
+            .body("[0].groupId", is("TCW"));
+    }
+
+    @Test
+    public void transitionCreatesATaskWithDueDate() {
+        given()
+            .relaxedHTTPSValidation()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(appealSubmittedCreateTaskRequestWithDueDate(caseId)).log().body()
+            .baseUri(testUrl)
+            .basePath("tasks")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.CREATED_201);
+
+        Object taskId = given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .baseUri(camundaUrl)
+            .basePath("/task")
+            .param("processVariables", "ccdId_eq_" + caseId)
+            .when()
+            .get()
+            .prettyPeek()
+            .then()
+            .body("size()", is(1))
+            .body("[0].name", is("Process Task"))
+            .extract()
+            .path("[0].id");
+
+        given()
+            .contentType(APPLICATION_JSON_VALUE)
+            .baseUri(camundaUrl)
+            .basePath("/task/" + taskId + "/identity-links?type=candidate")
+            .when()
+            .get()
+            .prettyPeek()
+            .then()
+            .body("[0].groupId", is("TCW"));
     }
 
     @Test

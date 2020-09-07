@@ -34,30 +34,38 @@ class CamundaGetTaskTest {
     @DisplayName("Get task id")
     @ParameterizedTest(name = "\"{0}\" \"{1}\" should go to \"{2}\"")
     @CsvSource({
-        "submitAppeal, anything, processApplication",
-        "submitTimeExtension, anything, decideOnTimeExtension",
-        "uploadHomeOfficeBundle, awaitingRespondentEvidence, reviewRespondentEvidence",
-        "submitCase, caseUnderReview, reviewAppealSkeletonArgument",
-        "submitReasonsForAppeal, reasonsForAppealSubmitted, reviewReasonsForAppeal",
-        "submitClarifyingQuestionAnswers, clarifyingQuestionsAnswersSubmitted, reviewClarifyingQuestionsAnswers",
-        "submitCmaRequirements, cmaRequirementsSubmitted, reviewCmaRequirements",
-        "listCma, cmaListed, attendCma",
-        "uploadHomeOfficeAppealResponse, respondentReview, reviewRespondentResponse",
-        "anything, prepareForHearing, createCaseSummary",
-        "anything, finalBundling, createHearingBundle",
-        "anything, preHearing, startDecisionsAndReasonsDocument"
+        "submitAppeal, anything, processApplication, TCW",
+        "submitTimeExtension, anything, decideOnTimeExtension, TCW",
+        "uploadHomeOfficeBundle, awaitingRespondentEvidence, reviewRespondentEvidence, TCW",
+        "submitCase, caseUnderReview, reviewAppealSkeletonArgument, TCW",
+        "submitReasonsForAppeal, reasonsForAppealSubmitted, reviewReasonsForAppeal, TCW",
+        "submitClarifyingQuestionAnswers, clarifyingQuestionsAnswersSubmitted, reviewClarifyingQuestionsAnswers, TCW",
+        "submitCmaRequirements, cmaRequirementsSubmitted, reviewCmaRequirements, TCW",
+        "listCma, cmaListed, attendCma, TCW",
+        "uploadHomeOfficeAppealResponse, respondentReview, reviewRespondentResponse, TCW",
+        "anything, prepareForHearing, createCaseSummary, TCW",
+        "anything, finalBundling, createHearingBundle, TCW",
+        "anything, preHearing, startDecisionsAndReasonsDocument, TCW",
+        "requestRespondentEvidence, awaitingRespondentEvidence, provideRespondentEvidence, external",
+        "requestCaseBuilding, caseBuilding, provideCaseBuilding, external",
+        "requestReasonsForAppeal, awaitingReasonsForAppeal, provideReasonsForAppeal, external",
+        "sendDirectionWithQuestions, awaitingClarifyingQuestionsAnswers, provideClarifyingAnswers, external",
+        "requestCmaRequirements, awaitingCmaRequirements, provideCmaRequirements, external",
+        "requestRespondentReview, respondentReview, provideRespondentReview, external",
+        "requestHearingRequirements, submitHearingRequirements, provideHearingRequirements, external"
     })
-    void shouldGetTaskIdTest(String eventId, String postState, String taskId) {
+    void shouldGetTaskIdTest(String eventId, String postState, String taskId, String group) {
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmn(eventId, postState);
 
         DmnDecisionRuleResult singleResult = dmnDecisionTableResult.getSingleResult();
 
         assertThat(singleResult.getEntry("taskId"), is(taskId));
+        assertThat(singleResult.getEntry("group"), is(group));
     }
 
     @DisplayName("transition unmapped")
     @Test
-    void transitionUnampped() {
+    void transitionUnmapped() {
         DmnDecisionTableResult dmnDecisionRuleResults = evaluateDmn("anything", "anything");
 
         assertThat(dmnDecisionRuleResults.isEmpty(), is(true));
