@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.rsecheck;
+package uk.gov.hmcts.reform.waworkflowapi;
 
 import com.google.common.testing.EqualsTester;
 import com.jparams.verifier.tostring.ToStringVerifier;
