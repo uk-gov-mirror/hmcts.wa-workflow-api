@@ -32,7 +32,7 @@ public class TaskClientService {
 
         if (dmnResults.isEmpty()) {
             return Optional.empty();
-        } else if (dmnResults.size() == 1) {
+        } else if (dmnResults.size() > 1) {
             Task task = taskForId(dmnResults.get(0).getTaskId().getValue());
             String group = dmnResults.get(0).getGroup().getValue();
             return Optional.of(new TaskToCreate(task, group));

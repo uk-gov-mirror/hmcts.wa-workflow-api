@@ -34,7 +34,6 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCES
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 class CreateTaskTest {
 
     @Autowired

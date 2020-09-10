@@ -19,7 +19,6 @@ import java.io.InputStream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
 class CamundaGetOverdueTaskTest {
 
     private DmnEngine dmnEngine;
