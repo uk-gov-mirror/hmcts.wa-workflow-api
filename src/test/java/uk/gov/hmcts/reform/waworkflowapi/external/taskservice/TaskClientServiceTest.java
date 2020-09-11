@@ -22,7 +22,6 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dm
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCESS_APPLICATION;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
 
-@SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
 class TaskClientServiceTest {
 
     private CamundaClient camundaClient;

@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.app
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.unmappedCreateTaskRequest;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
-@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 public class CreateTaskTest {
 
     private final String testUrl = System.getenv("TEST_URL") == null ? "http://localhost:8099" :  System.getenv("TEST_URL");

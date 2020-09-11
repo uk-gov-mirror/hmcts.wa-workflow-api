@@ -24,7 +24,6 @@ import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.job;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.waworkflowapi.ProcessEngineBuilder.getProcessEngine;
 
-@SuppressWarnings({ "PMD.AvoidDuplicateLiterals", "PMD.UseConcurrentHashMap" })
 public class CamundaCreateTaskTest {
 
     public static final String PROCESS_TASK = "processTask";
