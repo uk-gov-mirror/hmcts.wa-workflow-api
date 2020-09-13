@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.GetTaskDmnResult;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.ProcessVariables;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskToCreate;
+import uk.gov.hmcts.reform.waworkflowapi.models.Task;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static pl.pojo.tester.api.assertion.Assertions.assertPojoMethodsForAll;
 
+@SuppressWarnings({"unchecked", "PMD.JUnitTestsShouldIncludeAssert", "PMD.DataflowAnomalyAnalysis", "PMD.EqualsNull", "PMD.AvoidInstantiatingObjectsInLoops"})
 class PojoTest {
 
     private final Class[] classesToTest = {
@@ -40,7 +42,8 @@ class PojoTest {
         GetTaskDmnResult.class,
         SendMessageRequest.class,
         ProcessVariables.class,
-        TaskToCreate.class
+        TaskToCreate.class,
+        Task.class
     };
     // Cannot test equals for generic classes
     private final Class[] ignoreEquals = {
@@ -48,7 +51,8 @@ class PojoTest {
         DmnResult.class,
         SendMessageRequest.class,
         ProcessVariables.class,
-        TaskToCreate.class
+        TaskToCreate.class,
+        Task.class
     };
     private final ObjectGenerator objectGenerator = new ObjectGenerator(
         DefaultFieldValueChanger.INSTANCE,
