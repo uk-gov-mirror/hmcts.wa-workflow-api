@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,12 +36,16 @@ public class TaskClientService {
         } else if (dmnResults.size() == 1) {
             Task task = taskForId(dmnResults.get(0).getTaskId().getValue());
             String group = dmnResults.get(0).getGroup().getValue();
-            return Optional.of(new TaskToCreate(task, group));
+            DmnValue<Integer> workingDaysAllowed = dmnResults.get(0).getWorkingDaysAllowed();
+            return Optional.of((workingDaysAllowed == null)
+                                   ? new TaskToCreate(task, group)
+                                   : new TaskToCreate(task, group, workingDaysAllowed.getValue())
+            );
         }
         throw new IllegalStateException("Should have exactly one task for transition");
     }
 
-    public void createTask(String ccdId, TaskToCreate taskToCreate, String dueDate) {
+    public void createTask(String ccdId, TaskToCreate taskToCreate, ZonedDateTime dueDate) {
         ProcessVariables processVariables = new ProcessVariables(
             ccdId,
             taskToCreate.getTask(),

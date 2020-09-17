@@ -24,14 +24,18 @@ public class CreateTaskController {
         this.taskService = taskService;
     }
 
-    @PostMapping(path = "/tasks", consumes = { MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/tasks", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Starts the workflow to create a task")
     @ApiResponses({
         @ApiResponse(code = 201, message = "A new task has been created for the transition"),
         @ApiResponse(code = 204, message = "No new task was created for the transition")
     })
     public ResponseEntity createTask(@RequestBody CreateTaskRequest createTaskRequest) {
-        if (taskService.createTask(createTaskRequest.getTransition(), createTaskRequest.getCaseId(), createTaskRequest.getDueDate())) {
+        if (taskService.createTask(
+            createTaskRequest.getTransition(),
+            createTaskRequest.getCaseId(),
+            createTaskRequest.getDueDate()
+        )) {
             return created(null).build();
         } else {
             return noContent().build();

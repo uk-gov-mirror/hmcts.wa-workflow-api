@@ -23,6 +23,9 @@ camunda:
   url: ${CAMUNDA_URL:http://localhost:8080/engine-rest}
   getTaskDmnId: getTask
 
+govUkHolidays:
+  url: https://www.gov.uk/
+
 #logging:
 #  level:
 #    org.springframework: debug

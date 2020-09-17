@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.waworkflowapi.api;
 
-import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.CreateTaskRequest;
-
 import java.time.ZonedDateTime;
 
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestBuilder.aCreateTaskRequest;
@@ -33,6 +31,20 @@ public final class CreateTaskRequestCreator {
                     .withPreState("appealStarted")
                     .withEventId("submitAppeal")
                     .withPostState("appealSubmitted")
+                    .build()
+            )
+            .withDueDate(ZonedDateTime.now().plusDays(2))
+            .build();
+    }
+
+    public static CreateTaskRequest requestRespondentEvidenceTaskRequest(String caseId) {
+        return aCreateTaskRequest()
+            .withCaseId(caseId)
+            .withTransition(
+                aTransition()
+                    .withPreState("appealSubmitted")
+                    .withEventId("requestRespondentEvidence")
+                    .withPostState("awaitingRespondentEvidence")
                     .build()
             )
             .withDueDate(ZonedDateTime.now().plusDays(2))

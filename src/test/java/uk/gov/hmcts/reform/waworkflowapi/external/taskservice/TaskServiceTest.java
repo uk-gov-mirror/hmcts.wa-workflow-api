@@ -4,9 +4,9 @@ import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
+import uk.gov.hmcts.reform.waworkflowapi.duedate.DueDateService;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,30 +24,32 @@ class TaskServiceTest {
     private TaskService underTest;
     private Transition someTransition;
     private Task taskBeingCreated;
-    private String dueDate;
+    private ZonedDateTime dueDate;
+    private DueDateService dueDateService;
 
     @BeforeEach
     void setUp() {
         someCcdId = "ccdId";
         someTransition = new Transition("preState", "eventId", "postState");
         taskBeingCreated = PROCESS_APPLICATION;
-        dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        dueDate = ZonedDateTime.now().plusDays(2);
 
         taskClientService = mock(TaskClientService.class);
-        underTest = new TaskService(taskClientService);
+        dueDateService = mock(DueDateService.class);
+        underTest = new TaskService(taskClientService, dueDateService);
     }
 
     @Test
     void createsATask() {
-        taskClientService = mock(TaskClientService.class);
-        underTest = new TaskService(taskClientService);
         TaskToCreate taskToCreate = new TaskToCreate(this.taskBeingCreated, "TCW");
         when(taskClientService.getTask(someTransition)).thenReturn(Optional.of(taskToCreate));
+        ZonedDateTime calculatedDueDate = ZonedDateTime.now();
+        when(dueDateService.calculateDueDate(this.dueDate, taskToCreate)).thenReturn(calculatedDueDate);
 
-        boolean createdTask = underTest.createTask(someTransition, someCcdId, dueDate);
+        boolean createdTask = underTest.createTask(someTransition, someCcdId, this.dueDate);
 
         assertThat("Should have created a task", createdTask, CoreMatchers.is(true));
-        verify(taskClientService).createTask(someCcdId, taskToCreate, dueDate);
+        verify(taskClientService).createTask(someCcdId, taskToCreate, calculatedDueDate);
     }
 
     @Test
@@ -57,7 +59,7 @@ class TaskServiceTest {
         boolean createdTask = underTest.createTask(someTransition, someCcdId, dueDate);
 
         assertThat("Should not have created a task", createdTask, CoreMatchers.is(false));
-        verify(taskClientService, never()).createTask(any(String.class), any(TaskToCreate.class), any(String.class));
+        verify(taskClientService, never()).createTask(any(String.class), any(TaskToCreate.class), any(ZonedDateTime.class));
     }
 
 }

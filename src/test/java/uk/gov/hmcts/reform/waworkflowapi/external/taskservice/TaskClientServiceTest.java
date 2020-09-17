@@ -6,7 +6,6 @@ import org.mockito.Mockito;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnIntegerValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCESS_APPLICATION;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
@@ -44,9 +44,27 @@ class TaskClientServiceTest {
     }
 
     @Test
-    void getsATaskBasedOnTransition() {
-        List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(dmnStringValue(expectedTask),
-                                                                       dmnStringValue(GROUP)));
+    void getsATaskWithWorkingDaysBasedOnTransition() {
+        int workingDaysAllowed = 5;
+        List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(
+            dmnStringValue(expectedTask),
+            dmnStringValue(GROUP),
+            dmnIntegerValue(workingDaysAllowed)
+        ));
+        when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
+
+        Optional<TaskToCreate> task = underTest.getTask(transition);
+
+        assertThat(task, is(Optional.of(new TaskToCreate(taskForId(expectedTask), GROUP, workingDaysAllowed))));
+    }
+
+    @Test
+    void getsATaskWithoutWorkingDaysBasedOnTransition() {
+        List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(
+            dmnStringValue(expectedTask),
+            dmnStringValue(GROUP),
+            null
+        ));
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 
         Optional<TaskToCreate> task = underTest.getTask(transition);
@@ -66,7 +84,7 @@ class TaskClientServiceTest {
 
     @Test
     void getsMultipleTasksBasedOnTransitionWhichIsInvalid() {
-        GetTaskDmnResult dmnResult = new GetTaskDmnResult(dmnStringValue(expectedTask), dmnStringValue("TCW"));
+        GetTaskDmnResult dmnResult = new GetTaskDmnResult(dmnStringValue(expectedTask), dmnStringValue("TCW"), dmnIntegerValue(5));
         List<GetTaskDmnResult> ts = asList(dmnResult, dmnResult);
         when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
 
@@ -79,11 +97,14 @@ class TaskClientServiceTest {
     void createsATask() {
         String ccdId = "ccd_id";
         String group = "TCW";
-        String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        ZonedDateTime dueDate = ZonedDateTime.now().plusDays(2);
         underTest.createTask(ccdId, new TaskToCreate(PROCESS_APPLICATION, group), dueDate);
 
         Mockito.verify(camundaClient).sendMessage(
-            new SendMessageRequest("createTaskMessage", new ProcessVariables(ccdId, PROCESS_APPLICATION, group, dueDate))
+            new SendMessageRequest(
+                "createTaskMessage",
+                new ProcessVariables(ccdId, PROCESS_APPLICATION, group, dueDate)
+            )
         );
     }
 }

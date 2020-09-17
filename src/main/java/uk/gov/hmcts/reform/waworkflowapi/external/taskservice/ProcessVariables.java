@@ -1,35 +1,37 @@
 package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
 
 public class ProcessVariables {
-    private final DmnValue ccdId;
-    private final DmnValue task;
-    private final DmnValue group;
-    private final DmnValue dueDate;
+    private final DmnValue<String> ccdId;
+    private final DmnValue<String> taskId;
+    private final DmnValue<String> group;
+    private final DmnValue<String> dueDate;
 
-    public ProcessVariables(String ccdId, Task task, String group, String dueDate) {
+    public ProcessVariables(String ccdId, Task taskId, String group, ZonedDateTime dueDate) {
         this.ccdId = dmnStringValue(ccdId);
-        this.task = dmnStringValue(task.getId());
+        this.taskId = dmnStringValue(taskId.getId());
         this.group = dmnStringValue(group);
-        this.dueDate = dmnStringValue(dueDate);
+        this.dueDate = dmnStringValue(dueDate.format(DateTimeFormatter.ISO_INSTANT));
     }
 
-    public DmnValue getCcdId() {
+    public DmnValue<String> getCcdId() {
         return ccdId;
     }
 
-    public DmnValue getTask() {
-        return task;
+    public DmnValue<String> getTaskId() {
+        return taskId;
     }
 
-    public DmnValue getGroup() {
+    public DmnValue<String> getGroup() {
         return group;
     }
 
-    public DmnValue getDueDate() {
+    public DmnValue<String> getDueDate() {
         return dueDate;
     }
 
@@ -43,21 +45,21 @@ public class ProcessVariables {
         }
         ProcessVariables that = (ProcessVariables) object;
         return Objects.equals(ccdId, that.ccdId)
-               && Objects.equals(task, that.task)
+               && Objects.equals(taskId, that.taskId)
                && Objects.equals(group, that.group)
                && Objects.equals(dueDate, that.dueDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ccdId, task);
+        return Objects.hash(ccdId, taskId);
     }
 
     @Override
     public String toString() {
         return "ProcessVariables{"
                + "ccdId=" + ccdId
-               + ", task=" + task
+               + ", taskId=" + taskId
                + ", group=" + group
                + ", dueDate=" + dueDate
                + '}';

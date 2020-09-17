@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class CreateTaskRequest {
@@ -15,9 +16,9 @@ public class CreateTaskRequest {
     @ApiModelProperty(
         example = "2020-09-05T14:47:01.250542+01:00",
         notes = "Optional due date for the task that will be created")
-    private final String dueDate;
+    private final ZonedDateTime dueDate;
 
-    public CreateTaskRequest(String caseId, Transition transition, String dueDate) {
+    public CreateTaskRequest(String caseId, Transition transition, ZonedDateTime dueDate) {
         this.caseId = caseId;
         this.transition = transition;
         this.dueDate = dueDate;
@@ -31,7 +32,7 @@ public class CreateTaskRequest {
         return transition;
     }
 
-    public String getDueDate() {
+    public ZonedDateTime getDueDate() {
         return dueDate;
     }
 

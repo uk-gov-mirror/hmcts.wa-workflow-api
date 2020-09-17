@@ -5,10 +5,16 @@ import java.util.Objects;
 public class TaskToCreate {
     private final Task task;
     private final String group;
+    private final int workingDaysAllowed;
 
-    public TaskToCreate(Task task, String group) {
+    public TaskToCreate(Task task, String group, int workingDaysAllowed) {
         this.task = task;
         this.group = group;
+        this.workingDaysAllowed = workingDaysAllowed;
+    }
+
+    public TaskToCreate(Task task, String group) {
+        this(task, group, 0);
     }
 
     public Task getTask() {
@@ -17,6 +23,10 @@ public class TaskToCreate {
 
     public String getGroup() {
         return group;
+    }
+
+    public int getWorkingDaysAllowed() {
+        return workingDaysAllowed;
     }
 
     @Override
@@ -29,7 +39,8 @@ public class TaskToCreate {
         }
         TaskToCreate that = (TaskToCreate) object;
         return task == that.task
-               && Objects.equals(group, that.group);
+               && Objects.equals(group, that.group)
+               && Objects.equals(workingDaysAllowed, that.workingDaysAllowed);
     }
 
     @Override
@@ -42,6 +53,7 @@ public class TaskToCreate {
         return "TaskToCreate{"
                + "task=" + task
                + ", group='" + group + '\''
+               + ", workingDaysAllowed='" + workingDaysAllowed + '\''
                + '}';
     }
 }

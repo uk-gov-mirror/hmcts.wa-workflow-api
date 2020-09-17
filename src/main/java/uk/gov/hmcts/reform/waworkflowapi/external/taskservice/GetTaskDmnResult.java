@@ -3,23 +3,29 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 import java.util.Objects;
 
 public class GetTaskDmnResult {
-    private DmnValue taskId;
-    private DmnValue group;
+    private DmnValue<String> taskId;
+    private DmnValue<String> group;
+    private DmnValue<Integer> workingDaysAllowed;
 
     private GetTaskDmnResult() {
     }
 
-    public GetTaskDmnResult(DmnValue taskId, DmnValue group) {
+    public GetTaskDmnResult(DmnValue<String> taskId, DmnValue<String> group, DmnValue<Integer> workingDaysAllowed) {
         this.taskId = taskId;
         this.group = group;
+        this.workingDaysAllowed = workingDaysAllowed;
     }
 
-    public DmnValue getTaskId() {
+    public DmnValue<String> getTaskId() {
         return taskId;
     }
 
-    public DmnValue getGroup() {
+    public DmnValue<String> getGroup() {
         return group;
+    }
+
+    public DmnValue<Integer> getWorkingDaysAllowed() {
+        return workingDaysAllowed;
     }
 
     @Override
@@ -32,7 +38,8 @@ public class GetTaskDmnResult {
         }
         GetTaskDmnResult that = (GetTaskDmnResult) object;
         return Objects.equals(taskId, that.taskId)
-               && Objects.equals(group, that.group);
+               && Objects.equals(group, that.group)
+               && Objects.equals(workingDaysAllowed, that.workingDaysAllowed);
     }
 
     @Override
@@ -45,6 +52,7 @@ public class GetTaskDmnResult {
         return "GetTaskDmnResult{"
                + "taskId=" + taskId
                + ", group=" + group
+               + ", workingDaysAllowed=" + workingDaysAllowed
                + '}';
     }
 }

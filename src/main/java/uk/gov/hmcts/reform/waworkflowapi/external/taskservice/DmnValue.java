@@ -2,23 +2,27 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 
 import java.util.Objects;
 
-public class DmnValue {
-    private String value;
+public class DmnValue<T> {
+    private T value;
     private String type;
 
-    public static DmnValue dmnStringValue(String value) {
-        return new DmnValue(value, "String");
+    public static DmnValue<String> dmnStringValue(String value) {
+        return new DmnValue<>(value, "String");
+    }
+
+    public static DmnValue<Integer> dmnIntegerValue(Integer value) {
+        return new DmnValue<>(value, "Integer");
     }
 
     private DmnValue() {
     }
 
-    public DmnValue(String value, String type) {
+    public DmnValue(T value, String type) {
         this.value = value;
         this.type = type;
     }
 
-    public String getValue() {
+    public T getValue() {
         return value;
     }
 

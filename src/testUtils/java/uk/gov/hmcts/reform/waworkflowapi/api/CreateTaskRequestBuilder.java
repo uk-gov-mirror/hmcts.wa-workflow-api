@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.waworkflowapi.api;
 
-import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.CreateTaskRequest;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
 import java.time.ZonedDateTime;
@@ -29,11 +28,11 @@ public final class CreateTaskRequestBuilder {
     }
 
     public CreateTaskRequestBuilder withDueDate(ZonedDateTime dueDate) {
-        this.dueDate = dueDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        this.dueDate = dueDate.format(DateTimeFormatter.ISO_INSTANT);
         return this;
     }
 
-    public CreateTaskRequest build() {
+    public uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequest build() {
         return new CreateTaskRequest(caseId, transition, dueDate);
     }
 }

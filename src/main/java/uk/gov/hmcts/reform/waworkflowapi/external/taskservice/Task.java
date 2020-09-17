@@ -14,7 +14,14 @@ public enum Task {
     REVIEW_RESPONDENT_RESPONSE("reviewRespondentResponse"),
     CREATE_CASE_SUMMARY("createCaseSummary"),
     CREATE_HEARING_BUNDLE("createHearingBundle"),
-    START_DECISIONS_AND_REASONS_DOCUMENT("startDecisionsAndReasonsDocument")
+    START_DECISIONS_AND_REASONS_DOCUMENT("startDecisionsAndReasonsDocument"),
+    PROVIDE_RESPONDENT_EVIDENCE("provideRespondentEvidence"),
+    PROVIDE_CASE_BUILDING("provideCaseBuilding"),
+    PROVIDE_REASONS_FOR_APPEAL("provideReasonsForAppeal"),
+    PROVIDE_CLARIFYING_ANSWERS("provideClarifyingAnswers"),
+    PROVIDE_CMA_REQUIREMENTS("provideCmaRequirements"),
+    PROVIDE_RESPONDENT_REVIEW("provideRespondentReview"),
+    PROVIDE_HEARING_REQUIREMENTS("provideHearingRequirements")
     ;
 
 

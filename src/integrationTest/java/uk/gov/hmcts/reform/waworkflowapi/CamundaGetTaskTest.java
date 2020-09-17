@@ -33,33 +33,38 @@ class CamundaGetTaskTest {
     @DisplayName("Get task id")
     @ParameterizedTest(name = "\"{0}\" \"{1}\" should go to \"{2}\"")
     @CsvSource({
-        "submitAppeal, anything, processApplication, TCW",
-        "submitTimeExtension, anything, decideOnTimeExtension, TCW",
-        "uploadHomeOfficeBundle, awaitingRespondentEvidence, reviewRespondentEvidence, TCW",
-        "submitCase, caseUnderReview, reviewAppealSkeletonArgument, TCW",
-        "submitReasonsForAppeal, reasonsForAppealSubmitted, reviewReasonsForAppeal, TCW",
-        "submitClarifyingQuestionAnswers, clarifyingQuestionsAnswersSubmitted, reviewClarifyingQuestionsAnswers, TCW",
-        "submitCmaRequirements, cmaRequirementsSubmitted, reviewCmaRequirements, TCW",
-        "listCma, cmaListed, attendCma, TCW",
-        "uploadHomeOfficeAppealResponse, respondentReview, reviewRespondentResponse, TCW",
-        "anything, prepareForHearing, createCaseSummary, TCW",
-        "anything, finalBundling, createHearingBundle, TCW",
-        "anything, preHearing, startDecisionsAndReasonsDocument, TCW",
-        "requestRespondentEvidence, awaitingRespondentEvidence, provideRespondentEvidence, external",
-        "requestCaseBuilding, caseBuilding, provideCaseBuilding, external",
-        "requestReasonsForAppeal, awaitingReasonsForAppeal, provideReasonsForAppeal, external",
-        "sendDirectionWithQuestions, awaitingClarifyingQuestionsAnswers, provideClarifyingAnswers, external",
-        "requestCmaRequirements, awaitingCmaRequirements, provideCmaRequirements, external",
-        "requestRespondentReview, respondentReview, provideRespondentReview, external",
-        "requestHearingRequirements, submitHearingRequirements, provideHearingRequirements, external"
+        "submitAppeal, anything, processApplication, TCW, 2",
+        "submitTimeExtension, anything, decideOnTimeExtension, TCW, 2",
+        "uploadHomeOfficeBundle, awaitingRespondentEvidence, reviewRespondentEvidence, TCW, 2",
+        "submitCase, caseUnderReview, reviewAppealSkeletonArgument, TCW, 2",
+        "submitReasonsForAppeal, reasonsForAppealSubmitted, reviewReasonsForAppeal, TCW, 2",
+        "submitClarifyingQuestionAnswers, clarifyingQuestionsAnswersSubmitted, reviewClarifyingQuestionsAnswers, TCW, 2",
+        "submitCmaRequirements, cmaRequirementsSubmitted, reviewCmaRequirements, TCW, 2",
+        "listCma, cmaListed, attendCma, TCW, 2",
+        "uploadHomeOfficeAppealResponse, respondentReview, reviewRespondentResponse, TCW, 2",
+        "anything, prepareForHearing, createCaseSummary, TCW, 2",
+        "anything, finalBundling, createHearingBundle, TCW, 2",
+        "anything, preHearing, startDecisionsAndReasonsDocument, TCW, 2",
+        "requestRespondentEvidence, awaitingRespondentEvidence, provideRespondentEvidence, external, -1",
+        "requestCaseBuilding, caseBuilding, provideCaseBuilding, external, -1",
+        "requestReasonsForAppeal, awaitingReasonsForAppeal, provideReasonsForAppeal, external, -1",
+        "sendDirectionWithQuestions, awaitingClarifyingQuestionsAnswers, provideClarifyingAnswers, external, -1",
+        "requestCmaRequirements, awaitingCmaRequirements, provideCmaRequirements, external, -1",
+        "requestRespondentReview, respondentReview, provideRespondentReview, external, -1",
+        "requestHearingRequirements, submitHearingRequirements, provideHearingRequirements, external, -1"
     })
-    void shouldGetTaskIdTest(String eventId, String postState, String taskId, String group) {
+    void shouldGetTaskIdTest(String eventId, String postState, String taskId, String group, Integer workingDaysAllowed) {
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmn(eventId, postState);
 
         DmnDecisionRuleResult singleResult = dmnDecisionTableResult.getSingleResult();
 
         assertThat(singleResult.getEntry("taskId"), is(taskId));
         assertThat(singleResult.getEntry("group"), is(group));
+        if (workingDaysAllowed > 0) {
+            assertThat(singleResult.getEntry("workingDaysAllowed"), is(workingDaysAllowed));
+        } else {
+            assertThat(singleResult.containsKey("workingDaysAllowed"), is(false));
+        }
     }
 
     @DisplayName("transition unmapped")

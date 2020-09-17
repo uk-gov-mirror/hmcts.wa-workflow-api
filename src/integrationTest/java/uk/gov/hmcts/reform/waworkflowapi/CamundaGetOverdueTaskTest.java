@@ -33,20 +33,22 @@ class CamundaGetOverdueTaskTest {
     @DisplayName("Get overdue task")
     @ParameterizedTest(name = "\"{0}\" should go to \"{1}\"")
     @CsvSource({
-        "provideRespondentEvidence, followUpOverdueRespondentEvidence, TCW",
-        "provideCaseBuilding, followUpOverdueCaseBuilding, TCW",
-        "provideReasonsForAppeal, followUpOverdueReasonsForAppeal, TCW",
-        "provideClarifyingAnswers, followUpOverdueClarifyingAnswers, TCW",
-        "provideCmaRequirements, followUpOverdueCmaRequirements, TCW",
-        "provideRespondentReview, followUpOverdueRespondentReview, TCW",
-        "provideHearingRequirements, followUpOverdueHearingRequirements, TCW"
+        "provideRespondentEvidence, followUpOverdueRespondentEvidence, TCW, 2",
+        "provideCaseBuilding, followUpOverdueCaseBuilding, TCW, 2",
+        "provideReasonsForAppeal, followUpOverdueReasonsForAppeal, TCW, 2",
+        "provideClarifyingAnswers, followUpOverdueClarifyingAnswers, TCW, 2",
+        "provideCmaRequirements, followUpOverdueCmaRequirements, TCW, 2",
+        "provideRespondentReview, followUpOverdueRespondentReview, TCW, 2",
+        "provideHearingRequirements, followUpOverdueHearingRequirements, TCW, 2"
     })
-    void shouldGetOverdueTaskIdTest(String taskId, String overdueTaskId) {
+    void shouldGetOverdueTaskIdTest(String taskId, String overdueTaskId, String group, Integer workingDaysAllowed) {
         DmnDecisionTableResult dmnDecisionTableResult = evaluateDmn(taskId);
 
         DmnDecisionRuleResult singleResult = dmnDecisionTableResult.getSingleResult();
 
         assertThat(singleResult.getEntry("taskId"), is(overdueTaskId));
+        assertThat(singleResult.getEntry("group"), is(group));
+        assertThat(singleResult.getEntry("workingDaysAllowed"), is(workingDaysAllowed));
     }
 
     @DisplayName("transition unmapped")

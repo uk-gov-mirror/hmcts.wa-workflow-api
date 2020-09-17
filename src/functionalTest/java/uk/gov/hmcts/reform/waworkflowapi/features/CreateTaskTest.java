@@ -1,19 +1,27 @@
-package uk.gov.hmcts.reform.waworkflowapi.features.something;
+package uk.gov.hmcts.reform.waworkflowapi.features;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequest;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.serenitybdd.rest.SerenityRest.given;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestBuilder.aCreateTaskRequest;
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.appealSubmittedCreateTaskRequest;
-import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.appealSubmittedCreateTaskRequestWithDueDate;
+import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.requestRespondentEvidenceTaskRequest;
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.unmappedCreateTaskRequest;
+import static uk.gov.hmcts.reform.waworkflowapi.api.TransitionBuilder.aTransition;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 public class CreateTaskTest {
@@ -34,7 +42,7 @@ public class CreateTaskTest {
             .contentType(APPLICATION_JSON_VALUE)
             .body(appealSubmittedCreateTaskRequest(caseId)).log().body()
             .baseUri(testUrl)
-            .basePath("tasks")
+            .basePath("/tasks")
             .when()
             .post()
             .then()
@@ -70,9 +78,9 @@ public class CreateTaskTest {
         given()
             .relaxedHTTPSValidation()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(appealSubmittedCreateTaskRequestWithDueDate(caseId)).log().body()
+            .body(requestRespondentEvidenceTaskRequest(caseId)).log().body()
             .baseUri(testUrl)
-            .basePath("tasks")
+            .basePath("/tasks")
             .when()
             .post()
             .then()
@@ -100,7 +108,7 @@ public class CreateTaskTest {
             .get()
             .prettyPeek()
             .then()
-            .body("[0].groupId", is("TCW"));
+            .body("[0].groupId", is("external"));
     }
 
     @Test
@@ -110,7 +118,7 @@ public class CreateTaskTest {
             .contentType(APPLICATION_JSON_VALUE)
             .body(unmappedCreateTaskRequest(caseId)).log().body()
             .baseUri(testUrl)
-            .basePath("tasks")
+            .basePath("/tasks")
             .when()
             .post()
             .then()
@@ -125,5 +133,51 @@ public class CreateTaskTest {
             .get()
             .then()
             .body("size()", is(0));
+    }
+
+    @Test
+    public void transitionCreateOverdueTask() {
+        ZonedDateTime dueDate = ZonedDateTime.now();
+        CreateTaskRequest createTaskRequest = aCreateTaskRequest()
+            .withCaseId(caseId)
+            .withTransition(
+                aTransition()
+                    .withPreState("appealSubmitted")
+                    .withEventId("requestRespondentEvidence")
+                    .withPostState("awaitingRespondentEvidence")
+                    .build()
+            )
+            .withDueDate(dueDate)
+            .build();
+        given()
+            .relaxedHTTPSValidation()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(createTaskRequest).log().body()
+            .baseUri(testUrl)
+            .basePath("/tasks")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.CREATED_201);
+
+        await().ignoreException(AssertionError.class).pollInterval(1, SECONDS).atMost(60, SECONDS).until(
+            () -> {
+                given()
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(camundaUrl)
+                    .basePath("/task")
+                    .param("processVariables", "ccdId_eq_" + caseId)
+                    .when()
+                    .get()
+                    .prettyPeek()
+                    .then()
+                    .body("size()", is(2))
+                    .body("[0].name", is("Process Task"))
+                    .body("[0].due", startsWith(dueDate.format(DateTimeFormatter.ISO_LOCAL_DATE)))
+                    .body("[1].name", is("Process overdue task"));
+
+                return true;
+            }
+        );
     }
 }

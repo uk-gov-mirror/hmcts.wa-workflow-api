@@ -11,6 +11,9 @@ import pl.pojo.tester.internal.instantiator.ObjectGenerator;
 import pl.pojo.tester.internal.utils.ThoroughFieldPermutator;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.CreateTaskRequest;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
+import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.CountryHolidayDates;
+import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.HolidayDate;
+import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.UkHolidayDates;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnResult;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
@@ -42,6 +45,9 @@ class PojoTest {
         SendMessageRequest.class,
         ProcessVariables.class,
         TaskToCreate.class,
+        CountryHolidayDates.class,
+        HolidayDate.class,
+        UkHolidayDates.class
     };
     // Cannot test equals for generic classes
     private final Class[] ignoreEquals = {
@@ -50,6 +56,9 @@ class PojoTest {
         SendMessageRequest.class,
         ProcessVariables.class,
         TaskToCreate.class,
+        DmnValue.class,
+        GetTaskDmnRequest.class,
+        CreateTaskRequest.class
     };
     private final ObjectGenerator objectGenerator = new ObjectGenerator(
         DefaultFieldValueChanger.INSTANCE,
@@ -59,7 +68,7 @@ class PojoTest {
     private final EqualsTester equalsTester = new EqualsTester();
 
     @Test
-    public void allPojosAreWellImplemented() {
+    void allPojosAreWellImplemented() {
         assertPojoMethodsForAll(
             classesToTest
         )
