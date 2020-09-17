@@ -16,6 +16,9 @@ management:
 
 enableSwagger: ${ENABLE_SWAGGER:true}
 
+config:
+  stacktraceEnabled:  ${STACKTRACE_ENABLED:false}
+
 camunda:
   url: ${CAMUNDA_URL:http://localhost:8080/engine-rest}
   getTaskDmnId: getTask

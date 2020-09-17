@@ -23,7 +23,7 @@ public class CreateTaskTest {
     private String caseId;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         caseId = UUID.randomUUID().toString();
     }
 
