@@ -2,6 +2,22 @@
 
 [![Build Status](https://travis-ci.org/hmcts/wa-workflow-api.svg?branch=master)](https://travis-ci.org/hmcts/wa-workflow-api)
 
+#### What does this app do?
+
+API with endpoints that:
+
+- Evaluate DMN configuration deployed on Camunda
+- Triggers Camunda workflows
+
+<!--
+    Sequence Diagram Source:
+    http://www.plantuml.com/plantuml/uml/dP91Qzmm48NFgryXw7dnkJc4U7VfAT2557gUI6FlO5cZZaPnIyX_ht3AsavX2_N9lFVccmUZXwmWMiPWBkJHTipwp3-DoGF510AZpHVmF57ihKh1ZOC_2aQ7zjNiMX6UZXnOx0anFGs_3g5WrPso75WyohlhGORdsNga3XyfuZzSS4ClNA9_JtngFv-EfozcPtPd42L72Q8kZCt-RUO3QRgGedap1eeoEAKNKBGSJLfcx34GHcrJsgZVMOOkyDGcsgPXh7WufF4SG3kMqPWhmUxlruFspfw_FdsxiytqHsmyEih4SU-neqXQVvjNycyDla0ee6ZC6b1vVozSi1XxYhWNpBe0RFq4jKYqrIX1Fo0hyrfurNr_Vxlv_8hchlzTSSISeTyqpCMvgjweEASzNg-tFim3Hb_6y1i0
+    See: https://plantuml.com/ docs for reference
+-->
+
+![workflow api](workflow-api.png)
+
+
 ## Notes
 
 Since Spring Boot 2.1 bean overriding is disabled. If you want to enable it you will need to set `spring.main.allow-bean-definition-overriding` to `true`.
