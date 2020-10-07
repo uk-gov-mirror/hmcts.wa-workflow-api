@@ -3,11 +3,10 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.waworkflowapi.SpringBootIntegrationBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequest;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.DateService;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.DueDateService;
@@ -38,20 +37,15 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dm
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCESS_APPLICATION;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-class CreateTaskTest {
-
-    @Autowired
-    private transient MockMvc mockMvc;
-
-    @MockBean
-    private CamundaClient camundaClient;
-
-    @Autowired
-    private DueDateService dueDateService;
+class CreateTaskTest extends SpringBootIntegrationBaseTest {
 
     @MockBean DateService dateService;
+    @Autowired
+    private transient MockMvc mockMvc;
+    @MockBean
+    private CamundaClient camundaClient;
+    @Autowired
+    private DueDateService dueDateService;
 
     @DisplayName("Should create task with default due date and 201 response")
     @Test

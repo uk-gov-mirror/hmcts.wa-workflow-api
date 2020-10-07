@@ -76,7 +76,8 @@ class CamundaGetTaskTest {
     }
 
     private DmnDecisionTableResult evaluateDmn(String eventId, String postState) {
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("getTaskId.dmn")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(
+            "getTaskId.dmn")) {
             DmnDecision decision = dmnEngine.parseDecision("getTask", inputStream);
 
             VariableMap variables = new VariableMapImpl();

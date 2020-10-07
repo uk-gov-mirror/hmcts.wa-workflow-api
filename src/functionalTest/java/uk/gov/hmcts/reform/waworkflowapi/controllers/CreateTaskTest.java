@@ -1,11 +1,13 @@
-package uk.gov.hmcts.reform.waworkflowapi.features;
+package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
-import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequest;
+import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -22,23 +24,54 @@ import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.app
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.requestRespondentEvidenceTaskRequest;
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.unmappedCreateTaskRequest;
 import static uk.gov.hmcts.reform.waworkflowapi.api.TransitionBuilder.aTransition;
+import static uk.gov.hmcts.reform.waworkflowapi.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
-@RunWith(SpringIntegrationSerenityRunner.class)
-public class CreateTaskTest {
+public class CreateTaskTest extends SpringBootFunctionalBaseTest {
 
-    private final String testUrl = System.getenv("TEST_URL") == null ? "http://localhost:8099" :  System.getenv("TEST_URL");
-    private final String camundaUrl = System.getenv("CAMUNDA_URL") == null ? "http://localhost:8080/engine-rest" :  System.getenv("CAMUNDA_URL");
+
+    @Value("${targets.instance}")
+    private String testUrl;
+
+    @Value("${targets.camunda}")
+    private String camundaUrl;
+
+    @Autowired
+    private AuthorizationHeadersProvider authorizationHeadersProvider;
+
     private String caseId;
+
+    private String serviceAuthorizationToken;
 
     @Before
     public void setUp() {
         caseId = UUID.randomUUID().toString();
+        serviceAuthorizationToken =
+            authorizationHeadersProvider
+                .getAuthorizationHeaders()
+                .getValue(SERVICE_AUTHORIZATION);
     }
 
     @Test
-    public void transitionCreatesATaskWithDefaultDueDate() {
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
+
         given()
             .relaxedHTTPSValidation()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(appealSubmittedCreateTaskRequest(caseId)).log().body()
+            .baseUri(testUrl)
+            .basePath("/tasks")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.FORBIDDEN_403);
+    }
+
+    @Test
+    public void transition_creates_atask_with_default_due_date() {
+
+        given()
+            .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .body(appealSubmittedCreateTaskRequest(caseId)).log().body()
             .baseUri(testUrl)
@@ -49,6 +82,7 @@ public class CreateTaskTest {
             .statusCode(HttpStatus.CREATED_201);
 
         Object taskId = given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task")
@@ -63,6 +97,7 @@ public class CreateTaskTest {
             .path("[0].id");
 
         given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task/" + taskId + "/identity-links?type=candidate")
@@ -74,9 +109,10 @@ public class CreateTaskTest {
     }
 
     @Test
-    public void transitionCreatesATaskWithDueDate() {
+    public void transition_creates_atask_with_due_date() {
         given()
             .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .body(requestRespondentEvidenceTaskRequest(caseId)).log().body()
             .baseUri(testUrl)
@@ -87,6 +123,7 @@ public class CreateTaskTest {
             .statusCode(HttpStatus.CREATED_201);
 
         Object taskId = given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task")
@@ -101,6 +138,7 @@ public class CreateTaskTest {
             .path("[0].id");
 
         given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task/" + taskId + "/identity-links?type=candidate")
@@ -112,9 +150,10 @@ public class CreateTaskTest {
     }
 
     @Test
-    public void transitionDoesNotCreatesATask() {
+    public void transition_does_not_creates_atask() {
         given()
             .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .body(unmappedCreateTaskRequest(caseId)).log().body()
             .baseUri(testUrl)
@@ -125,6 +164,7 @@ public class CreateTaskTest {
             .statusCode(HttpStatus.NO_CONTENT_204);
 
         given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task")
@@ -136,7 +176,7 @@ public class CreateTaskTest {
     }
 
     @Test
-    public void transitionCreateOverdueTask() {
+    public void transition_create_overdue_task() {
         ZonedDateTime dueDate = ZonedDateTime.now();
         CreateTaskRequest createTaskRequest = aCreateTaskRequest()
             .withCaseId(caseId)
@@ -151,6 +191,7 @@ public class CreateTaskTest {
             .build();
         given()
             .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .body(createTaskRequest).log().body()
             .baseUri(testUrl)
@@ -163,6 +204,7 @@ public class CreateTaskTest {
         await().ignoreException(AssertionError.class).pollInterval(1, SECONDS).atMost(60, SECONDS).until(
             () -> {
                 given()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
                     .contentType(APPLICATION_JSON_VALUE)
                     .baseUri(camundaUrl)
                     .basePath("/task")

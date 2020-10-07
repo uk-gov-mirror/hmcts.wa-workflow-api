@@ -12,7 +12,12 @@ import java.time.ZonedDateTime;
 @SpringBootApplication
 @EnableCircuitBreaker
 @SuppressWarnings("HideUtilityClassConstructor") // Spring needs a constructor, its not a utility class
-@EnableFeignClients
+@EnableFeignClients(basePackages =
+    {
+        "uk.gov.hmcts.reform.auth",
+        "uk.gov.hmcts.reform.authorisation",
+        "uk.gov.hmcts.reform.waworkflowapi",
+    })
 public class Application {
 
     public static void main(final String[] args) {
