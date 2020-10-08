@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -19,13 +20,9 @@ public class CreateTaskController {
 
     private final TaskService taskService;
 
-    @Autowired
-    public CreateTaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
-
     @PostMapping(path = "/tasks", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Starts the workflow to create a task")
+    @ApiImplicitParam(name = "ServiceAuthorization", value = "Bearer xxxx", paramType = "header")
     @ApiResponses({
         @ApiResponse(code = 201, message = "A new task has been created for the transition"),
         @ApiResponse(code = 204, message = "No new task was created for the transition")
@@ -41,5 +38,10 @@ public class CreateTaskController {
         } else {
             return noContent().build();
         }
+    }
+
+    @Autowired
+    public CreateTaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 }
