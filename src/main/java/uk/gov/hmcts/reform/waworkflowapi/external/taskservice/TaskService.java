@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.DueDateService;
 
@@ -19,12 +20,17 @@ public class TaskService {
         this.dueDateService = dueDateService;
     }
 
-    public boolean createTask(Transition transition, String caseId, ZonedDateTime dueDate) {
-        Optional<TaskToCreate> taskOptional = taskClientService.getTask(transition);
+    public boolean createTask(
+        ServiceDetails serviceDetails,
+        Transition transition,
+        String caseId,
+        ZonedDateTime dueDate
+    ) {
+        Optional<TaskToCreate> taskOptional = taskClientService.getTask(serviceDetails, transition);
 
         return taskOptional.map(taskToCreate -> {
             ZonedDateTime calculatedDueDate = dueDateService.calculateDueDate(dueDate, taskToCreate);
-            taskClientService.createTask(caseId, taskToCreate, calculatedDueDate);
+            taskClientService.createTask(serviceDetails, caseId, taskToCreate, calculatedDueDate);
 
             return true;
         }).orElse(false);

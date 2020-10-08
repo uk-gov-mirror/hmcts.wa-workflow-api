@@ -10,6 +10,7 @@ import pl.pojo.tester.internal.field.DefaultFieldValueChanger;
 import pl.pojo.tester.internal.instantiator.ObjectGenerator;
 import pl.pojo.tester.internal.utils.ThoroughFieldPermutator;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.CreateTaskRequest;
+import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.CountryHolidayDates;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.HolidayDate;
@@ -47,7 +48,8 @@ class PojoTest {
         TaskToCreate.class,
         CountryHolidayDates.class,
         HolidayDate.class,
-        UkHolidayDates.class
+        UkHolidayDates.class,
+        ServiceDetails.class
     };
     // Cannot test equals for generic classes
     private final Class[] ignoreEquals = {

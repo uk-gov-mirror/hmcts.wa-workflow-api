@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCES
 class DueDateServiceTest {
 
     public static final String TCW_GROUP = "TCW";
+    private static final String NAME = "task name";
     private FixedDateService dateService;
     private DueDateService underTest;
     private HolidayService holidayService;
@@ -32,7 +33,7 @@ class DueDateServiceTest {
 
     @Test
     void haveToSetEitherADueDateOrHaveWorkingDays() {
-        TaskToCreate taskToCreate = new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP);
+        TaskToCreate taskToCreate = new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP, NAME);
         assertThrows(IllegalStateException.class, () -> {
             underTest.calculateDueDate(
                 null,
@@ -46,7 +47,7 @@ class DueDateServiceTest {
         ZonedDateTime providedDueDate = ZonedDateTime.now();
         ZonedDateTime calculatedDueDate = underTest.calculateDueDate(
             providedDueDate,
-            new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP)
+            new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP, NAME)
         );
 
         assertThat(calculatedDueDate, is(providedDueDate));
@@ -110,7 +111,7 @@ class DueDateServiceTest {
 
         ZonedDateTime calculatedDueDate = underTest.calculateDueDate(
             null,
-            new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP, leadTimeDays)
+            new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP, leadTimeDays, NAME)
         );
 
         assertThat(calculatedDueDate, is(expectedDueDate));

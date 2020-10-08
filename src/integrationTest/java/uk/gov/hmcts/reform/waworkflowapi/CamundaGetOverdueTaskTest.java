@@ -60,9 +60,9 @@ class CamundaGetOverdueTaskTest {
     }
 
     private DmnDecisionTableResult evaluateDmn(String taskId) {
-        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-            "getOverdueTask.dmn")) {
-            DmnDecision decision = dmnEngine.parseDecision("getOverdueTask", inputStream);
+        ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+        try (InputStream inputStream = contextClassLoader.getResourceAsStream("getOverdueTask_IA_Asylum.dmn")) {
+            DmnDecision decision = dmnEngine.parseDecision("getOverdueTask_IA_Asylum", inputStream);
 
             VariableMap variables = new VariableMapImpl();
             variables.putValue("taskId", taskId);

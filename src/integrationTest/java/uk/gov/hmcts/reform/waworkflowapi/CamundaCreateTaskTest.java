@@ -37,6 +37,7 @@ public class CamundaCreateTaskTest {
     private static final String DUE_DATE_STRING = DUE_DATE.format(ISO_INSTANT);
     public static final Date DUE_DATE_DATE = from(DUE_DATE.toInstant());
     public static final String CALCULATE_DUE_DATE_TASK = "calculateDueDate";
+    public static final String TASK_NAME = "task name";
 
     @Rule
     public ProcessEngineRule processEngineRule = new ProcessEngineRule(getProcessEngine());
@@ -45,10 +46,10 @@ public class CamundaCreateTaskTest {
     @Deployment(resources = {"create_task.bpmn"})
     public void createsAndCompletesATaskWithADueDate() {
         ProcessInstance processInstance = startCreateTaskProcess(of(
-            "group",
-            EXPECTED_GROUP,
-            "dueDate",
-            DUE_DATE_STRING
+            "taskId", "provideRespondentEvidence",
+            "group", EXPECTED_GROUP,
+            "dueDate", DUE_DATE_STRING,
+            "name", TASK_NAME
         ));
 
         assertThat(processInstance).isStarted()
@@ -56,6 +57,7 @@ public class CamundaCreateTaskTest {
             .hasDefinitionKey(PROCESS_TASK)
             .hasCandidateGroup(EXPECTED_GROUP)
             .hasDueDate(DUE_DATE_DATE)
+            .hasName(TASK_NAME)
             .isNotAssigned();
         assertThat(processInstance)
             .job()
@@ -68,14 +70,17 @@ public class CamundaCreateTaskTest {
     @Deployment(resources = {"create_task.bpmn"})
     public void createsAndCompletesATaskWithoutADueDate() {
         Map<String, Object> processVariables = new HashMap<>();
+        processVariables.put("taskId", "provideRespondentEvidence");
         processVariables.put("group", EXPECTED_GROUP);
         processVariables.put("dueDate", null);
+        processVariables.put("name", TASK_NAME);
         ProcessInstance processInstance = startCreateTaskProcess(processVariables);
 
         assertThat(processInstance).isStarted()
             .task()
             .hasDefinitionKey(PROCESS_TASK)
             .hasCandidateGroup(EXPECTED_GROUP)
+            .hasName(TASK_NAME)
             .isNotAssigned();
 
         Date dueDate = task().getDueDate();
@@ -95,10 +100,17 @@ public class CamundaCreateTaskTest {
     }
 
     @Test
-    @Deployment(resources = {"create_task.bpmn", "getOverdueTask.dmn"})
+    @Deployment(resources = {"create_task.bpmn", "getOverdueTask_IA_Asylum.dmn"})
     public void overdueAndOverdueTaskIsCreated() {
         ProcessInstance processInstance = startCreateTaskProcess(
-            of("taskId", "provideRespondentEvidence", "group", EXPECTED_GROUP, "dueDate", DUE_DATE_STRING)
+            of(
+                "jurisdiction", "IA",
+                "caseType", "Asylum",
+                "taskId", "provideRespondentEvidence",
+                "group", EXPECTED_GROUP,
+                "dueDate", DUE_DATE_STRING,
+                "name", TASK_NAME
+            )
         );
 
         assertThat(processInstance).isStarted()
@@ -118,6 +130,7 @@ public class CamundaCreateTaskTest {
         assertThat(processInstance).isWaitingAt(PROCESS_OVERDUE_TASK);
         assertThat(processInstance).task(PROCESS_OVERDUE_TASK).hasCandidateGroup("TCW");
         assertThat(processInstance).task(PROCESS_OVERDUE_TASK).hasDueDate(from(overdueTaskDueDate.toInstant()));
+        assertThat(processInstance).task(PROCESS_OVERDUE_TASK).hasName("Follow Up Overdue Respondent Evidence");
 
         complete(task(PROCESS_OVERDUE_TASK));
         assertThat(processInstance).isWaitingAt(PROCESS_TASK);
@@ -129,10 +142,17 @@ public class CamundaCreateTaskTest {
     }
 
     @Test
-    @Deployment(resources = {"create_task.bpmn", "getOverdueTask.dmn"})
+    @Deployment(resources = {"create_task.bpmn", "getOverdueTask_IA_Asylum.dmn"})
     public void overdueAndOverdueTaskIsNotCreated() {
         ProcessInstance processInstance = startCreateTaskProcess(
-            of("taskId", "anotherTask", "group", EXPECTED_GROUP, "dueDate", DUE_DATE_STRING)
+            of(
+                "jurisdiction", "IA",
+                "caseType", "Asylum",
+                "taskId", "anotherTask",
+                "group", EXPECTED_GROUP,
+                "dueDate", DUE_DATE_STRING,
+                "name", TASK_NAME
+            )
         );
 
         assertThat(processInstance).isStarted()

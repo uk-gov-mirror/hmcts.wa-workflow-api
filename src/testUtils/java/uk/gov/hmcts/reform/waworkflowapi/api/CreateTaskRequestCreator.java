@@ -12,6 +12,8 @@ public final class CreateTaskRequestCreator {
 
     public static CreateTaskRequest appealSubmittedCreateTaskRequest(String caseId) {
         return aCreateTaskRequest()
+            .withJurisdiction("IA")
+            .withCaseType("Asylum")
             .withCaseId(caseId)
             .withTransition(
                 aTransition()
@@ -25,6 +27,8 @@ public final class CreateTaskRequestCreator {
 
     public static CreateTaskRequest appealSubmittedCreateTaskRequestWithDueDate(String caseId) {
         return aCreateTaskRequest()
+            .withJurisdiction("IA")
+            .withCaseType("Asylum")
             .withCaseId(caseId)
             .withTransition(
                 aTransition()
@@ -39,6 +43,8 @@ public final class CreateTaskRequestCreator {
 
     public static CreateTaskRequest requestRespondentEvidenceTaskRequest(String caseId) {
         return aCreateTaskRequest()
+            .withJurisdiction("IA")
+            .withCaseType("Asylum")
             .withCaseId(caseId)
             .withTransition(
                 aTransition()
@@ -57,6 +63,8 @@ public final class CreateTaskRequestCreator {
 
     public static CreateTaskRequest unmappedCreateTaskRequest(String caseId) {
         return aCreateTaskRequest()
+            .withJurisdiction("IA")
+            .withCaseType("Asylum")
             .withCaseId(caseId)
             .withTransition(
                 aTransition()

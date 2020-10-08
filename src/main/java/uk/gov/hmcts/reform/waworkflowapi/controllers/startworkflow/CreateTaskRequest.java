@@ -8,6 +8,8 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class CreateTaskRequest {
+    @ApiModelProperty
+    private final ServiceDetails serviceDetails;
     @ApiModelProperty(example = "abc1234567890", required = true, notes = "The case id in CCD")
     private final String caseId;
     @ApiModelProperty(required = true)
@@ -18,10 +20,20 @@ public class CreateTaskRequest {
         notes = "Optional due date for the task that will be created")
     private final ZonedDateTime dueDate;
 
-    public CreateTaskRequest(String caseId, Transition transition, ZonedDateTime dueDate) {
+    public CreateTaskRequest(
+        ServiceDetails serviceDetails,
+        String caseId,
+        Transition transition,
+        ZonedDateTime dueDate
+    ) {
+        this.serviceDetails = serviceDetails;
         this.caseId = caseId;
         this.transition = transition;
         this.dueDate = dueDate;
+    }
+
+    public ServiceDetails getServiceDetails() {
+        return serviceDetails;
     }
 
     public String getCaseId() {
@@ -45,7 +57,8 @@ public class CreateTaskRequest {
             return false;
         }
         CreateTaskRequest that = (CreateTaskRequest) object;
-        return Objects.equals(caseId, that.caseId)
+        return Objects.equals(serviceDetails, that.serviceDetails)
+               && Objects.equals(caseId, that.caseId)
                && Objects.equals(transition, that.transition)
                && Objects.equals(dueDate, that.dueDate);
     }
@@ -58,7 +71,8 @@ public class CreateTaskRequest {
     @Override
     public String toString() {
         return "CreateTaskRequest{"
-               + "caseId='" + caseId + '\''
+               + "serviceDetails='" + serviceDetails + '\''
+               + ", caseId='" + caseId + '\''
                + ", transition=" + transition
                + ", dueDate=" + dueDate
                + '}';

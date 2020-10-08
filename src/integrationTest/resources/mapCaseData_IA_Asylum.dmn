@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" id="Definitions_1yb2kkp" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.0.0">
-  <decision id="mapCaseData" name="Map Case Data">
+  <decision id="mapCaseData_IA_Asylum" name="Map Case Data">
     <decisionTable id="DecisionTable_14cx079" hitPolicy="RULE ORDER">
       <input id="InputClause_1gxyo7f" label="case">
         <inputExpression id="LiteralExpression_0mra7c4" typeRef="string">

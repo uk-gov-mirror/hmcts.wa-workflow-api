@@ -6,15 +6,17 @@ public class TaskToCreate {
     private final Task task;
     private final String group;
     private final int workingDaysAllowed;
+    private final String name;
 
-    public TaskToCreate(Task task, String group, int workingDaysAllowed) {
+    public TaskToCreate(Task task, String group, int workingDaysAllowed, String name) {
         this.task = task;
         this.group = group;
         this.workingDaysAllowed = workingDaysAllowed;
+        this.name = name;
     }
 
-    public TaskToCreate(Task task, String group) {
-        this(task, group, 0);
+    public TaskToCreate(Task task, String group, String name) {
+        this(task, group, 0, name);
     }
 
     public Task getTask() {
@@ -29,6 +31,10 @@ public class TaskToCreate {
         return workingDaysAllowed;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -40,7 +46,8 @@ public class TaskToCreate {
         TaskToCreate that = (TaskToCreate) object;
         return task == that.task
                && Objects.equals(group, that.group)
-               && Objects.equals(workingDaysAllowed, that.workingDaysAllowed);
+               && Objects.equals(workingDaysAllowed, that.workingDaysAllowed)
+               && Objects.equals(name, that.name);
     }
 
     @Override
@@ -54,6 +61,7 @@ public class TaskToCreate {
                + "task=" + task
                + ", group='" + group + '\''
                + ", workingDaysAllowed='" + workingDaysAllowed + '\''
+               + ", name='" + name + '\''
                + '}';
     }
 }

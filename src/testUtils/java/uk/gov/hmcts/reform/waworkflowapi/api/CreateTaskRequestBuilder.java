@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.waworkflowapi.api;
 
+import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public final class CreateTaskRequestBuilder {
+    private String jurisdiction;
+    private String caseType;
     private String caseId;
     private Transition transition;
     private String dueDate;
@@ -15,6 +18,16 @@ public final class CreateTaskRequestBuilder {
 
     public static CreateTaskRequestBuilder aCreateTaskRequest() {
         return new CreateTaskRequestBuilder();
+    }
+
+    public CreateTaskRequestBuilder withJurisdiction(String jurisdiction) {
+        this.jurisdiction = jurisdiction;
+        return this;
+    }
+
+    public CreateTaskRequestBuilder withCaseType(String caseType) {
+        this.caseType = caseType;
+        return this;
     }
 
     public CreateTaskRequestBuilder withCaseId(String caseId) {
@@ -33,6 +46,6 @@ public final class CreateTaskRequestBuilder {
     }
 
     public uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequest build() {
-        return new CreateTaskRequest(caseId, transition, dueDate);
+        return new CreateTaskRequest(new ServiceDetails(jurisdiction, caseType), caseId, transition, dueDate);
     }
 }

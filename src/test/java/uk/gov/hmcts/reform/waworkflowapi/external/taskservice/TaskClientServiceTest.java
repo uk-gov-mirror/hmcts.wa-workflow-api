@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
 import java.time.ZonedDateTime;
@@ -30,6 +31,8 @@ class TaskClientServiceTest {
     private Transition transition;
     private DmnRequest<GetTaskDmnRequest> dmnRequest;
     private static final String GROUP = "TCW";
+    private static final String NAME = "taskName";
+    private ServiceDetails serviceDetails;
 
     @BeforeEach
     void setUp() {
@@ -41,6 +44,7 @@ class TaskClientServiceTest {
             dmnStringValue(transition.getEventId()),
             dmnStringValue(transition.getPostState())
         ));
+        serviceDetails = new ServiceDetails("jurisdiction", "caseType");
     }
 
     @Test
@@ -49,13 +53,15 @@ class TaskClientServiceTest {
         List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(
             dmnStringValue(expectedTask),
             dmnStringValue(GROUP),
-            dmnIntegerValue(workingDaysAllowed)
+            dmnIntegerValue(workingDaysAllowed),
+            dmnStringValue(NAME)
         ));
-        when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
+        when(camundaClient.getTask(serviceDetails.getJurisdiction(), serviceDetails.getCaseType(), dmnRequest))
+            .thenReturn(ts);
 
-        Optional<TaskToCreate> task = underTest.getTask(transition);
+        Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
-        assertThat(task, is(Optional.of(new TaskToCreate(taskForId(expectedTask), GROUP, workingDaysAllowed))));
+        assertThat(task, is(Optional.of(new TaskToCreate(taskForId(expectedTask), GROUP, workingDaysAllowed, NAME))));
     }
 
     @Test
@@ -63,33 +69,42 @@ class TaskClientServiceTest {
         List<GetTaskDmnResult> ts = singletonList(new GetTaskDmnResult(
             dmnStringValue(expectedTask),
             dmnStringValue(GROUP),
-            null
+            null,
+            dmnStringValue(NAME)
         ));
-        when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
+        when(camundaClient.getTask(serviceDetails.getJurisdiction(), serviceDetails.getCaseType(), dmnRequest))
+            .thenReturn(ts);
 
-        Optional<TaskToCreate> task = underTest.getTask(transition);
+        Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
-        assertThat(task, is(Optional.of(new TaskToCreate(taskForId(expectedTask), GROUP))));
+        assertThat(task, is(Optional.of(new TaskToCreate(taskForId(expectedTask), GROUP, NAME))));
     }
 
     @Test
     void noTasksForTransition() {
         List<GetTaskDmnResult> ts = emptyList();
-        when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
+        when(camundaClient.getTask(serviceDetails.getJurisdiction(), serviceDetails.getCaseType(), dmnRequest))
+            .thenReturn(ts);
 
-        Optional<TaskToCreate> task = underTest.getTask(transition);
+        Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
         assertThat(task, is(Optional.empty()));
     }
 
     @Test
     void getsMultipleTasksBasedOnTransitionWhichIsInvalid() {
-        GetTaskDmnResult dmnResult = new GetTaskDmnResult(dmnStringValue(expectedTask), dmnStringValue("TCW"), dmnIntegerValue(5));
+        GetTaskDmnResult dmnResult = new GetTaskDmnResult(
+            dmnStringValue(expectedTask),
+            dmnStringValue("TCW"),
+            dmnIntegerValue(5),
+            dmnStringValue(NAME)
+        );
         List<GetTaskDmnResult> ts = asList(dmnResult, dmnResult);
-        when(camundaClient.getTask(dmnRequest)).thenReturn(ts);
+        when(camundaClient.getTask(serviceDetails.getJurisdiction(), serviceDetails.getCaseType(), dmnRequest))
+            .thenReturn(ts);
 
         assertThrows(IllegalStateException.class, () -> {
-            underTest.getTask(transition);
+            underTest.getTask(serviceDetails, transition);
         });
     }
 
@@ -98,12 +113,20 @@ class TaskClientServiceTest {
         String ccdId = "ccd_id";
         String group = "TCW";
         ZonedDateTime dueDate = ZonedDateTime.now().plusDays(2);
-        underTest.createTask(ccdId, new TaskToCreate(PROCESS_APPLICATION, group), dueDate);
+        underTest.createTask(serviceDetails, ccdId, new TaskToCreate(PROCESS_APPLICATION, group, NAME), dueDate);
 
         Mockito.verify(camundaClient).sendMessage(
             new SendMessageRequest(
                 "createTaskMessage",
-                new ProcessVariables(ccdId, PROCESS_APPLICATION, group, dueDate)
+                new ProcessVariables(
+                    serviceDetails.getJurisdiction(),
+                    serviceDetails.getCaseType(),
+                    ccdId,
+                    PROCESS_APPLICATION,
+                    group,
+                    dueDate,
+                    NAME
+                )
             )
         );
     }

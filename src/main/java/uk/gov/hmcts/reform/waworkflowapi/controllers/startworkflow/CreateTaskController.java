@@ -32,6 +32,7 @@ public class CreateTaskController {
     })
     public ResponseEntity createTask(@RequestBody CreateTaskRequest createTaskRequest) {
         if (taskService.createTask(
+            createTaskRequest.getServiceDetails(),
             createTaskRequest.getTransition(),
             createTaskRequest.getCaseId(),
             createTaskRequest.getDueDate()
