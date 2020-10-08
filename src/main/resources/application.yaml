@@ -49,7 +49,6 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
-    - "/tasks"
   authorisedServices:
     - "wa_workflow_api"
 
