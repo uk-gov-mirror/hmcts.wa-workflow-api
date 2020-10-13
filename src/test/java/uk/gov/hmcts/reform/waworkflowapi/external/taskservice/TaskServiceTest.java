@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCESS_APPLICATION;
 
 class TaskServiceTest {
 
@@ -24,7 +23,7 @@ class TaskServiceTest {
     private TaskClientService taskClientService;
     private TaskService underTest;
     private Transition someTransition;
-    private Task taskBeingCreated;
+    private String taskBeingCreated;
     private ZonedDateTime dueDate;
     private DueDateService dueDateService;
     private ServiceDetails serviceDetails;
@@ -33,7 +32,7 @@ class TaskServiceTest {
     void setUp() {
         someCcdId = "ccdId";
         someTransition = new Transition("preState", "eventId", "postState");
-        taskBeingCreated = PROCESS_APPLICATION;
+        taskBeingCreated = "processApplication";
         dueDate = ZonedDateTime.now().plusDays(2);
 
         taskClientService = mock(TaskClientService.class);

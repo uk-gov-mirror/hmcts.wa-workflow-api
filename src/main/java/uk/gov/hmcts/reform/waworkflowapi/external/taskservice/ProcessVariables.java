@@ -19,7 +19,7 @@ public class ProcessVariables {
         String jurisdiction,
         String caseType,
         String ccdId,
-        Task taskId,
+        String taskId,
         String group,
         ZonedDateTime dueDate,
         String name
@@ -27,7 +27,7 @@ public class ProcessVariables {
         this.jurisdiction = dmnStringValue(jurisdiction);
         this.caseType = dmnStringValue(caseType);
         this.ccdId = dmnStringValue(ccdId);
-        this.taskId = dmnStringValue(taskId.getId());
+        this.taskId = dmnStringValue(taskId);
         this.group = dmnStringValue(group);
         this.dueDate = dmnStringValue(dueDate.format(DateTimeFormatter.ISO_INSTANT));
         this.name = dmnStringValue(name);

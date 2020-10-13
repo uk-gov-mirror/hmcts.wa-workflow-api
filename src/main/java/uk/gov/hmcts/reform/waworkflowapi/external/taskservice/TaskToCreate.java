@@ -3,23 +3,23 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 import java.util.Objects;
 
 public class TaskToCreate {
-    private final Task task;
+    private final String task;
     private final String group;
     private final int workingDaysAllowed;
     private final String name;
 
-    public TaskToCreate(Task task, String group, int workingDaysAllowed, String name) {
+    public TaskToCreate(String task, String group, int workingDaysAllowed, String name) {
         this.task = task;
         this.group = group;
         this.workingDaysAllowed = workingDaysAllowed;
         this.name = name;
     }
 
-    public TaskToCreate(Task task, String group, String name) {
+    public TaskToCreate(String task, String group, String name) {
         this(task, group, 0, name);
     }
 
-    public Task getTask() {
+    public String getTask() {
         return task;
     }
 
@@ -44,7 +44,7 @@ public class TaskToCreate {
             return false;
         }
         TaskToCreate that = (TaskToCreate) object;
-        return task == that.task
+        return Objects.equals(task, that.task)
                && Objects.equals(group, that.group)
                && Objects.equals(workingDaysAllowed, that.workingDaysAllowed)
                && Objects.equals(name, that.name);

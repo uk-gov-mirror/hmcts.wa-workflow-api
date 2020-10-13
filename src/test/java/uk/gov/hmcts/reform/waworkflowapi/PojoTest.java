@@ -57,7 +57,6 @@ class PojoTest {
         DmnResult.class,
         SendMessageRequest.class,
         ProcessVariables.class,
-        TaskToCreate.class,
         DmnValue.class,
         GetTaskDmnRequest.class,
         CreateTaskRequest.class

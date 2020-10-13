@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
-import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
 
 @Component
 public class TaskClientService {
@@ -39,7 +38,7 @@ public class TaskClientService {
         if (dmnResults.isEmpty()) {
             return Optional.empty();
         } else if (dmnResults.size() == 1) {
-            Task task = taskForId(dmnResults.get(0).getTaskId().getValue());
+            String task = dmnResults.get(0).getTaskId().getValue();
             String group = dmnResults.get(0).getGroup().getValue();
             DmnValue<Integer> workingDaysAllowed = dmnResults.get(0).getWorkingDaysAllowed();
             String name = dmnResults.get(0).getName().getValue();

@@ -20,8 +20,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnIntegerValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
-import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCESS_APPLICATION;
-import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.taskForId;
 
 class TaskClientServiceTest {
 
@@ -38,7 +36,7 @@ class TaskClientServiceTest {
     void setUp() {
         camundaClient = mock(CamundaClient.class);
         underTest = new TaskClientService(camundaClient);
-        expectedTask = PROCESS_APPLICATION.getId();
+        expectedTask = "processApplication";
         transition = new Transition("startState", "eventName", "endState");
         dmnRequest = new DmnRequest<>(new GetTaskDmnRequest(
             dmnStringValue(transition.getEventId()),
@@ -61,7 +59,7 @@ class TaskClientServiceTest {
 
         Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
-        assertThat(task, is(Optional.of(new TaskToCreate(taskForId(expectedTask), GROUP, workingDaysAllowed, NAME))));
+        assertThat(task, is(Optional.of(new TaskToCreate(expectedTask, GROUP, workingDaysAllowed, NAME))));
     }
 
     @Test
@@ -77,7 +75,7 @@ class TaskClientServiceTest {
 
         Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
-        assertThat(task, is(Optional.of(new TaskToCreate(taskForId(expectedTask), GROUP, NAME))));
+        assertThat(task, is(Optional.of(new TaskToCreate(expectedTask, GROUP, NAME))));
     }
 
     @Test
@@ -113,7 +111,7 @@ class TaskClientServiceTest {
         String ccdId = "ccd_id";
         String group = "TCW";
         ZonedDateTime dueDate = ZonedDateTime.now().plusDays(2);
-        underTest.createTask(serviceDetails, ccdId, new TaskToCreate(PROCESS_APPLICATION, group, NAME), dueDate);
+        underTest.createTask(serviceDetails, ccdId, new TaskToCreate("processApplication", group, NAME), dueDate);
 
         Mockito.verify(camundaClient).sendMessage(
             new SendMessageRequest(
@@ -122,7 +120,7 @@ class TaskClientServiceTest {
                     serviceDetails.getJurisdiction(),
                     serviceDetails.getCaseType(),
                     ccdId,
-                    PROCESS_APPLICATION,
+                    "processApplication",
                     group,
                     dueDate,
                     NAME

@@ -13,7 +13,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.Task.PROCESS_APPLICATION;
 
 @SuppressWarnings("PMD.JUnitAssertionsShouldIncludeMessage")
 class DueDateServiceTest {
@@ -33,7 +32,7 @@ class DueDateServiceTest {
 
     @Test
     void haveToSetEitherADueDateOrHaveWorkingDays() {
-        TaskToCreate taskToCreate = new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP, NAME);
+        TaskToCreate taskToCreate = new TaskToCreate("processApplication", TCW_GROUP, NAME);
         assertThrows(IllegalStateException.class, () -> {
             underTest.calculateDueDate(
                 null,
@@ -47,7 +46,7 @@ class DueDateServiceTest {
         ZonedDateTime providedDueDate = ZonedDateTime.now();
         ZonedDateTime calculatedDueDate = underTest.calculateDueDate(
             providedDueDate,
-            new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP, NAME)
+            new TaskToCreate("processApplication", TCW_GROUP, NAME)
         );
 
         assertThat(calculatedDueDate, is(providedDueDate));
@@ -111,7 +110,7 @@ class DueDateServiceTest {
 
         ZonedDateTime calculatedDueDate = underTest.calculateDueDate(
             null,
-            new TaskToCreate(PROCESS_APPLICATION, TCW_GROUP, leadTimeDays, NAME)
+            new TaskToCreate("processApplication", TCW_GROUP, leadTimeDays, NAME)
         );
 
         assertThat(calculatedDueDate, is(expectedDueDate));
