@@ -18,7 +18,8 @@ import static org.springframework.http.ResponseEntity.noContent;
 @RestController
 public class CreateTaskController {
 
-    private final TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
     @PostMapping(path = "/tasks", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Starts the workflow to create a task")
@@ -27,7 +28,7 @@ public class CreateTaskController {
         @ApiResponse(code = 201, message = "A new task has been created for the transition"),
         @ApiResponse(code = 204, message = "No new task was created for the transition")
     })
-    public ResponseEntity createTask(@RequestBody CreateTaskRequest createTaskRequest) {
+    public ResponseEntity<Object> createTask(@RequestBody CreateTaskRequest createTaskRequest) {
         if (taskService.createTask(
             createTaskRequest.getServiceDetails(),
             createTaskRequest.getTransition(),
@@ -35,13 +36,10 @@ public class CreateTaskController {
             createTaskRequest.getDueDate()
         )) {
             return created(null).build();
+
         } else {
             return noContent().build();
         }
     }
 
-    @Autowired
-    public CreateTaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
 }
