@@ -18,8 +18,7 @@ import static org.springframework.http.ResponseEntity.noContent;
 @RestController
 public class CreateTaskController {
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @PostMapping(path = "/tasks", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Starts the workflow to create a task")
@@ -36,10 +35,13 @@ public class CreateTaskController {
             createTaskRequest.getDueDate()
         )) {
             return created(null).build();
-
         } else {
             return noContent().build();
         }
     }
 
+    @Autowired
+    public CreateTaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 }
