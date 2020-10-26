@@ -6,7 +6,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerAdviceTest {
@@ -19,9 +24,13 @@ public class CallbackControllerAdviceTest {
         final String exceptionMessage = "Some exception message";
         final Exception exception = new Exception(exceptionMessage);
 
-        ResponseEntity<String> response = callbackControllerAdvice.handleGenericException(exception);
+        ResponseEntity<ErrorMessage> response = callbackControllerAdvice.handleGenericException(exception);
 
-        assertEquals(response.getStatusCode().value(), HttpStatus.INTERNAL_SERVER_ERROR.value());
-        assertEquals(response.getBody(), exceptionMessage);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertFalse(Timestamp.valueOf(LocalDateTime.now()).before(response.getBody().getTimestamp()));
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getBody().getError());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getBody().getStatus());
+        assertEquals(exceptionMessage, response.getBody().getMessage());
     }
 }
