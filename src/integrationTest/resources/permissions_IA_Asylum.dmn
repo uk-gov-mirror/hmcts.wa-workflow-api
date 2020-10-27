@@ -15,19 +15,19 @@
           <text></text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0pwg10h">
-          <text>"tribunalCaseworker"</text>
+          <text>"tribunal-caseworker"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_151ry1h">
           <text>"Read,Refer,Own,Manage,Cancel"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0vjgddh">
-        <description>Senior ribunal caseworker task permissions</description>
+        <description>Senior tribunal caseworker task permissions</description>
         <inputEntry id="UnaryTests_0qkny80">
           <text></text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ti6ulm">
-          <text>"seniorTribunalCaseworker"</text>
+          <text>"senior-tribunal-caseworker"</text>
         </outputEntry>
         <outputEntry id="LiteralExpression_0z3dkq8">
           <text>"Read,Refer,Own,Manage,Cancel"</text>
