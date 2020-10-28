@@ -3,9 +3,17 @@ package uk.gov.hmcts.reform.waworkflowapi;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
+import utils.GetFileFromRepo;
+import utils.IntegrationTestBase;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -28,7 +36,7 @@ import static org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests.job;
 import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.waworkflowapi.ProcessEngineBuilder.getProcessEngine;
 
-public class CamundaCreateTaskTest {
+public class CamundaCreateTaskTest extends IntegrationTestBase {
 
     public static final String PROCESS_TASK = "processTask";
     public static final String PROCESS_OVERDUE_TASK = "processOverdueTask";
@@ -38,6 +46,7 @@ public class CamundaCreateTaskTest {
     public static final Date DUE_DATE_DATE = from(DUE_DATE.toInstant());
     public static final String CALCULATE_DUE_DATE_TASK = "calculateDueDate";
     public static final String TASK_NAME = "task name";
+
 
     @Rule
     public ProcessEngineRule processEngineRule = new ProcessEngineRule(getProcessEngine());
