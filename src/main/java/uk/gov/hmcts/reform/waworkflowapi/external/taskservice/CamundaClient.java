@@ -25,5 +25,6 @@ public interface CamundaClient {
     );
 
     @PostMapping(value = "/message", produces = MediaType.APPLICATION_JSON_VALUE)
-    void sendMessage(SendMessageRequest sendMessageRequest);
+    void sendMessage(@RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+                     SendMessageRequest sendMessageRequest);
 }

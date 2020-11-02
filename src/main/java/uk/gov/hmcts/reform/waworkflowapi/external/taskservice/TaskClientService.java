@@ -63,6 +63,9 @@ public class TaskClientService {
             dueDate,
             taskToCreate.getName()
         );
-        camundaClient.sendMessage(new SendMessageRequest("createTaskMessage", processVariables));
+        camundaClient.sendMessage(
+            authTokenGenerator.generate(),
+            new SendMessageRequest("createTaskMessage", processVariables)
+        );
     }
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import static java.time.ZonedDateTime.parse;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -84,6 +85,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
         );
 
         verify(camundaClient).sendMessage(
+            BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
                 new ProcessVariables(
@@ -117,6 +119,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
         ).andExpect(status().isCreated()).andReturn();
 
         verify(camundaClient).sendMessage(
+            BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
                 new ProcessVariables(
@@ -149,7 +152,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
                 .content(asJsonString(createTaskRequest))
         ).andExpect(status().isNoContent()).andReturn();
 
-        verify(camundaClient, never()).sendMessage(any(SendMessageRequest.class));
+        verify(camundaClient, never()).sendMessage(eq(BEARER_SERVICE_TOKEN), any(SendMessageRequest.class));
     }
 
     private DmnRequest<GetTaskDmnRequest> createGetTaskDmnRequest(CreateTaskRequest createTaskRequest) {

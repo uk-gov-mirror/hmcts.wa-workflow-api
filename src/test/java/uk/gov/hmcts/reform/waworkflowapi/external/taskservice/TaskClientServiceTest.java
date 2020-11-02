@@ -48,6 +48,8 @@ class TaskClientServiceTest {
             dmnStringValue(transition.getPostState())
         ));
         serviceDetails = new ServiceDetails("jurisdiction", "caseType");
+
+        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
     }
 
     @Test
@@ -66,8 +68,6 @@ class TaskClientServiceTest {
             dmnRequest
         )).thenReturn(ts);
 
-        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
-
         Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
         assertThat(task, is(Optional.of(new TaskToCreate(expectedTask, GROUP, workingDaysAllowed, NAME))));
@@ -81,8 +81,6 @@ class TaskClientServiceTest {
             null,
             dmnStringValue(NAME)
         ));
-
-        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
 
         when(camundaClient.getTask(
             BEARER_SERVICE_TOKEN,
@@ -106,8 +104,6 @@ class TaskClientServiceTest {
             dmnRequest
         )).thenReturn(ts);
 
-        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
-
         Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
         assertThat(task, is(Optional.empty()));
@@ -129,8 +125,6 @@ class TaskClientServiceTest {
             dmnRequest
         )).thenReturn(ts);
 
-        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
-
         assertThrows(IllegalStateException.class, () -> {
             underTest.getTask(serviceDetails, transition);
         });
@@ -141,9 +135,11 @@ class TaskClientServiceTest {
         String ccdId = "ccd_id";
         String group = "TCW";
         ZonedDateTime dueDate = ZonedDateTime.now().plusDays(2);
+
         underTest.createTask(serviceDetails, ccdId, new TaskToCreate("processApplication", group, NAME), dueDate);
 
         Mockito.verify(camundaClient).sendMessage(
+            BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
                 new ProcessVariables(
