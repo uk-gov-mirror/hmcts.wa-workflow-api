@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 
@@ -31,11 +32,15 @@ class TaskClientServiceTest {
     private static final String GROUP = "TCW";
     private static final String NAME = "taskName";
     private ServiceDetails serviceDetails;
+    private AuthTokenGenerator authTokenGenerator;
+
+    private static final String BEARER_SERVICE_TOKEN = "Bearer service token";
 
     @BeforeEach
     void setUp() {
         camundaClient = mock(CamundaClient.class);
-        underTest = new TaskClientService(camundaClient);
+        authTokenGenerator = mock(AuthTokenGenerator.class);
+        underTest = new TaskClientService(camundaClient, authTokenGenerator);
         expectedTask = "processApplication";
         transition = new Transition("startState", "eventName", "endState");
         dmnRequest = new DmnRequest<>(new GetTaskDmnRequest(
@@ -54,8 +59,14 @@ class TaskClientServiceTest {
             dmnIntegerValue(workingDaysAllowed),
             dmnStringValue(NAME)
         ));
-        when(camundaClient.getTask(serviceDetails.getJurisdiction(), serviceDetails.getCaseType(), dmnRequest))
-            .thenReturn(ts);
+        when(camundaClient.getTask(
+            BEARER_SERVICE_TOKEN,
+            serviceDetails.getJurisdiction(),
+            serviceDetails.getCaseType(),
+            dmnRequest
+        )).thenReturn(ts);
+
+        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
 
         Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
@@ -70,8 +81,15 @@ class TaskClientServiceTest {
             null,
             dmnStringValue(NAME)
         ));
-        when(camundaClient.getTask(serviceDetails.getJurisdiction(), serviceDetails.getCaseType(), dmnRequest))
-            .thenReturn(ts);
+
+        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
+
+        when(camundaClient.getTask(
+            BEARER_SERVICE_TOKEN,
+            serviceDetails.getJurisdiction(),
+            serviceDetails.getCaseType(),
+            dmnRequest
+        )).thenReturn(ts);
 
         Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
@@ -81,8 +99,14 @@ class TaskClientServiceTest {
     @Test
     void noTasksForTransition() {
         List<GetTaskDmnResult> ts = emptyList();
-        when(camundaClient.getTask(serviceDetails.getJurisdiction(), serviceDetails.getCaseType(), dmnRequest))
-            .thenReturn(ts);
+        when(camundaClient.getTask(
+            BEARER_SERVICE_TOKEN,
+            serviceDetails.getJurisdiction(),
+            serviceDetails.getCaseType(),
+            dmnRequest
+        )).thenReturn(ts);
+
+        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
 
         Optional<TaskToCreate> task = underTest.getTask(serviceDetails, transition);
 
@@ -98,8 +122,14 @@ class TaskClientServiceTest {
             dmnStringValue(NAME)
         );
         List<GetTaskDmnResult> ts = asList(dmnResult, dmnResult);
-        when(camundaClient.getTask(serviceDetails.getJurisdiction(), serviceDetails.getCaseType(), dmnRequest))
-            .thenReturn(ts);
+        when(camundaClient.getTask(
+            BEARER_SERVICE_TOKEN,
+            serviceDetails.getJurisdiction(),
+            serviceDetails.getCaseType(),
+            dmnRequest
+        )).thenReturn(ts);
+
+        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
 
         assertThrows(IllegalStateException.class, () -> {
             underTest.getTask(serviceDetails, transition);
