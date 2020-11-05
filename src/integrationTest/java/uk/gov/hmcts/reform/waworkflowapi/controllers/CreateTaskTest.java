@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootIntegrationBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequest;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.DateService;
@@ -24,6 +26,7 @@ import java.util.List;
 import static java.time.ZonedDateTime.parse;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -42,9 +45,18 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
     @Autowired
     private transient MockMvc mockMvc;
     @MockBean
+    private AuthTokenGenerator authTokenGenerator;
+    @MockBean
     private CamundaClient camundaClient;
     @Autowired
     private DueDateService dueDateService;
+
+    private static final String BEARER_SERVICE_TOKEN = "Bearer service token";
+
+    @BeforeEach
+    void setUp() {
+        when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
+    }
 
     @DisplayName("Should create task with default due date and 201 response")
     @Test
@@ -53,8 +65,14 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
         when(dateService.now()).thenReturn(now);
 
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest("1234567890");
-        when(camundaClient.getTask("IA", "Asylum", createGetTaskDmnRequest(createTaskRequest)))
+        when(camundaClient.getTask(
+            BEARER_SERVICE_TOKEN,
+            "IA",
+            "Asylum",
+            createGetTaskDmnRequest(createTaskRequest)
+        ))
             .thenReturn(createGetTaskResponse());
+
         mockMvc.perform(
             post("/tasks")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -67,6 +85,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
         );
 
         verify(camundaClient).sendMessage(
+            BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
                 new ProcessVariables(
@@ -86,7 +105,12 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
     @Test
     void createsTaskForTransitionAndDueDate() throws Exception {
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequestWithDueDate("1234567890");
-        when(camundaClient.getTask("IA", "Asylum", createGetTaskDmnRequest(createTaskRequest)))
+        when(camundaClient.getTask(
+            BEARER_SERVICE_TOKEN,
+            "IA",
+            "Asylum",
+            createGetTaskDmnRequest(createTaskRequest)
+        ))
             .thenReturn(createGetTaskResponse());
         mockMvc.perform(
             post("/tasks")
@@ -95,6 +119,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
         ).andExpect(status().isCreated()).andReturn();
 
         verify(camundaClient).sendMessage(
+            BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
                 new ProcessVariables(
@@ -114,7 +139,12 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
     @Test
     void doesNotCreateTaskForTransition() throws Exception {
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest("1234567890");
-        when(camundaClient.getTask("IA", "Asylum", createGetTaskDmnRequest(createTaskRequest)))
+        when(camundaClient.getTask(
+            BEARER_SERVICE_TOKEN,
+            "IA",
+            "Asylum",
+            createGetTaskDmnRequest(createTaskRequest)
+        ))
             .thenReturn(emptyList());
         mockMvc.perform(
             post("/tasks")
@@ -122,7 +152,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
                 .content(asJsonString(createTaskRequest))
         ).andExpect(status().isNoContent()).andReturn();
 
-        verify(camundaClient, never()).sendMessage(any(SendMessageRequest.class));
+        verify(camundaClient, never()).sendMessage(eq(BEARER_SERVICE_TOKEN), any(SendMessageRequest.class));
     }
 
     private DmnRequest<GetTaskDmnRequest> createGetTaskDmnRequest(CreateTaskRequest createTaskRequest) {

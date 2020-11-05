@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskService;
 
+import java.net.URI;
+
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.noContent;
 
@@ -27,14 +29,14 @@ public class CreateTaskController {
         @ApiResponse(code = 201, message = "A new task has been created for the transition"),
         @ApiResponse(code = 204, message = "No new task was created for the transition")
     })
-    public ResponseEntity createTask(@RequestBody CreateTaskRequest createTaskRequest) {
+    public ResponseEntity<Object> createTask(@RequestBody CreateTaskRequest createTaskRequest) {
         if (taskService.createTask(
             createTaskRequest.getServiceDetails(),
             createTaskRequest.getTransition(),
             createTaskRequest.getCaseId(),
             createTaskRequest.getDueDate()
         )) {
-            return created(null).build();
+            return created(URI.create("/tasks")).build();
         } else {
             return noContent().build();
         }

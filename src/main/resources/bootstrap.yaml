@@ -6,3 +6,4 @@ spring:
       paths: /mnt/secrets/wa
       aliases:
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        s2s-secret-workflow-api: S2S_SECRET_WORKFLOW_API
