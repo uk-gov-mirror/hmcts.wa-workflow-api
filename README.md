@@ -4,14 +4,14 @@
 
 #### What does this app do?
 
-API with endpoints that:
+Provides endpoints to:
 
-- Evaluate DMN configuration deployed on Camunda
-- Triggers Camunda workflows
+- Evaluate DMN configuration deployed in Camunda
+- Correlate messages to Camunda that will either initiate or cancel Camunda BPMN processes
 
 <!--
     Sequence Diagram Source:
-    http://www.plantuml.com/plantuml/uml/dP91Qzmm48NFgryXw7dnkJc4U7VfAT2557gUI6FlO5cZZaPnIyX_ht3AsavX2_N9lFVccmUZXwmWMiPWBkJHTipwp3-DoGF510AZpHVmF57ihKh1ZOC_2aQ7zjNiMX6UZXnOx0anFGs_3g5WrPso75WyohlhGORdsNga3XyfuZzSS4ClNA9_JtngFv-EfozcPtPd42L72Q8kZCt-RUO3QRgGedap1eeoEAKNKBGSJLfcx34GHcrJsgZVMOOkyDGcsgPXh7WufF4SG3kMqPWhmUxlruFspfw_FdsxiytqHsmyEih4SU-neqXQVvjNycyDla0ee6ZC6b1vVozSi1XxYhWNpBe0RFq4jKYqrIX1Fo0hyrfurNr_Vxlv_8hchlzTSSISeTyqpCMvgjweEASzNg-tFim3Hb_6y1i0
+    http://www.plantuml.com/plantuml/uml/dP51Qzmm48NFgryXwDdut1n2lBlq5EX22ZrFfB5tiAnHHwEu9UI_LpJ5gqqXXUWatfltpOEvomgYPGdcJ1xjoAoF_DEOF5DC8B3OV0RFAyN9gXIySl17mUZGFflT8CBhWGEBFIAcX_dNFXIikbEMFOj7UNKzoFpunxgd4UyfudzSSFCaNA9_dVWqV3uUZb_CpknE84gE4aHj6Ut-TkOjQJsJedan1eeoEAKdKBGSJRfax24GHXrIkbA_iynZu7L8T3qDIyN3FYsd03goBCPi1DlTja5xOqzV7xxTs7xzA_OU7MNYs7aSAPBMR_zC_gN79mW558rf0PNtxy8B5kD44Jl1h1U0hKzGYqHRZHBq3R8ojy9Dz-xs_UOBvWpJX_jj-QPUBivLzRr-jZwFs-dQgznXz6K9lm40
     See: https://plantuml.com/ docs for reference
 -->
 
