@@ -132,11 +132,11 @@ class TaskClientServiceTest {
 
     @Test
     void createsATask() {
-        String ccdId = "ccd_id";
+        String caseId = "case_id";
         String group = "TCW";
         ZonedDateTime dueDate = ZonedDateTime.now().plusDays(2);
 
-        underTest.createTask(serviceDetails, ccdId, new TaskToCreate("processApplication", group, NAME), dueDate);
+        underTest.createTask(serviceDetails, caseId, new TaskToCreate("processApplication", group, NAME), dueDate);
 
         Mockito.verify(camundaClient).sendMessage(
             BEARER_SERVICE_TOKEN,
@@ -145,7 +145,7 @@ class TaskClientServiceTest {
                 new ProcessVariables(
                     serviceDetails.getJurisdiction(),
                     serviceDetails.getCaseType(),
-                    ccdId,
+                    caseId,
                     "processApplication",
                     group,
                     dueDate,
