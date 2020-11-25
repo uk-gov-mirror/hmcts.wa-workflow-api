@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 
 class TaskServiceTest {
 
-    private String someCcdId;
+    private String someCaseId;
     private TaskClientService taskClientService;
     private TaskService underTest;
     private Transition someTransition;
@@ -30,7 +30,7 @@ class TaskServiceTest {
 
     @BeforeEach
     void setUp() {
-        someCcdId = "ccdId";
+        someCaseId = "caseId";
         someTransition = new Transition("preState", "eventId", "postState");
         taskBeingCreated = "processApplication";
         dueDate = ZonedDateTime.now().plusDays(2);
@@ -48,17 +48,17 @@ class TaskServiceTest {
         ZonedDateTime calculatedDueDate = ZonedDateTime.now();
         when(dueDateService.calculateDueDate(this.dueDate, taskToCreate)).thenReturn(calculatedDueDate);
 
-        boolean createdTask = underTest.createTask(serviceDetails, someTransition, someCcdId, this.dueDate);
+        boolean createdTask = underTest.createTask(serviceDetails, someTransition, someCaseId, this.dueDate);
 
         assertThat("Should have created a task", createdTask, CoreMatchers.is(true));
-        verify(taskClientService).createTask(serviceDetails, someCcdId, taskToCreate, calculatedDueDate);
+        verify(taskClientService).createTask(serviceDetails, someCaseId, taskToCreate, calculatedDueDate);
     }
 
     @Test
     void doesNotCreateATask() {
         when(taskClientService.getTask(serviceDetails, someTransition)).thenReturn(Optional.empty());
 
-        boolean createdTask = underTest.createTask(serviceDetails, someTransition, someCcdId, dueDate);
+        boolean createdTask = underTest.createTask(serviceDetails, someTransition, someCaseId, dueDate);
 
         assertThat("Should not have created a task", createdTask, CoreMatchers.is(false));
         verify(taskClientService, never()).createTask(
