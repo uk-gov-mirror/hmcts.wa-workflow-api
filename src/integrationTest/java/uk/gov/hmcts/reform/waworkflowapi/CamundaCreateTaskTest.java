@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.waworkflowapi;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
-import org.camunda.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
 import org.junit.Rule;
 import org.junit.Test;
 
