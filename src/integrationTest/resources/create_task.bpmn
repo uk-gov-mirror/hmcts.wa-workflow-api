@@ -62,8 +62,8 @@
         <bpmn:outgoing>Flow_0fy4joa</bpmn:outgoing>
         <bpmn:messageEventDefinition id="MessageEventDefinition_0vxc2ge" messageRef="Message_1k0m2ip" />
       </bpmn:startEvent>
-      <bpmn:sequenceFlow id="Flow_0fy4joa" sourceRef="cancelTasks" targetRef="Event_1s00w7w" />
-      <bpmn:endEvent id="Event_1s00w7w">
+      <bpmn:sequenceFlow id="Flow_0fy4joa" sourceRef="cancelTasks" targetRef="cancelledTasksCompleted" />
+      <bpmn:endEvent id="cancelledTasksCompleted">
         <bpmn:incoming>Flow_0fy4joa</bpmn:incoming>
       </bpmn:endEvent>
     </bpmn:subProcess>
@@ -184,7 +184,7 @@
         <di:waypoint x="538" y="710" />
         <di:waypoint x="662" y="710" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_1rf35yg_di" bpmnElement="Event_1s00w7w">
+      <bpmndi:BPMNShape id="Event_1rf35yg_di" bpmnElement="cancelledTasksCompleted">
         <dc:Bounds x="662" y="692" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_006cei4_di" bpmnElement="cancelTasks">
