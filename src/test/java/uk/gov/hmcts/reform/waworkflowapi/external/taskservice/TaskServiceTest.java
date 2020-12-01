@@ -48,7 +48,7 @@ class TaskServiceTest {
         ZonedDateTime calculatedDueDate = ZonedDateTime.now();
         when(dueDateService.calculateDueDate(this.dueDate, taskToCreate)).thenReturn(calculatedDueDate);
 
-        boolean createdTask = underTest.createTask(serviceDetails, someTransition, someCaseId, this.dueDate);
+        boolean createdTask = underTest.createTask(serviceDetails, someTransition, someCaseId, this.dueDate, null);
 
         assertThat("Should have created a task", createdTask, CoreMatchers.is(true));
         verify(taskClientService).createTask(serviceDetails, someCaseId, taskToCreate, calculatedDueDate);
@@ -58,7 +58,7 @@ class TaskServiceTest {
     void doesNotCreateATask() {
         when(taskClientService.getTask(serviceDetails, someTransition)).thenReturn(Optional.empty());
 
-        boolean createdTask = underTest.createTask(serviceDetails, someTransition, someCaseId, dueDate);
+        boolean createdTask = underTest.createTask(serviceDetails, someTransition, someCaseId, dueDate, null);
 
         assertThat("Should not have created a task", createdTask, CoreMatchers.is(false));
         verify(taskClientService, never()).createTask(

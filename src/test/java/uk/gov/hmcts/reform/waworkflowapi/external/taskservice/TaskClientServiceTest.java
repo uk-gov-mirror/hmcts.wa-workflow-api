@@ -142,7 +142,7 @@ class TaskClientServiceTest {
             BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
-                businessKey, new ProcessVariables(
+                 new ProcessVariables(
                     serviceDetails.getJurisdiction(),
                     serviceDetails.getCaseType(),
                     caseId,

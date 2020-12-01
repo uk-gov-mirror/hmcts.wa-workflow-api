@@ -74,7 +74,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
             .thenReturn(createGetTaskResponse());
 
         mockMvc.perform(
-            post("/tasks")
+            post("/workflow/message")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(createTaskRequest))
         ).andExpect(status().isCreated()).andReturn();
@@ -88,7 +88,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
             BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
-                businessKey, new ProcessVariables(
+                 new ProcessVariables(
                     "IA",
                     "Asylum",
                     createTaskRequest.getCaseId(),
@@ -113,7 +113,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
         ))
             .thenReturn(createGetTaskResponse());
         mockMvc.perform(
-            post("/tasks")
+            post("/workflow/message")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(createTaskRequest))
         ).andExpect(status().isCreated()).andReturn();
@@ -122,7 +122,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
             BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
-                businessKey, new ProcessVariables(
+                 new ProcessVariables(
                     "IA",
                     "Asylum",
                     createTaskRequest.getCaseId(),
@@ -147,7 +147,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
         ))
             .thenReturn(emptyList());
         mockMvc.perform(
-            post("/tasks")
+            post("/workflow/message")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(createTaskRequest))
         ).andExpect(status().isNoContent()).andReturn();
