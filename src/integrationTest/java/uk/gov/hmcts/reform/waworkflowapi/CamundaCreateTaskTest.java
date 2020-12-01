@@ -168,8 +168,39 @@ public class CamundaCreateTaskTest {
         assertThat(processInstance).isEnded();
     }
 
+    @Test
+    @Deployment(resources = {"create_task.bpmn"})
+    public void createsAndCancelACamundaTask() {
+        String testBusinessKey = "TestBusinessKey";
+
+        ProcessInstance createTaskAndCancel = startCreateTaskProcessWithBusinessKey(of(
+            "group", EXPECTED_GROUP,
+            "dueDate", DUE_DATE_STRING,
+            "name", TASK_NAME
+        ), testBusinessKey);
+
+        assertThat(createTaskAndCancel).isStarted()
+            .task()
+            .hasDefinitionKey(PROCESS_TASK)
+            .hasCandidateGroup(EXPECTED_GROUP)
+            .hasName(TASK_NAME)
+            .isNotAssigned();
+        assertThat(createTaskAndCancel).isWaitingAt("processTask");
+
+
+        processEngineRule.getRuntimeService().correlateMessage("cancelTasks",testBusinessKey);
+        assertThat(createTaskAndCancel).isEnded();
+
+    }
+
     private ProcessInstance startCreateTaskProcess(Map<String, Object> processVariables) {
         return processEngineRule.getRuntimeService()
             .startProcessInstanceByMessage("createTaskMessage", processVariables);
     }
+
+    private ProcessInstance startCreateTaskProcessWithBusinessKey(Map<String, Object> processVariables, String businessKey) {
+        return processEngineRule.getRuntimeService()
+            .startProcessInstanceByMessage("createTaskMessage",businessKey, processVariables);
+    }
+
 }
