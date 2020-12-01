@@ -15,6 +15,7 @@ public class SendMessageRequest {
         return messageName;
     }
 
+
     public ProcessVariables getProcessVariables() {
         return processVariables;
     }

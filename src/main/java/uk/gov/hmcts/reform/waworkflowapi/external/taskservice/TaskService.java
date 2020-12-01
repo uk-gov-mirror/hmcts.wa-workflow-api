@@ -24,15 +24,20 @@ public class TaskService {
         ServiceDetails serviceDetails,
         Transition transition,
         String caseId,
-        ZonedDateTime dueDate
+        ZonedDateTime dueDate,
+        String id
     ) {
-        Optional<TaskToCreate> taskOptional = taskClientService.getTask(serviceDetails, transition);
+        if (id == null) {
+            Optional<TaskToCreate> taskOptional = taskClientService.getTask(serviceDetails, transition);
 
-        return taskOptional.map(taskToCreate -> {
-            ZonedDateTime calculatedDueDate = dueDateService.calculateDueDate(dueDate, taskToCreate);
-            taskClientService.createTask(serviceDetails, caseId, taskToCreate, calculatedDueDate);
-
+            return taskOptional.map(taskToCreate -> {
+                ZonedDateTime calculatedDueDate = dueDateService.calculateDueDate(dueDate, taskToCreate);
+                taskClientService.createTask(serviceDetails, caseId, taskToCreate, calculatedDueDate);
+                return true;
+            }).orElse(false);
+        } else {
+            taskClientService.getTask(serviceDetails, transition);
             return true;
-        }).orElse(false);
+        }
     }
 }

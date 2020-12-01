@@ -88,7 +88,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
             BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
-                new ProcessVariables(
+                businessKey, new ProcessVariables(
                     "IA",
                     "Asylum",
                     createTaskRequest.getCaseId(),
@@ -122,7 +122,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
             BEARER_SERVICE_TOKEN,
             new SendMessageRequest(
                 "createTaskMessage",
-                new ProcessVariables(
+                businessKey, new ProcessVariables(
                     "IA",
                     "Asylum",
                     createTaskRequest.getCaseId(),
