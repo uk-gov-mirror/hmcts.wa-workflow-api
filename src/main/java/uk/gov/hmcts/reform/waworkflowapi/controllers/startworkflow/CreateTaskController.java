@@ -55,8 +55,7 @@ public class CreateTaskController {
     @ApiOperation("Creates a message form camunda")
     @ApiImplicitParam(name = "ServiceAuthorization", value = "Bearer xxxx", paramType = "header")
     @ApiResponses({
-        @ApiResponse(code = 201, message = "A new task has been created for the transition"),
-        @ApiResponse(code = 204, message = "No new task was created for the transition")
+        @ApiResponse(code = 201, message = "A new message was initiated"),
     })
     public ResponseEntity<Object> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
         sendMessageService.createMessage(sendMessageRequest);

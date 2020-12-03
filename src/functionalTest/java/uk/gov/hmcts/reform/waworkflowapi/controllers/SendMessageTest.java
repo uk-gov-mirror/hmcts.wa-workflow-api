@@ -24,9 +24,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     @Value("${targets.instance}")
     private String testUrl;
 
-    @Value("${targets.camunda}")
-    private String camundaUrl;
-
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
@@ -59,7 +56,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void transition_creates_atask_with_default_due_date() {
+    public void should_initiate_camunda_send_message() {
         Map<String, DmnValue> processVariables = mockProcessVariables();
         given()
             .relaxedHTTPSValidation()

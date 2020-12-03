@@ -29,7 +29,7 @@ class EvaluateDmnServiceTest {
     }
 
     @Test
-    void createsATask() {
+    void setEvaluateDmnServiceTest() {
         when(taskClientService.evaluate(evaluateDmnRequest,"test")).thenReturn(mockResponse());
         List<Map<String,DmnValue>> evaluateDmn = evaluateDmnService.evaluateDmn(evaluateDmnRequest,"test");
 

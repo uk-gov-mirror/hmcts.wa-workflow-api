@@ -58,7 +58,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void transition_creates_atask_with_default_due_date() {
+    public void should_evaluate_and_return_dmn_results() {
 
         given()
             .relaxedHTTPSValidation()

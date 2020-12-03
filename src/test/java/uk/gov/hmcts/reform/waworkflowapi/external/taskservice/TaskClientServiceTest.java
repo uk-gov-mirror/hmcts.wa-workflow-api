@@ -39,7 +39,7 @@ class TaskClientServiceTest {
     }
 
     @Test
-    void getsATaskWithWorkingDaysBasedOnTransition() {
+    void evaluateDmnRequest() {
         when(camundaClient.evaluateDmn(
             BEARER_SERVICE_TOKEN,
             evaluateDmnRequest.getServiceDetails().getJurisdiction(),
@@ -52,7 +52,7 @@ class TaskClientServiceTest {
     }
 
     @Test
-    void noTasksForTransition() {
+    void evaluateForEmptyDmn() {
         List<Map<String,DmnValue>> ts = emptyList();
         when(camundaClient.evaluateDmn(
             BEARER_SERVICE_TOKEN,
