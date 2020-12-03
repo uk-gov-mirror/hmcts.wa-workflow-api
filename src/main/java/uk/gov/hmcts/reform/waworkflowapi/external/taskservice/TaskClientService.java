@@ -26,13 +26,10 @@ public class TaskClientService {
         );
     }
 
-    public List<Map<String,DmnValue>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String id) {
-        String jurisdiction = evaluateDmnRequest.getServiceDetails().getJurisdiction();
-        String caseType = evaluateDmnRequest.getServiceDetails().getCaseType();
+    public List<Map<String,DmnValue>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String key) {
         return camundaClient.evaluateDmn(
             authTokenGenerator.generate(),
-            jurisdiction,
-            caseType,
+            key,
             evaluateDmnRequest
         );
     }

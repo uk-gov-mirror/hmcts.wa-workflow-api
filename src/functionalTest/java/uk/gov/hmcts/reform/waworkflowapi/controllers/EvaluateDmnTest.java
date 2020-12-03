@@ -47,10 +47,10 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
         given()
             .relaxedHTTPSValidation()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(new EvaluateDmnRequest(null,null)).log().body()
+            .body(new EvaluateDmnRequest(null)).log().body()
             .baseUri(testUrl)
-            .pathParam("id","getTask_IA_Asylum")
-            .basePath("/workflow/decision-definition/{id}/evaluate")
+            .pathParam("key","getTask_IA_Asylum")
+            .basePath("/workflow/decision-definition/{key}/evaluate")
             .when()
             .post()
             .then()
@@ -59,15 +59,14 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
 
     @Test
     public void should_evaluate_and_return_dmn_results() {
-
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(new EvaluateDmnRequest(mockVariables(),serviceDetails())).log().body()
+            .body(new EvaluateDmnRequest(mockVariables())).log().body()
             .baseUri(testUrl)
-            .pathParam("id","getTask_IA_Asylum")
-            .basePath("/workflow/decision-definition/{id}/evaluate")
+            .pathParam("key","getTask_IA_Asylum")
+            .basePath("/workflow/decision-definition/key/{key}/evaluate")
             .when()
             .post()
             .prettyPeek()
@@ -79,6 +78,25 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body("results[0].taskId.value", equalTo("processApplication"))
             .body("results[0].group.value", equalTo("TCW"));
 
+
+    }
+
+    @Test
+    public void not_be_able_find_incorrect_dmn_table() {
+
+        given()
+            .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(new EvaluateDmnRequest(mockVariables())).log().body()
+            .baseUri(testUrl)
+            .pathParam("key","non-existent")
+            .basePath("/workflow/decision-definition/key/{key}/evaluate")
+            .when()
+            .post()
+            .prettyPeek()
+            .then()
+            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
 
     }
 

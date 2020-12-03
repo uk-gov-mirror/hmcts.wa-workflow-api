@@ -71,6 +71,22 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .statusCode(HttpStatus.NO_CONTENT_204);
     }
 
+    @Test
+    public void should_not_be_able_to_post_as_message_does_not_exist() {
+        Map<String, DmnValue> processVariables = mockProcessVariables();
+        given()
+            .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(new SendMessageRequest("non-existent-message", processVariables)).log().body()
+            .baseUri(testUrl)
+            .basePath("/workflow/message")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
+    }
+
     private Map<String, DmnValue> mockProcessVariables() {
         Map<String, DmnValue> processVariables = new HashMap<>();
         processVariables.put("dueDate",DmnValue.dmnStringValue("2020-09-05T14:47:01.250542+01:00"));

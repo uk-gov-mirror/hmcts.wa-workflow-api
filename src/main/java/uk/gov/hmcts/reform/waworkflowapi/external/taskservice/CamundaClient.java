@@ -21,11 +21,10 @@ public interface CamundaClient {
     void sendMessage(@RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
                      SendMessageRequest sendMessageRequest);
 
-    @PostMapping(value = "/decision-definition/key/getTask_{jurisdiction}_{caseType}/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/decision-definition/key/{key}/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
     List<Map<String,DmnValue>> evaluateDmn(
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
-        @PathVariable("jurisdiction") String jurisdiction,
-        @PathVariable("caseType") String caseType,
+        @PathVariable("key") String key,
         EvaluateDmnRequest evaluateDmnRequest
     );
 

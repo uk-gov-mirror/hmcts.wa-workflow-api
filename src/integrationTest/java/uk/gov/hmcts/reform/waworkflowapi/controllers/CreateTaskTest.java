@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootIntegrationBaseTest;
-import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.CamundaClient;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.EvaluateDmnRequest;
@@ -18,6 +17,7 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,16 +49,11 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
             Map.of("name", dmnStringValue("Process Application"),
                    "workingDaysAllowed", dmnIntegerValue(2),
                    "taskId", dmnStringValue("processApplication"),
-                   "group", dmnStringValue("TCW")),
-            new ServiceDetails(
-                "IA",
-                "Asylum"
-            ));
+                   "group", dmnStringValue("TCW")));
 
         when(camundaClient.evaluateDmn(
             BEARER_SERVICE_TOKEN,
-            "IA",
-            "Asylum",
+            anyString(),
             evaluateDmnRequest
         )).thenReturn(getEvalResponse());
 

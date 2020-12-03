@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +10,8 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +19,6 @@ class TaskClientServiceTest {
 
     private CamundaClient camundaClient;
     private TaskClientService underTest;
-    private ServiceDetails serviceDetails;
     private AuthTokenGenerator authTokenGenerator;
     private EvaluateDmnRequest evaluateDmnRequest;
 
@@ -33,18 +33,16 @@ class TaskClientServiceTest {
         camundaClient = mock(CamundaClient.class);
         authTokenGenerator = mock(AuthTokenGenerator.class);
         underTest = new TaskClientService(camundaClient, authTokenGenerator);
-        serviceDetails = new ServiceDetails("jurisdiction", "caseType");
-        evaluateDmnRequest = new EvaluateDmnRequest(Map.of("name",DmnValue.dmnStringValue("test")),serviceDetails);
+        evaluateDmnRequest = new EvaluateDmnRequest(Map.of("name",DmnValue.dmnStringValue("test")));
         when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
     }
 
     @Test
     void evaluateDmnRequest() {
         when(camundaClient.evaluateDmn(
-            BEARER_SERVICE_TOKEN,
-            evaluateDmnRequest.getServiceDetails().getJurisdiction(),
-            evaluateDmnRequest.getServiceDetails().getCaseType(),
-            evaluateDmnRequest
+            eq(BEARER_SERVICE_TOKEN),
+            anyString(),
+            eq(evaluateDmnRequest)
         )).thenReturn(mockResponse());
 
         List<Map<String,DmnValue>> task = underTest.evaluate(evaluateDmnRequest, "test");
@@ -56,8 +54,7 @@ class TaskClientServiceTest {
         List<Map<String,DmnValue>> ts = emptyList();
         when(camundaClient.evaluateDmn(
             BEARER_SERVICE_TOKEN,
-            serviceDetails.getJurisdiction(),
-            serviceDetails.getCaseType(),
+            "key",
             evaluateDmnRequest
         )).thenReturn(ts);
 
