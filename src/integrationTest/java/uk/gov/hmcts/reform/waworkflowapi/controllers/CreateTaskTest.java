@@ -93,7 +93,7 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
 
     }
 
-    private List<Map<String,DmnValue>> getEvalResponse() {
+    private List<Map<String,Object>> getEvalResponse() {
         return List.of(Map.of(
                                  "name",dmnStringValue("processApplication"),
                                  "group", dmnStringValue("TCW"),

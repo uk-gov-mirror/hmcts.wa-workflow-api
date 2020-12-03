@@ -22,7 +22,7 @@ public interface CamundaClient {
                      SendMessageRequest sendMessageRequest);
 
     @PostMapping(value = "/decision-definition/key/getTask_{jurisdiction}_{caseType}/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<Map<String,DmnValue>> evaluateDmn(
+    List<Map<String,Object>> evaluateDmn(
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @PathVariable("jurisdiction") String jurisdiction,
         @PathVariable("caseType") String caseType,

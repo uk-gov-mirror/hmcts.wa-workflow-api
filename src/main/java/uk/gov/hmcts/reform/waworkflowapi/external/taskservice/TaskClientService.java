@@ -26,7 +26,7 @@ public class TaskClientService {
         );
     }
 
-    public List<Map<String,DmnValue>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String id) {
+    public List<Map<String,Object>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String id) {
         String jurisdiction = evaluateDmnRequest.getServiceDetails().getJurisdiction();
         String caseType = evaluateDmnRequest.getServiceDetails().getCaseType();
         return camundaClient.evaluateDmn(
