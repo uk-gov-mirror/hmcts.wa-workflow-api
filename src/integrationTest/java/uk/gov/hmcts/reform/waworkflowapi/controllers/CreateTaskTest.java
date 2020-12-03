@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,13 +53,13 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
                    "group", dmnStringValue("TCW")));
 
         when(camundaClient.evaluateDmn(
-            BEARER_SERVICE_TOKEN,
+            eq(BEARER_SERVICE_TOKEN),
             anyString(),
-            evaluateDmnRequest
+            eq(evaluateDmnRequest)
         )).thenReturn(getEvalResponse());
 
         mockMvc.perform(
-            post("/workflow/decision-definition/getTask_IA_asylum/evaluate")
+            post("/workflow/decision-definition/key/getTask_IA_asylum/evaluate")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(asJsonString(evaluateDmnRequest))
         ).andExpect(status().isOk()).andReturn();
