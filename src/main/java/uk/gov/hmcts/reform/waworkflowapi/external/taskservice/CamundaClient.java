@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
+@SuppressWarnings("PMD.UseObjectForClearerAPI")
 @FeignClient(
     name = "camunda",
     url = "${camunda.url}"
@@ -16,9 +17,12 @@ public interface CamundaClient {
 
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
-    @PostMapping(value = "/decision-definition/key/getTask_{jurisdiction}_{caseType}/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<GetTaskDmnResult> getTask(
+    @PostMapping(
+        value = "/decision-definition/key/{decisionTableName}-{jurisdiction}-{caseType}/evaluate",
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    List<GetTaskDmnResult> evaluateDmnTable(
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+        @PathVariable("decisionTableName") String decisionTableName,
         @PathVariable("jurisdiction") String jurisdiction,
         @PathVariable("caseType") String caseType,
         DmnRequest<GetTaskDmnRequest> requestParameters

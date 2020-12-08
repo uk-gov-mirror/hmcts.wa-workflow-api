@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnIntegerValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
+import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskClientService.WA_TASK_INITIATION_DECISION_TABLE_NAME;
 
 class TaskClientServiceTest {
 
@@ -47,7 +48,7 @@ class TaskClientServiceTest {
             dmnStringValue(transition.getEventId()),
             dmnStringValue(transition.getPostState())
         ));
-        serviceDetails = new ServiceDetails("jurisdiction", "caseType");
+        serviceDetails = new ServiceDetails("jurisdiction", "casetype");
 
         when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
     }
@@ -61,8 +62,9 @@ class TaskClientServiceTest {
             dmnIntegerValue(workingDaysAllowed),
             dmnStringValue(NAME)
         ));
-        when(camundaClient.getTask(
+        when(camundaClient.evaluateDmnTable(
             BEARER_SERVICE_TOKEN,
+            WA_TASK_INITIATION_DECISION_TABLE_NAME,
             serviceDetails.getJurisdiction(),
             serviceDetails.getCaseType(),
             dmnRequest
@@ -82,8 +84,9 @@ class TaskClientServiceTest {
             dmnStringValue(NAME)
         ));
 
-        when(camundaClient.getTask(
+        when(camundaClient.evaluateDmnTable(
             BEARER_SERVICE_TOKEN,
+            WA_TASK_INITIATION_DECISION_TABLE_NAME,
             serviceDetails.getJurisdiction(),
             serviceDetails.getCaseType(),
             dmnRequest
@@ -97,8 +100,9 @@ class TaskClientServiceTest {
     @Test
     void noTasksForTransition() {
         List<GetTaskDmnResult> ts = emptyList();
-        when(camundaClient.getTask(
+        when(camundaClient.evaluateDmnTable(
             BEARER_SERVICE_TOKEN,
+            WA_TASK_INITIATION_DECISION_TABLE_NAME,
             serviceDetails.getJurisdiction(),
             serviceDetails.getCaseType(),
             dmnRequest
@@ -118,8 +122,9 @@ class TaskClientServiceTest {
             dmnStringValue(NAME)
         );
         List<GetTaskDmnResult> ts = asList(dmnResult, dmnResult);
-        when(camundaClient.getTask(
+        when(camundaClient.evaluateDmnTable(
             BEARER_SERVICE_TOKEN,
+            WA_TASK_INITIATION_DECISION_TABLE_NAME,
             serviceDetails.getJurisdiction(),
             serviceDetails.getCaseType(),
             dmnRequest

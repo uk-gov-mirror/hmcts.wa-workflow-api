@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.waworkflowapi.api.CreateTaskRequestCreator.app
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreatorObjectMapper.asJsonString;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnIntegerValue;
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
+import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskClientService.WA_TASK_INITIATION_DECISION_TABLE_NAME;
 
 class CreateTaskTest extends SpringBootIntegrationBaseTest {
 
@@ -65,10 +66,11 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
         when(dateService.now()).thenReturn(now);
 
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest("1234567890");
-        when(camundaClient.getTask(
+        when(camundaClient.evaluateDmnTable(
             BEARER_SERVICE_TOKEN,
-            "IA",
-            "Asylum",
+            WA_TASK_INITIATION_DECISION_TABLE_NAME,
+            "ia",
+            "asylum",
             createGetTaskDmnRequest(createTaskRequest)
         ))
             .thenReturn(createGetTaskResponse());
@@ -105,10 +107,11 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
     @Test
     void createsTaskForTransitionAndDueDate() throws Exception {
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequestWithDueDate("1234567890");
-        when(camundaClient.getTask(
+        when(camundaClient.evaluateDmnTable(
             BEARER_SERVICE_TOKEN,
-            "IA",
-            "Asylum",
+            WA_TASK_INITIATION_DECISION_TABLE_NAME,
+            "ia",
+            "asylum",
             createGetTaskDmnRequest(createTaskRequest)
         ))
             .thenReturn(createGetTaskResponse());
@@ -139,10 +142,11 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
     @Test
     void doesNotCreateTaskForTransition() throws Exception {
         CreateTaskRequest createTaskRequest = appealSubmittedCreateTaskRequest("1234567890");
-        when(camundaClient.getTask(
+        when(camundaClient.evaluateDmnTable(
             BEARER_SERVICE_TOKEN,
-            "IA",
-            "Asylum",
+            WA_TASK_INITIATION_DECISION_TABLE_NAME,
+            "ia",
+            "asylum",
             createGetTaskDmnRequest(createTaskRequest)
         ))
             .thenReturn(emptyList());
