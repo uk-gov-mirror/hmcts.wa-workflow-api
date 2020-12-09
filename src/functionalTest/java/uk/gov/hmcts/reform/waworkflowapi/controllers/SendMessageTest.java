@@ -4,7 +4,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static net.serenitybdd.rest.SerenityRest.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -20,20 +18,13 @@ import static uk.gov.hmcts.reform.waworkflowapi.config.ServiceTokenGeneratorConf
 
 public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
-
-    @Value("${targets.instance}")
-    private String testUrl;
-
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
-
-    private String caseId;
 
     private String serviceAuthorizationToken;
 
     @Before
     public void setUp() {
-        caseId = UUID.randomUUID().toString();
         serviceAuthorizationToken =
             authorizationHeadersProvider
                 .getAuthorizationHeaders()
@@ -42,7 +33,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
     @Test
     public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
-        Map<String, DmnValue> processVariables = new HashMap<>();
+        Map<String, DmnValue<?>> processVariables = new HashMap<>();
         given()
             .relaxedHTTPSValidation()
             .contentType(APPLICATION_JSON_VALUE)
@@ -57,7 +48,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
     @Test
     public void should_initiate_camunda_send_message() {
-        Map<String, DmnValue> processVariables = mockProcessVariables();
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables();
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -73,7 +64,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
     @Test
     public void should_not_be_able_to_post_as_message_does_not_exist() {
-        Map<String, DmnValue> processVariables = mockProcessVariables();
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables();
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -87,13 +78,13 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
     }
 
-    private Map<String, DmnValue> mockProcessVariables() {
-        Map<String, DmnValue> processVariables = new HashMap<>();
+    private Map<String, DmnValue<?>> mockProcessVariables() {
+        Map<String, DmnValue<?>> processVariables = new HashMap<>();
         processVariables.put("dueDate",DmnValue.dmnStringValue("2020-09-05T14:47:01.250542+01:00"));
         processVariables.put("group",DmnValue.dmnStringValue("group"));
         processVariables.put("name",DmnValue.dmnStringValue("name"));
-        processVariables.put("jurisdiction",DmnValue.dmnStringValue("IA"));
-        processVariables.put("caseType",DmnValue.dmnStringValue("Asylum"));
+        processVariables.put("jurisdiction",DmnValue.dmnStringValue("ia"));
+        processVariables.put("caseType",DmnValue.dmnStringValue("asylum"));
         processVariables.put("taskId",DmnValue.dmnStringValue("provideRespondentEvidence"));
 
         return processVariables;

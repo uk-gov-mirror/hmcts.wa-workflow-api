@@ -4,15 +4,12 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
-import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.EvaluateDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
 import java.util.Map;
-import java.util.UUID;
 
 import static net.serenitybdd.rest.SerenityRest.given;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -21,20 +18,13 @@ import static uk.gov.hmcts.reform.waworkflowapi.config.ServiceTokenGeneratorConf
 
 public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
 
-
-    @Value("${targets.instance}")
-    private String testUrl;
-
     @Autowired
-    private AuthorizationHeadersProvider authorizationHeadersProvider;
-
-    private String caseId;
+    public AuthorizationHeadersProvider authorizationHeadersProvider;
 
     private String serviceAuthorizationToken;
 
     @Before
     public void setUp() {
-        caseId = UUID.randomUUID().toString();
         serviceAuthorizationToken =
             authorizationHeadersProvider
                 .getAuthorizationHeaders()
@@ -49,7 +39,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .contentType(APPLICATION_JSON_VALUE)
             .body(new EvaluateDmnRequest(null)).log().body()
             .baseUri(testUrl)
-            .pathParam("key","getTask_IA_Asylum")
+            .pathParam("key", WA_TASK_INITIATION_IA_ASYLUM)
             .basePath("/workflow/decision-definition/{key}/evaluate")
             .when()
             .post()
@@ -65,7 +55,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .contentType(APPLICATION_JSON_VALUE)
             .body(new EvaluateDmnRequest(mockVariables())).log().body()
             .baseUri(testUrl)
-            .pathParam("key","getTask_IA_Asylum")
+            .pathParam("key",WA_TASK_INITIATION_IA_ASYLUM)
             .basePath("/workflow/decision-definition/key/{key}/evaluate")
             .when()
             .post()
@@ -100,13 +90,10 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
 
     }
 
-    private Map<String, DmnValue> mockVariables() {
+    private Map<String, DmnValue<?>> mockVariables() {
         return Map.of("eventId",DmnValue.dmnStringValue("submitAppeal"),
                       "postEventState",DmnValue.dmnStringValue(""));
     }
 
-    private ServiceDetails serviceDetails() {
-        return new ServiceDetails("IA","Asylum");
-    }
 }
 

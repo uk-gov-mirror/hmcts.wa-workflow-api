@@ -5,17 +5,17 @@ import java.util.Map;
 
 public class EvaluateDmnRequest {
 
-    private Map<String, DmnValue> variables;
+    private Map<String, DmnValue<?>> variables;
 
     public EvaluateDmnRequest() {
         // Empty constructor
     }
 
-    public EvaluateDmnRequest(Map<String, DmnValue> variables) {
+    public EvaluateDmnRequest(Map<String, DmnValue<?>> variables) {
         this.variables = variables;
     }
 
-    public Map<String, DmnValue> getVariables() {
+    public Map<String, DmnValue<?>> getVariables() {
         return variables;
     }
 

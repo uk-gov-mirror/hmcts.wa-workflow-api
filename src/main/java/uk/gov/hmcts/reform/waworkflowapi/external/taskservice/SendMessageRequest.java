@@ -5,9 +5,9 @@ import java.util.Objects;
 
 public class SendMessageRequest {
     private final String messageName;
-    private final Map<String, DmnValue> processVariables;
+    private final Map<String, DmnValue<?>> processVariables;
 
-    public SendMessageRequest(String messageName, Map<String, DmnValue> processVariables) {
+    public SendMessageRequest(String messageName, Map<String, DmnValue<?>> processVariables) {
         this.messageName = messageName;
         this.processVariables = processVariables;
     }
@@ -17,7 +17,7 @@ public class SendMessageRequest {
     }
 
 
-    public Map<String, DmnValue> getProcessVariables() {
+    public Map<String, DmnValue<?>> getProcessVariables() {
         return processVariables;
     }
 
