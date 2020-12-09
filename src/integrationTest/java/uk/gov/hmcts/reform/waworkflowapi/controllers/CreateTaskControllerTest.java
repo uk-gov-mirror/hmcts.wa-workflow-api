@@ -40,7 +40,7 @@ import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dm
 import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
 
 @Slf4j
-class CreateTaskTest extends SpringBootIntegrationBaseTest {
+class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
 
     public static final String WORKFLOW_MESSAGE_ENDPOINT = "/workflow/message";
     private static final String BEARER_SERVICE_TOKEN = "Bearer service token";

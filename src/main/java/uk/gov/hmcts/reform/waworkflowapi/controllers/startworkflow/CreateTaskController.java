@@ -69,7 +69,7 @@ public class CreateTaskController {
     public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
 
         if (CREATE_TASK_MESSAGE.equals(sendMessageRequest.getMessageName())) {
-            sendMessageService.createMessage(updateSendMessageRequest(sendMessageRequest));
+            sendMessageService.createMessage(updateDueDateInSendMessageRequest(sendMessageRequest));
         } else {
             sendMessageService.createMessage(sendMessageRequest);
         }
@@ -77,7 +77,7 @@ public class CreateTaskController {
         return noContent().build();
     }
 
-    private SendMessageRequest updateSendMessageRequest(SendMessageRequest sendMessageRequest) {
+    private SendMessageRequest updateDueDateInSendMessageRequest(SendMessageRequest sendMessageRequest) {
         ZonedDateTime dueDateUkTime = getDueDateInUkTimeZone(sendMessageRequest);
         TaskToCreate taskToCreate = buildTaskToCreate(sendMessageRequest);
         ZonedDateTime updatedDueDate = dueDateService.calculateDueDate(dueDateUkTime, taskToCreate);
@@ -92,7 +92,8 @@ public class CreateTaskController {
         );
     }
 
-    private Map<String, DmnValue<?>> updateSendMessageRequestWithNewDueDate(SendMessageRequest sendMessageRequest, ZonedDateTime updatedDueDate) {
+    private Map<String, DmnValue<?>> updateSendMessageRequestWithNewDueDate(SendMessageRequest sendMessageRequest,
+                                                                            ZonedDateTime updatedDueDate) {
         Map<String, DmnValue<?>> updateProcessVariables = sendMessageRequest.getProcessVariables();
         updateProcessVariables.put("dueDate", DmnValue.dmnStringValue(updatedDueDate.toString()));
         updateProcessVariables.remove("workingDaysAllowed");
