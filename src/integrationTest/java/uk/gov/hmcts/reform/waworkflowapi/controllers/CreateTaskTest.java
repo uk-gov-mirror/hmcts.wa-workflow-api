@@ -75,8 +75,8 @@ class CreateTaskTest extends SpringBootIntegrationBaseTest {
             Map.of(
                 "name",dmnStringValue("name"),
                 "group",dmnStringValue("group"),
-                "jurisdiction",dmnStringValue("IA"),
-                "caseType",dmnStringValue("Asylum"),
+                "jurisdiction",dmnStringValue("ia"),
+                "caseType",dmnStringValue("asylum"),
                 "taskId",dmnStringValue("provideRespondentEvidence")
             )
         );

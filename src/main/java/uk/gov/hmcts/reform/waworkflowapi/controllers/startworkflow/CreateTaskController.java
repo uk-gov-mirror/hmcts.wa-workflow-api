@@ -43,7 +43,8 @@ public class CreateTaskController {
     @ApiResponses({
         @ApiResponse(code = 200, message = "A DMN was found, evaluated and returned"),
     })
-    public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest, @PathVariable(name = "key") String key) {
+    public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
+                                                           @PathVariable(name = "key") String key) {
         List<Map<String,DmnValue>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(evaluateDmnRequest, key);
         return ResponseEntity.ok()
             .body(new EvaluateDmnResponse(evaluateDmnResponse));

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings("PMD.UseObjectForClearerAPI")
 @FeignClient(
     name = "camunda",
     url = "${camunda.url}"
