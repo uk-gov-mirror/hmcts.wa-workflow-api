@@ -45,7 +45,7 @@ public class CreateTaskController {
     })
     public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
                                                            @PathVariable(name = "key") String key) {
-        List<Map<String,DmnValue>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(evaluateDmnRequest, key);
+        List<Map<String,DmnValue<?>>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(evaluateDmnRequest, key);
         return ResponseEntity.ok()
             .body(new EvaluateDmnResponse(evaluateDmnResponse));
 
@@ -58,7 +58,7 @@ public class CreateTaskController {
     @ApiResponses({
         @ApiResponse(code = 201, message = "A new message was initiated"),
     })
-    public ResponseEntity<Object> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
+    public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
         sendMessageService.createMessage(sendMessageRequest);
         return noContent().build();
     }

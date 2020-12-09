@@ -27,7 +27,7 @@ public class TaskClientService {
         );
     }
 
-    public List<Map<String,DmnValue>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String key) {
+    public List<Map<String,DmnValue<?>>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String key) {
         return camundaClient.evaluateDmn(
             authTokenGenerator.generate(),
             key,

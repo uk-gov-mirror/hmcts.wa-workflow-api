@@ -24,7 +24,7 @@ class TaskClientServiceTest {
 
     private static final String BEARER_SERVICE_TOKEN = "Bearer service token";
 
-    private List<Map<String,DmnValue>> mockResponse() {
+    private List<Map<String,DmnValue<?>>> mockResponse() {
         return List.of(Map.of("test",DmnValue.dmnStringValue("TestValue")));
     }
 
@@ -45,20 +45,20 @@ class TaskClientServiceTest {
             eq(evaluateDmnRequest)
         )).thenReturn(mockResponse());
 
-        List<Map<String,DmnValue>> task = underTest.evaluate(evaluateDmnRequest, "test");
+        List<Map<String,DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test");
         assertEquals(task.get(0).get("test").getValue(), "TestValue");
     }
 
     @Test
     void evaluateForEmptyDmn() {
-        List<Map<String,DmnValue>> ts = emptyList();
+        List<Map<String,DmnValue<?>>> ts = emptyList();
         when(camundaClient.evaluateDmn(
             BEARER_SERVICE_TOKEN,
             "key",
             evaluateDmnRequest
         )).thenReturn(ts);
 
-        List<Map<String,DmnValue>> task = underTest.evaluate(evaluateDmnRequest, "test");
+        List<Map<String,DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test");
 
         assertEquals(task, new ArrayList<>());
     }

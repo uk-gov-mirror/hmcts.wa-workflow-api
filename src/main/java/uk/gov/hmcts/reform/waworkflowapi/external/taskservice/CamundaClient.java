@@ -23,7 +23,7 @@ public interface CamundaClient {
                      SendMessageRequest sendMessageRequest);
 
     @PostMapping(value = "/decision-definition/key/{key}/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<Map<String,DmnValue>> evaluateDmn(
+    List<Map<String,DmnValue<?>>> evaluateDmn(
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @PathVariable("key") String key,
         EvaluateDmnRequest evaluateDmnRequest

@@ -7,17 +7,17 @@ import java.util.Map;
 
 public class EvaluateDmnResponse {
     @ApiModelProperty(example = "List[HashMap<String,DmnValue> }]", required = true, notes = "Service jurisdiction")
-    private List<Map<String,DmnValue>> results;
+    private List<Map<String,DmnValue<?>>> results;
 
     public EvaluateDmnResponse() {
         // Empty constructor
     }
 
-    public EvaluateDmnResponse(List<Map<String,DmnValue>> results) {
+    public EvaluateDmnResponse(List<Map<String,DmnValue<?>>> results) {
         this.results = results;
     }
 
-    public List<Map<String, DmnValue>> getResults() {
+    public List<Map<String, DmnValue<?>>> getResults() {
         return results;
     }
 }

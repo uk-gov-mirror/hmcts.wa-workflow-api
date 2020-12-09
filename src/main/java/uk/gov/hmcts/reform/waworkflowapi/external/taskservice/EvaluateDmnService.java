@@ -15,7 +15,7 @@ public class EvaluateDmnService {
         this.taskClientService = taskClientService;
     }
 
-    public List<Map<String,DmnValue>> evaluateDmn(EvaluateDmnRequest evaluateDmnRequest, String key) {
+    public List<Map<String,DmnValue<?>>> evaluateDmn(EvaluateDmnRequest evaluateDmnRequest, String key) {
         return taskClientService.evaluate(evaluateDmnRequest, key);
     }
 
