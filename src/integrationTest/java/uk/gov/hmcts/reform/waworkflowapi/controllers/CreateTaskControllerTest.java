@@ -21,8 +21,6 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.EvaluateDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +42,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
 
     public static final String WORKFLOW_MESSAGE_ENDPOINT = "/workflow/message";
     private static final String BEARER_SERVICE_TOKEN = "Bearer service token";
-    public static final String FIXED_DATE = "2020-12-07T17:39:22.232622";
+    public static final String FIXED_DATE = "2020-12-07T17:39:22.232622+01:00";
 
     @Autowired
     private transient MockMvc mockMvc;
@@ -63,8 +61,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
     void setUp() {
         when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
 
-        ZoneId ukTime = ZoneId.of("Europe/London");
-        ZonedDateTime nowDateMock = LocalDateTime.parse(FIXED_DATE).atZone(ukTime);
+        ZonedDateTime nowDateMock = ZonedDateTime.parse(FIXED_DATE);
         when(dateService.now()).thenReturn(nowDateMock);
     }
 
@@ -166,8 +163,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             )
         );
 
-        ZoneId ukTime = ZoneId.of("Europe/London");
-        ZonedDateTime expectedDueDate = LocalDateTime.parse(FIXED_DATE).atZone(ukTime);
         SendMessageRequest expectedSendMessageRequest2 = new SendMessageRequest(
             "createTaskMessage",
             Map.of(
@@ -176,7 +171,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "jurisdiction", dmnStringValue("ia"),
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
-                "dueDate", dmnStringValue(expectedDueDate.toString()),
+                "dueDate", dmnStringValue(ZonedDateTime.parse(FIXED_DATE).toString()),
                 "caseReference", dmnStringValue("some caseReference")
             )
         );
@@ -205,7 +200,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             )
         );
 
-        ZonedDateTime expectedDueDatePlusTwoDays = LocalDateTime.parse(FIXED_DATE).plusDays(2).atZone(ukTime);
         SendMessageRequest expectedSendMessageRequest3 = new SendMessageRequest(
             "createTaskMessage",
             Map.of(
@@ -214,7 +208,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "jurisdiction", dmnStringValue("ia"),
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
-                "dueDate", dmnStringValue(expectedDueDatePlusTwoDays.toString()),
+                "dueDate", dmnStringValue(ZonedDateTime.parse(FIXED_DATE).plusDays(2).toString()),
                 "caseReference", dmnStringValue("some caseReference")
             )
         );

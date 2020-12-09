@@ -81,6 +81,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     private Map<String, DmnValue<?>> mockProcessVariables() {
         Map<String, DmnValue<?>> processVariables = new HashMap<>();
         processVariables.put("dueDate",DmnValue.dmnStringValue("2020-09-05T14:47:01.250542+01:00"));
+        processVariables.put("workingDaysAllowed",DmnValue.dmnIntegerValue(0));
         processVariables.put("group",DmnValue.dmnStringValue("group"));
         processVariables.put("name",DmnValue.dmnStringValue("name"));
         processVariables.put("jurisdiction",DmnValue.dmnStringValue("ia"));

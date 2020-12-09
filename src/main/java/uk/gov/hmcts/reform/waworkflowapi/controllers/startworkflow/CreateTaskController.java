@@ -20,8 +20,6 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageService;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskToCreate;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +76,7 @@ public class CreateTaskController {
     }
 
     private SendMessageRequest updateDueDateInSendMessageRequest(SendMessageRequest sendMessageRequest) {
-        ZonedDateTime dueDateUkTime = getDueDateInUkTimeZone(sendMessageRequest);
+        ZonedDateTime dueDateUkTime = getDueDate(sendMessageRequest);
         TaskToCreate taskToCreate = buildTaskToCreate(sendMessageRequest);
         ZonedDateTime updatedDueDate = dueDateService.calculateDueDate(dueDateUkTime, taskToCreate);
         Map<String, DmnValue<?>> updateProcessVariables = updateSendMessageRequestWithNewDueDate(
@@ -109,14 +107,9 @@ public class CreateTaskController {
         );
     }
 
-    private ZonedDateTime getDueDateInUkTimeZone(SendMessageRequest sendMessageRequest) {
+    private ZonedDateTime getDueDate(SendMessageRequest sendMessageRequest) {
         String dueDateAsString = (String) sendMessageRequest.getProcessVariables().get("dueDate").getValue();
-        if (dueDateAsString == null) {
-            return null;
-        }
-        LocalDateTime dueDate = LocalDateTime.parse(dueDateAsString);
-        ZoneId ukTime = ZoneId.of("Europe/London");
-        return dueDate.atZone(ukTime);
+        return (dueDateAsString == null) ? null : ZonedDateTime.parse(dueDateAsString);
     }
 
 }
