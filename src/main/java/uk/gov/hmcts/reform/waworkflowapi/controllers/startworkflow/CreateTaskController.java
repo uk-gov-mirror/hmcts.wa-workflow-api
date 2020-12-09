@@ -11,13 +11,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.waworkflowapi.duedate.DueDateService;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.EvaluateDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.EvaluateDmnResponse;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.EvaluateDmnService;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageService;
+import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskToCreate;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -26,15 +31,18 @@ import static org.springframework.http.ResponseEntity.noContent;
 @RestController
 public class CreateTaskController {
 
+    public static final String CREATE_TASK_MESSAGE = "createTaskMessage";
     private final EvaluateDmnService evaluateDmnService;
     private final SendMessageService sendMessageService;
+    private final DueDateService dueDateService;
 
     @Autowired
     public CreateTaskController(EvaluateDmnService evaluateDmnService,
-                                SendMessageService sendMessageService
-    ) {
+                                SendMessageService sendMessageService,
+                                DueDateService dueDateService) {
         this.evaluateDmnService = evaluateDmnService;
         this.sendMessageService = sendMessageService;
+        this.dueDateService = dueDateService;
     }
 
     @PostMapping(path = "/workflow/decision-definition/key/{key}/evaluate", consumes = {MediaType.APPLICATION_JSON_VALUE})
@@ -45,7 +53,7 @@ public class CreateTaskController {
     })
     public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
                                                            @PathVariable(name = "key") String key) {
-        List<Map<String,DmnValue<?>>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(evaluateDmnRequest, key);
+        List<Map<String, DmnValue<?>>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(evaluateDmnRequest, key);
         return ResponseEntity.ok()
             .body(new EvaluateDmnResponse(evaluateDmnResponse));
 
@@ -59,8 +67,55 @@ public class CreateTaskController {
         @ApiResponse(code = 201, message = "A new message was initiated"),
     })
     public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
-        sendMessageService.createMessage(sendMessageRequest);
+
+        if (CREATE_TASK_MESSAGE.equals(sendMessageRequest.getMessageName())) {
+            sendMessageService.createMessage(updateSendMessageRequest(sendMessageRequest));
+        } else {
+            sendMessageService.createMessage(sendMessageRequest);
+        }
+
         return noContent().build();
+    }
+
+    private SendMessageRequest updateSendMessageRequest(SendMessageRequest sendMessageRequest) {
+        ZonedDateTime dueDateUkTime = getDueDateInUkTimeZone(sendMessageRequest);
+        TaskToCreate taskToCreate = buildTaskToCreate(sendMessageRequest);
+        ZonedDateTime updatedDueDate = dueDateService.calculateDueDate(dueDateUkTime, taskToCreate);
+        Map<String, DmnValue<?>> updateProcessVariables = updateSendMessageRequestWithNewDueDate(
+            sendMessageRequest,
+            updatedDueDate
+        );
+
+        return new SendMessageRequest(
+            sendMessageRequest.getMessageName(),
+            updateProcessVariables
+        );
+    }
+
+    private Map<String, DmnValue<?>> updateSendMessageRequestWithNewDueDate(SendMessageRequest sendMessageRequest, ZonedDateTime updatedDueDate) {
+        Map<String, DmnValue<?>> updateProcessVariables = sendMessageRequest.getProcessVariables();
+        updateProcessVariables.put("dueDate", DmnValue.dmnStringValue(updatedDueDate.toString()));
+        updateProcessVariables.remove("workingDaysAllowed");
+        return updateProcessVariables;
+    }
+
+    private TaskToCreate buildTaskToCreate(SendMessageRequest sendMessageRequest) {
+        return new TaskToCreate(
+            (String) sendMessageRequest.getProcessVariables().get("taskId").getValue(),
+            (String) sendMessageRequest.getProcessVariables().get("group").getValue(),
+            (Integer) sendMessageRequest.getProcessVariables().get("workingDaysAllowed").getValue(),
+            (String) sendMessageRequest.getProcessVariables().get("name").getValue()
+        );
+    }
+
+    private ZonedDateTime getDueDateInUkTimeZone(SendMessageRequest sendMessageRequest) {
+        String dueDateAsString = (String) sendMessageRequest.getProcessVariables().get("dueDate").getValue();
+        if (dueDateAsString == null) {
+            return null;
+        }
+        LocalDateTime dueDate = LocalDateTime.parse(dueDateAsString);
+        ZoneId ukTime = ZoneId.of("Europe/London");
+        return dueDate.atZone(ukTime);
     }
 
 }
