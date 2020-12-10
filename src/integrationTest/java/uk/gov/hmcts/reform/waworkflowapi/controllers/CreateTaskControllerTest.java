@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.EvaluateDmnRequest
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -42,7 +43,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
 
     public static final String WORKFLOW_MESSAGE_ENDPOINT = "/workflow/message";
     private static final String BEARER_SERVICE_TOKEN = "Bearer service token";
-    public static final String FIXED_DATE = "2020-12-07T17:39:22.232+01:00";
+    public static final String FIXED_DATE = "2020-12-14T10:24:38.975296Z";
 
     @Autowired
     private transient MockMvc mockMvc;
@@ -171,7 +172,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "jurisdiction", dmnStringValue("ia"),
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
-                "dueDate", dmnStringValue(ZonedDateTime.parse(FIXED_DATE).toString()),
+                "dueDate", dmnStringValue(FIXED_DATE),
                 "caseReference", dmnStringValue("some caseReference")
             )
         );
@@ -201,6 +202,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             )
         );
 
+        String expectedDueDate = ZonedDateTime.parse(FIXED_DATE).plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
         SendMessageRequest expectedSendMessageRequest3 = new SendMessageRequest(
             "createTaskMessage",
             Map.of(
@@ -209,7 +211,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "jurisdiction", dmnStringValue("ia"),
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
-                "dueDate", dmnStringValue(ZonedDateTime.parse(FIXED_DATE).plusDays(2).toString()),
+                "dueDate", dmnStringValue(expectedDueDate),
                 "caseReference", dmnStringValue("some caseReference")
             )
         );

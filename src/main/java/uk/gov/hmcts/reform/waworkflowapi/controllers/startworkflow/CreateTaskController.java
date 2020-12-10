@@ -93,9 +93,8 @@ public class CreateTaskController {
     private Map<String, DmnValue<?>> updateSendMessageRequestWithNewDueDate(SendMessageRequest sendMessageRequest,
                                                                             ZonedDateTime updatedDueDate) {
         Map<String, DmnValue<?>> updateProcessVariables = sendMessageRequest.getProcessVariables();
-        String updatedDueDateAsString =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(updatedDueDate);
-        updateProcessVariables.put("dueDate", DmnValue.dmnStringValue(updatedDueDateAsString));
+        updateProcessVariables.put("dueDate",
+                                   DmnValue.dmnStringValue(updatedDueDate.format(DateTimeFormatter.ISO_INSTANT)));
         updateProcessVariables.remove("workingDaysAllowed");
         return updateProcessVariables;
     }

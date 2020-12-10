@@ -48,7 +48,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void creates_task_with_due_date() {
+    public void when_due_date_is_today_then_camunda_creates_overdue_task_taking_into_account_holidays() {
         ZonedDateTime dueDate = ZonedDateTime.now();
         Map<String, DmnValue<?>> processVariables = mockProcessVariables(dueDate, 0);
         given()
