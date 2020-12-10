@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
 import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,8 +48,9 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void should_initiate_camunda_send_message() {
-        Map<String, DmnValue<?>> processVariables = mockProcessVariables();
+    public void creates_task_with_due_date() {
+        ZonedDateTime dueDate = ZonedDateTime.now();
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables(dueDate, 0);
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -60,11 +62,12 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .post()
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
+
     }
 
     @Test
     public void should_not_be_able_to_post_as_message_does_not_exist() {
-        Map<String, DmnValue<?>> processVariables = mockProcessVariables();
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables(ZonedDateTime.now(), 0);
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -78,10 +81,10 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
     }
 
-    private Map<String, DmnValue<?>> mockProcessVariables() {
+    private Map<String, DmnValue<?>> mockProcessVariables(ZonedDateTime dueDate, int workingDaysAllowed) {
         Map<String, DmnValue<?>> processVariables = new HashMap<>();
-        processVariables.put("dueDate",DmnValue.dmnStringValue("2020-09-05T14:47:01.250542+01:00"));
-        processVariables.put("workingDaysAllowed",DmnValue.dmnIntegerValue(0));
+        processVariables.put("dueDate",DmnValue.dmnStringValue(dueDate.toString()));
+        processVariables.put("workingDaysAllowed",DmnValue.dmnIntegerValue(workingDaysAllowed));
         processVariables.put("group",DmnValue.dmnStringValue("group"));
         processVariables.put("name",DmnValue.dmnStringValue("name"));
         processVariables.put("jurisdiction",DmnValue.dmnStringValue("ia"));

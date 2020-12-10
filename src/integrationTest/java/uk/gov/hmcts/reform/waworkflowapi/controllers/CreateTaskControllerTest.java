@@ -42,7 +42,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
 
     public static final String WORKFLOW_MESSAGE_ENDPOINT = "/workflow/message";
     private static final String BEARER_SERVICE_TOKEN = "Bearer service token";
-    public static final String FIXED_DATE = "2020-12-07T17:39:22.232622+01:00";
+    public static final String FIXED_DATE = "2020-12-07T17:39:22.232+01:00";
 
     @Autowired
     private transient MockMvc mockMvc;
@@ -146,7 +146,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
 
         /*
         Scenario2: When messageName is createTaskMessage and dueDate is not null
-                   Then message is sent to Camunda with the default dueDate
+                   Then message is sent to Camunda with the given dueDate
          */
 
         SendMessageRequest sendMessageRequest2 = new SendMessageRequest(
@@ -176,14 +176,15 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             )
         );
 
-        Scenario messageIsCreateTaskThenDueTaskIsDefault = Scenario.builder()
+        Scenario messageIsCreateTaskThenDueTaskIsPastToCamunda = Scenario.builder()
             .sendMessageRequest(sendMessageRequest2)
             .expectedSendMessageRequest(expectedSendMessageRequest2)
             .build();
 
         /*
          Scenario3: When messageName is createTaskMessage and dueDate is null
-                   Then message is sent to Camunda with the dueDate calculated using the workingDaysAllowed field
+                   Then message is sent to Camunda with the default dueDate
+                   And it is calculated using the workingDaysAllowed field
          */
 
         SendMessageRequest sendMessageRequest3 = new SendMessageRequest(
@@ -220,7 +221,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
 
         return Stream.of(
             messageIsOtherThanCreateTaskThenDueTaskIsNotSet,
-            messageIsCreateTaskThenDueTaskIsDefault,
+            messageIsCreateTaskThenDueTaskIsPastToCamunda,
             messageIsCreateTaskThenDueTaskIsCalculated
         );
     }

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageService
 import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskToCreate;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -57,7 +58,6 @@ public class CreateTaskController {
 
     }
 
-
     @PostMapping(path = "/workflow/message", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Creates a message form camunda")
     @ApiImplicitParam(name = "ServiceAuthorization", value = "Bearer xxxx", paramType = "header")
@@ -93,7 +93,9 @@ public class CreateTaskController {
     private Map<String, DmnValue<?>> updateSendMessageRequestWithNewDueDate(SendMessageRequest sendMessageRequest,
                                                                             ZonedDateTime updatedDueDate) {
         Map<String, DmnValue<?>> updateProcessVariables = sendMessageRequest.getProcessVariables();
-        updateProcessVariables.put("dueDate", DmnValue.dmnStringValue(updatedDueDate.toString()));
+        String updatedDueDateAsString =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(updatedDueDate);
+        updateProcessVariables.put("dueDate", DmnValue.dmnStringValue(updatedDueDateAsString));
         updateProcessVariables.remove("workingDaysAllowed");
         return updateProcessVariables;
     }
