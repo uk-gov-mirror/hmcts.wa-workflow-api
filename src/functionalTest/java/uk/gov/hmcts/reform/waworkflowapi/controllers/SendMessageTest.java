@@ -10,12 +10,16 @@ import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest
 import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.serenitybdd.rest.SerenityRest.given;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.waworkflowapi.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
@@ -155,10 +159,57 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
+    public void transition_create_overdue_task() {
+        ZonedDateTime dueDate = ZonedDateTime.now();
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables(
+            dueDate.toString(),
+            "Provide Respondent Evidence",
+            "provideRespondentEvidence",
+            "external"
+        );
+
+        given()
+            .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(new SendMessageRequest("createTaskMessage", processVariables)).log().body()
+            .baseUri(testUrl)
+            .basePath("/workflow/message")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT_204);
+
+        await().ignoreException(AssertionError.class).pollInterval(1, SECONDS).atMost(20, SECONDS).until(
+            () -> {
+                given()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(camundaUrl)
+                    .basePath("/task")
+                    .param("processVariables", "caseReference_eq_" + caseReference)
+                    .when()
+                    .get()
+                    .prettyPeek()
+                    .then()
+                    .body("size()", is(2))
+                    .body("[0].name", is("Provide Respondent Evidence"))
+                    .body("[0].formKey", is("provideRespondentEvidence"))
+                    .body("[0].due", startsWith(dueDate.format(DateTimeFormatter.ISO_LOCAL_DATE)))
+                    .body("[1].name", is("Follow Up Overdue Respondent Evidence"))
+                    .body("[1].formKey", is("followUpOverdueRespondentEvidence"));
+
+                return true;
+            }
+        );
+    }
+
+    @Test
     public void should_not_be_able_to_post_as_message_does_not_exist() {
-        Map<String, DmnValue<?>> processVariables = mockProcessVariables(ZonedDateTime.now().toString(),
-                                                                         "Process Application", "processApplication",
-                                                                         "TCW"
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables(
+            ZonedDateTime.now().toString(),
+            "Process Application", "processApplication",
+            "TCW"
         );
         given()
             .relaxedHTTPSValidation()
@@ -172,6 +223,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
     }
+
 
     private Map<String, DmnValue<?>> mockProcessVariables(
         String dueDate,
