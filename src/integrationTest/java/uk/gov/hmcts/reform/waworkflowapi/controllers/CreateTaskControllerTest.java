@@ -124,7 +124,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "jurisdiction", dmnStringValue("ia"),
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
-                "caseReference", dmnStringValue("some caseReference")
+                "caseId", dmnStringValue("some caseId")
             )
         );
 
@@ -136,7 +136,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "jurisdiction", dmnStringValue("ia"),
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
-                "caseReference", dmnStringValue("some caseReference")
+                "caseId", dmnStringValue("some caseId")
             )
         );
 
@@ -160,7 +160,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "taskId", dmnStringValue("some taskId"),
                 "dueDate", dmnStringValue(FIXED_DATE),
                 "workingDaysAllowed", dmnIntegerValue(0),
-                "caseReference", dmnStringValue("some caseReference")
+                "caseId", dmnStringValue("some caseId")
             )
         );
 
@@ -173,7 +173,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
                 "dueDate", dmnStringValue(FIXED_DATE),
-                "caseReference", dmnStringValue("some caseReference")
+                "caseId", dmnStringValue("some caseId")
             )
         );
 
@@ -198,7 +198,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "taskId", dmnStringValue("some taskId"),
                 "workingDaysAllowed", dmnIntegerValue(2),
                 "dueDate", dmnStringValue(null),
-                "caseReference", dmnStringValue("some caseReference")
+                "caseId", dmnStringValue("some caseId")
             )
         );
 
@@ -212,7 +212,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
                 "dueDate", dmnStringValue(expectedDueDate),
-                "caseReference", dmnStringValue("some caseReference")
+                "caseId", dmnStringValue("some caseId")
             )
         );
 

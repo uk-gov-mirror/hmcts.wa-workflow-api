@@ -29,11 +29,11 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
     private String serviceAuthorizationToken;
-    private String caseReference;
+    private String caseId;
 
     @Before
     public void setUp() {
-        caseReference = UUID.randomUUID().toString();
+        caseId = UUID.randomUUID().toString();
 
         serviceAuthorizationToken =
             authorizationHeadersProvider
@@ -83,7 +83,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task")
-            .param("processVariables", "caseReference_eq_" + caseReference)
+            .param("processVariables", "caseId_eq_" + caseId)
             .when()
             .get()
             .prettyPeek()
@@ -135,7 +135,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task")
-            .param("processVariables", "caseReference_eq_" + caseReference)
+            .param("processVariables", "caseId_eq_" + caseId)
             .when()
             .get()
             .prettyPeek()
@@ -187,7 +187,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     .contentType(APPLICATION_JSON_VALUE)
                     .baseUri(camundaUrl)
                     .basePath("/task")
-                    .param("processVariables", "caseReference_eq_" + caseReference)
+                    .param("processVariables", "caseId_eq_" + caseId)
                     .when()
                     .get()
                     .prettyPeek()
@@ -239,7 +239,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         processVariables.put("jurisdiction", DmnValue.dmnStringValue("ia"));
         processVariables.put("caseType", DmnValue.dmnStringValue("asylum"));
         processVariables.put("taskId", DmnValue.dmnStringValue(taskId));
-        processVariables.put("caseReference", DmnValue.dmnStringValue(caseReference));
+        processVariables.put("caseId", DmnValue.dmnStringValue(caseId));
 
         return processVariables;
     }

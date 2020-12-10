@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
-@ActiveProfiles(profiles = {"local","functional"})
+@ActiveProfiles("functional")
 public abstract class SpringBootFunctionalBaseTest {
 
     public static final String WA_TASK_INITIATION_IA_ASYLUM = "wa-task-initiation-ia-asylum";
