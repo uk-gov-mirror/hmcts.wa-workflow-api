@@ -26,11 +26,6 @@ camunda:
 govUkHolidays:
   url: https://www.gov.uk/
 
-#logging:
-#  level:
-#    org.springframework: debug
-
-#If you use a database then uncomment below lines and update db properties accordingly
 spring:
   application:
     name: WA workflow api

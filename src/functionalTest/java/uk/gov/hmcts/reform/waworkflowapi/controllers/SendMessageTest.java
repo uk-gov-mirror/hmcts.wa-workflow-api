@@ -12,8 +12,10 @@ import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static net.serenitybdd.rest.SerenityRest.given;
+import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.waworkflowapi.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
@@ -23,9 +25,12 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
     private String serviceAuthorizationToken;
+    private String caseReference;
 
     @Before
     public void setUp() {
+        caseReference = UUID.randomUUID().toString();
+
         serviceAuthorizationToken =
             authorizationHeadersProvider
                 .getAuthorizationHeaders()
@@ -48,9 +53,15 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void when_due_date_is_today_then_camunda_creates_overdue_task_taking_into_account_holidays() {
-        ZonedDateTime dueDate = ZonedDateTime.now();
-        Map<String, DmnValue<?>> processVariables = mockProcessVariables(dueDate, 0);
+    public void transition_creates_a_task_with_default_due_date() {
+
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables(
+            null,
+            "Process Application",
+            "processApplication",
+            "TCW"
+        );
+
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -63,11 +74,92 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
+        Object taskId = given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .baseUri(camundaUrl)
+            .basePath("/task")
+            .param("processVariables", "caseReference_eq_" + caseReference)
+            .when()
+            .get()
+            .prettyPeek()
+            .then()
+            .body("size()", is(1))
+            .body("[0].name", is("Process Application"))
+            .body("[0].formKey", is("processApplication"))
+            .extract()
+            .path("[0].id");
+
+        given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .baseUri(camundaUrl)
+            .basePath("/task/" + taskId + "/identity-links?type=candidate")
+            .when()
+            .get()
+            .prettyPeek()
+            .then()
+            .body("[0].groupId", is("TCW"));
+    }
+
+
+    @Test
+    public void transition_creates_a_task_with_due_date() {
+
+        ZonedDateTime dueDate = ZonedDateTime.now().plusDays(2);
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables(
+            dueDate.toString(),
+            "Provide Respondent Evidence",
+            "provideRespondentEvidence",
+            "external"
+        );
+
+        given()
+            .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(new SendMessageRequest("createTaskMessage", processVariables)).log().body()
+            .baseUri(testUrl)
+            .basePath("/workflow/message")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.NO_CONTENT_204);
+
+        Object taskId = given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .baseUri(camundaUrl)
+            .basePath("/task")
+            .param("processVariables", "caseReference_eq_" + caseReference)
+            .when()
+            .get()
+            .prettyPeek()
+            .then()
+            .body("size()", is(1))
+            .body("[0].name", is("Provide Respondent Evidence"))
+            .body("[0].formKey", is("provideRespondentEvidence"))
+            .extract()
+            .path("[0].id");
+
+        given()
+            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .contentType(APPLICATION_JSON_VALUE)
+            .baseUri(camundaUrl)
+            .basePath("/task/" + taskId + "/identity-links?type=candidate")
+            .when()
+            .get()
+            .prettyPeek()
+            .then()
+            .body("[0].groupId", is("external"));
     }
 
     @Test
     public void should_not_be_able_to_post_as_message_does_not_exist() {
-        Map<String, DmnValue<?>> processVariables = mockProcessVariables(ZonedDateTime.now(), 0);
+        Map<String, DmnValue<?>> processVariables = mockProcessVariables(ZonedDateTime.now().toString(),
+                                                                         "Process Application", "processApplication",
+                                                                         "TCW"
+        );
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -81,15 +173,21 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
     }
 
-    private Map<String, DmnValue<?>> mockProcessVariables(ZonedDateTime dueDate, int workingDaysAllowed) {
+    private Map<String, DmnValue<?>> mockProcessVariables(
+        String dueDate,
+        String name,
+        String taskId,
+        String group
+    ) {
         Map<String, DmnValue<?>> processVariables = new HashMap<>();
-        processVariables.put("dueDate",DmnValue.dmnStringValue(dueDate.toString()));
-        processVariables.put("workingDaysAllowed",DmnValue.dmnIntegerValue(workingDaysAllowed));
-        processVariables.put("group",DmnValue.dmnStringValue("group"));
-        processVariables.put("name",DmnValue.dmnStringValue("name"));
-        processVariables.put("jurisdiction",DmnValue.dmnStringValue("ia"));
-        processVariables.put("caseType",DmnValue.dmnStringValue("asylum"));
-        processVariables.put("taskId",DmnValue.dmnStringValue("provideRespondentEvidence"));
+        processVariables.put("dueDate", DmnValue.dmnStringValue(dueDate));
+        processVariables.put("workingDaysAllowed", DmnValue.dmnIntegerValue(2));
+        processVariables.put("group", DmnValue.dmnStringValue(group));
+        processVariables.put("name", DmnValue.dmnStringValue(name));
+        processVariables.put("jurisdiction", DmnValue.dmnStringValue("ia"));
+        processVariables.put("caseType", DmnValue.dmnStringValue("asylum"));
+        processVariables.put("taskId", DmnValue.dmnStringValue(taskId));
+        processVariables.put("caseReference", DmnValue.dmnStringValue(caseReference));
 
         return processVariables;
     }

@@ -8,12 +8,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
-@ActiveProfiles("functional")
+@ActiveProfiles(profiles = {"local","functional"})
 public abstract class SpringBootFunctionalBaseTest {
 
     public static final String WA_TASK_INITIATION_IA_ASYLUM = "wa-task-initiation-ia-asylum";
 
     @Value("${targets.instance}")
     public String testUrl;
+
+    @Value("${camunda.url}")
+    public String camundaUrl;
 
 }
