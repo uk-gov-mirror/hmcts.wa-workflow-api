@@ -1,0 +1,12 @@
+logging:
+  level:
+    org.springframework: info
+    uk.gov.hmcts.reform: debug
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full
+
+spring.jackson.serialization.indent_output: true

@@ -1,12 +1,13 @@
 package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class SendMessageRequest {
     private final String messageName;
-    private final ProcessVariables processVariables;
+    private final Map<String, DmnValue<?>> processVariables;
 
-    public SendMessageRequest(String messageName, ProcessVariables processVariables) {
+    public SendMessageRequest(String messageName, Map<String, DmnValue<?>> processVariables) {
         this.messageName = messageName;
         this.processVariables = processVariables;
     }
@@ -15,7 +16,8 @@ public class SendMessageRequest {
         return messageName;
     }
 
-    public ProcessVariables getProcessVariables() {
+
+    public Map<String, DmnValue<?>> getProcessVariables() {
         return processVariables;
     }
 

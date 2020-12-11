@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("PMD.UseObjectForClearerAPI")
 @FeignClient(
@@ -17,18 +18,16 @@ public interface CamundaClient {
 
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
-    @PostMapping(
-        value = "/decision-definition/key/{decisionTableName}-{jurisdiction}-{caseType}/evaluate",
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    List<GetTaskDmnResult> evaluateDmnTable(
-        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
-        @PathVariable("decisionTableName") String decisionTableName,
-        @PathVariable("jurisdiction") String jurisdiction,
-        @PathVariable("caseType") String caseType,
-        DmnRequest<GetTaskDmnRequest> requestParameters
-    );
-
     @PostMapping(value = "/message", produces = MediaType.APPLICATION_JSON_VALUE)
     void sendMessage(@RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
                      SendMessageRequest sendMessageRequest);
+
+    @PostMapping(value = "/decision-definition/key/{key}/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
+    List<Map<String,DmnValue<?>>> evaluateDmn(
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+        @PathVariable("key") String key,
+        EvaluateDmnRequest evaluateDmnRequest
+    );
+
 }
+
