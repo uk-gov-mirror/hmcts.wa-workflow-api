@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,7 +22,6 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.waworkflowapi.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
 public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
@@ -78,7 +78,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
-        Object taskId = given()
+        String taskId = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
@@ -104,6 +104,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .prettyPeek()
             .then()
             .body("[0].groupId", is("TCW"));
+
+        cleanUp(taskId, serviceAuthorizationToken);
     }
 
 
@@ -130,7 +132,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
-        Object taskId = given()
+        String taskId = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
@@ -156,6 +158,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .prettyPeek()
             .then()
             .body("[0].groupId", is("external"));
+
+        cleanUp(taskId, serviceAuthorizationToken);
     }
 
     @Test
@@ -182,7 +186,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         await().ignoreException(AssertionError.class).pollInterval(1, SECONDS).atMost(20, SECONDS).until(
             () -> {
-                given()
+                List<String> tasks = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
                     .contentType(APPLICATION_JSON_VALUE)
                     .baseUri(camundaUrl)
@@ -197,7 +201,11 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     .body("[0].formKey", is("provideRespondentEvidence"))
                     .body("[0].due", startsWith(dueDate.format(DateTimeFormatter.ISO_LOCAL_DATE)))
                     .body("[1].name", is("Follow Up Overdue Respondent Evidence"))
-                    .body("[1].formKey", is("followUpOverdueRespondentEvidence"));
+                    .body("[1].formKey", is("followUpOverdueRespondentEvidence"))
+                    .extract()
+                    .path("id");
+
+                tasks.forEach(taskId -> cleanUp(taskId, serviceAuthorizationToken));
 
                 return true;
             }
