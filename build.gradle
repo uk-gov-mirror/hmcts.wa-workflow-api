@@ -120,6 +120,11 @@ task smoke(type: Test) {
   classpath = sourceSets.smokeTest.runtimeClasspath
 }
 
+task tests {
+  description = "Runs junit , integration and functional tests"
+  dependsOn test, integration, functional
+}
+
 checkstyle {
   maxWarnings = 0
   toolVersion = '8.29'
@@ -199,6 +204,7 @@ dependencyCheck {
 dependencyManagement {
   dependencies {
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.66'
+    dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     // CVE-2018-10237 - Unbounded memory allocation
     dependencySet(group: 'com.google.guava', version: '30.0-jre') {
       entry 'guava'
