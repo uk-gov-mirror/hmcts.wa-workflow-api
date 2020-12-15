@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.waworkflowapi.duedate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.waworkflowapi.common.TaskToCreate;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.HolidayService;
-import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskToCreate;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

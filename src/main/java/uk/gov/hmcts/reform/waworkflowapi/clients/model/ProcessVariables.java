@@ -1,10 +1,10 @@
-package uk.gov.hmcts.reform.waworkflowapi.external.taskservice;
+package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
+import static uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue.dmnStringValue;
 
 public class ProcessVariables {
     private final DmnValue<String> jurisdiction;

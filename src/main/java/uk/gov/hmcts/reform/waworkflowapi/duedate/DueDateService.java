@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.waworkflowapi.duedate;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.waworkflowapi.common.TaskToCreate;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.HolidayService;
-import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.TaskToCreate;
 
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
