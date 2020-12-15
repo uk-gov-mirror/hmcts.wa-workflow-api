@@ -15,11 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootIntegrationBaseTest;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnRequest;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.CamundaClient;
 import uk.gov.hmcts.reform.waworkflowapi.duedate.DateService;
-import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.CamundaClient;
-import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue;
-import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.EvaluateDmnRequest;
-import uk.gov.hmcts.reform.waworkflowapi.external.taskservice.SendMessageRequest;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,8 +35,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.waworkflowapi.api.CreatorObjectMapper.asJsonString;
-import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnIntegerValue;
-import static uk.gov.hmcts.reform.waworkflowapi.external.taskservice.DmnValue.dmnStringValue;
+import static uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue.dmnIntegerValue;
+import static uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue.dmnStringValue;
 
 @Slf4j
 class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
