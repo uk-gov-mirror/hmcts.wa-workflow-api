@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.model.GetTaskDmnResult;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.ProcessVariables;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
 import uk.gov.hmcts.reform.waworkflowapi.common.TaskToCreate;
+import uk.gov.hmcts.reform.waworkflowapi.controllers.advice.ErrorMessage;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.CreateTaskRequest;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
@@ -49,7 +50,8 @@ class PojoTest {
         CountryHolidayDates.class,
         HolidayDate.class,
         UkHolidayDates.class,
-        ServiceDetails.class
+        ServiceDetails.class,
+        ErrorMessage.class
     };
     // Cannot test equals for generic classes
     private final Class[] ignoreEquals = {
@@ -59,7 +61,8 @@ class PojoTest {
         ProcessVariables.class,
         DmnValue.class,
         GetTaskDmnRequest.class,
-        CreateTaskRequest.class
+        CreateTaskRequest.class,
+        ErrorMessage.class
     };
     private final ObjectGenerator objectGenerator = new ObjectGenerator(
         DefaultFieldValueChanger.INSTANCE,
