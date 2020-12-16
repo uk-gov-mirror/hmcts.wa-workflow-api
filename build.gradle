@@ -211,7 +211,7 @@ dependencyManagement {
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.66'
     dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '30.0-jre') {
+    dependencySet(group: 'com.google.guava', version: '30.1-jre') {
       entry 'guava'
     }
     dependency group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
@@ -285,7 +285,7 @@ dependencies {
   }
 
   testCompile group: 'pl.pojo', name: 'pojo-tester', version: '0.7.6'
-  testCompile group: 'com.google.guava', name: 'guava-testlib', version: '30.0-jre'
+  testCompile group: 'com.google.guava', name: 'guava-testlib', version: '30.1-jre'
   testCompile group: 'com.jparams', name: 'to-string-verifier', version: '1.4.8'
 
   //for testing Camunda config will move out of this project
