@@ -44,15 +44,16 @@ public class CreateTaskController {
         this.dueDateService = dueDateService;
     }
 
-    @PostMapping(path = "/workflow/decision-definition/key/{key}/evaluate", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ApiOperation("Creates a message form camunda")
     @ApiImplicitParam(name = "ServiceAuthorization", value = "Bearer xxxx", paramType = "header")
     @ApiResponses({
         @ApiResponse(code = 200, message = "A DMN was found, evaluated and returned"),
     })
     public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
-                                                           @PathVariable(name = "key") String key) {
-        List<Map<String, DmnValue<?>>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(evaluateDmnRequest, key);
+                                                           @PathVariable(name = "key") String key,
+                                                           @PathVariable(name = "tenant-id") String tenantId) {
+        List<Map<String, DmnValue<?>>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(evaluateDmnRequest, key, tenantId);
         return ResponseEntity.ok()
             .body(new EvaluateDmnResponse(evaluateDmnResponse));
 

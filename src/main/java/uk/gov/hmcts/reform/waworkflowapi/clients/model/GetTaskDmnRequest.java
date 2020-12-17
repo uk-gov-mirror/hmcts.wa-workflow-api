@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 public class GetTaskDmnRequest {
     private final DmnValue eventId;
     private final DmnValue postEventState;
@@ -17,31 +20,5 @@ public class GetTaskDmnRequest {
 
     public DmnValue getPostEventState() {
         return postEventState;
-    }
-
-    @Override
-    public boolean equals(Object anotherObject) {
-        if (this == anotherObject) {
-            return true;
-        }
-        if (anotherObject == null || getClass() != anotherObject.getClass()) {
-            return false;
-        }
-        GetTaskDmnRequest that = (GetTaskDmnRequest) anotherObject;
-        return Objects.equals(eventId, that.eventId)
-               && Objects.equals(postEventState, that.postEventState);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(eventId, postEventState);
-    }
-
-    @Override
-    public String toString() {
-        return "GetTaskDmnRequest{"
-               + "eventId=" + eventId
-               + ", postEventState=" + postEventState
-               + '}';
     }
 }

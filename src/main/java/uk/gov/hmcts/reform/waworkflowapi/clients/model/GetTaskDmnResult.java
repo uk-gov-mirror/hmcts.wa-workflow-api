@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 public class GetTaskDmnResult {
     private DmnValue<String> taskId;
     private DmnValue<String> group;
@@ -32,35 +35,5 @@ public class GetTaskDmnResult {
 
     public DmnValue<String> getName() {
         return name;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-        GetTaskDmnResult that = (GetTaskDmnResult) object;
-        return Objects.equals(taskId, that.taskId)
-               && Objects.equals(group, that.group)
-               && Objects.equals(workingDaysAllowed, that.workingDaysAllowed)
-               && Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(taskId);
-    }
-
-    @Override
-    public String toString() {
-        return "GetTaskDmnResult{"
-               + "taskId=" + taskId
-               + ", group=" + group
-               + ", workingDaysAllowed=" + workingDaysAllowed
-               + ", name=" + name
-               + '}';
     }
 }

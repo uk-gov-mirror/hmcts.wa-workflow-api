@@ -29,11 +29,11 @@ class EvaluateDmnServiceTest {
 
     @Test
     void setEvaluateDmnServiceTest() {
-        when(taskClientService.evaluate(evaluateDmnRequest,"test")).thenReturn(mockResponse());
-        List<Map<String,DmnValue<?>>> evaluateDmn = evaluateDmnService.evaluateDmn(evaluateDmnRequest,"test");
+        when(taskClientService.evaluate(evaluateDmnRequest,"test","id")).thenReturn(mockResponse());
+        List<Map<String,DmnValue<?>>> evaluateDmn = evaluateDmnService.evaluateDmn(evaluateDmnRequest,"test", "id");
 
         assertEquals(evaluateDmn.get(0).get("test").getValue(), "TestResponse");
-        verify(taskClientService).evaluate(evaluateDmnRequest, "test");
+        verify(taskClientService).evaluate(evaluateDmnRequest, "test", "id");
     }
 
 

@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Objects;
 
 import static uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue.dmnStringValue;
 
+@EqualsAndHashCode
+@ToString
 public class ProcessVariables {
     private final DmnValue<String> jurisdiction;
     private final DmnValue<String> caseType;
@@ -59,41 +63,5 @@ public class ProcessVariables {
 
     public DmnValue<String> getName() {
         return name;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-        ProcessVariables that = (ProcessVariables) object;
-        return Objects.equals(jurisdiction, that.jurisdiction)
-               && Objects.equals(caseType, that.caseType)
-               && Objects.equals(caseId, that.caseId)
-               && Objects.equals(taskId, that.taskId)
-               && Objects.equals(group, that.group)
-               && Objects.equals(dueDate, that.dueDate)
-               && Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(caseId, taskId);
-    }
-
-    @Override
-    public String toString() {
-        return "ProcessVariables{"
-               + "jurisdiction=" + jurisdiction
-               + ", caseType=" + caseType
-               + ", caseId=" + caseId
-               + ", taskId=" + taskId
-               + ", group=" + group
-               + ", dueDate=" + dueDate
-               + ", name=" + name
-               + '}';
     }
 }

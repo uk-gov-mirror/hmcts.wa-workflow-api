@@ -44,10 +44,11 @@ class TaskClientServiceTest {
         when(camundaClient.evaluateDmn(
             eq(BEARER_SERVICE_TOKEN),
             anyString(),
+            anyString(),
             eq(evaluateDmnRequest)
         )).thenReturn(mockResponse());
 
-        List<Map<String,DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test");
+        List<Map<String,DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test", "id");
         assertEquals(task.get(0).get("test").getValue(), "TestValue");
     }
 
@@ -57,10 +58,11 @@ class TaskClientServiceTest {
         when(camundaClient.evaluateDmn(
             BEARER_SERVICE_TOKEN,
             "key",
+            "id",
             evaluateDmnRequest
         )).thenReturn(ts);
 
-        List<Map<String,DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test");
+        List<Map<String,DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test", "id");
 
         assertEquals(task, new ArrayList<>());
     }
