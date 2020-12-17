@@ -125,7 +125,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
                 "caseId", dmnStringValue("some caseId")
-            )
+            ),
+            null
         );
 
         SendMessageRequest expectedSendMessageRequest1 = new SendMessageRequest(
@@ -137,7 +138,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),
                 "caseId", dmnStringValue("some caseId")
-            )
+            ),
+            null
         );
 
         Scenario messageIsOtherThanCreateTaskThenDueTaskIsNotSet = Scenario.builder()
@@ -161,7 +163,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "dueDate", dmnStringValue(FIXED_DATE),
                 "workingDaysAllowed", dmnIntegerValue(0),
                 "caseId", dmnStringValue("some caseId")
-            )
+            ),
+            null
         );
 
         SendMessageRequest expectedSendMessageRequest2 = new SendMessageRequest(
@@ -174,7 +177,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "taskId", dmnStringValue("some taskId"),
                 "dueDate", dmnStringValue(FIXED_DATE),
                 "caseId", dmnStringValue("some caseId")
-            )
+            ),
+            null
         );
 
         Scenario messageIsCreateTaskThenDueTaskIsPastToCamunda = Scenario.builder()
@@ -199,7 +203,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "workingDaysAllowed", dmnIntegerValue(2),
                 "dueDate", dmnStringValue(null),
                 "caseId", dmnStringValue("some caseId")
-            )
+            ),
+            null
         );
 
         String expectedDueDate = ZonedDateTime.parse(FIXED_DATE).plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
@@ -213,7 +218,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "taskId", dmnStringValue("some taskId"),
                 "dueDate", dmnStringValue(expectedDueDate),
                 "caseId", dmnStringValue("some caseId")
-            )
+            ),
+            null
         );
 
         Scenario messageIsCreateTaskThenDueTaskIsCalculated = Scenario.builder()

@@ -35,6 +35,7 @@ public class CreateTaskController {
     private final SendMessageService sendMessageService;
     private final DueDateService dueDateService;
 
+
     @Autowired
     public CreateTaskController(EvaluateDmnService evaluateDmnService,
                                 SendMessageService sendMessageService,
@@ -86,15 +87,18 @@ public class CreateTaskController {
 
         return new SendMessageRequest(
             sendMessageRequest.getMessageName(),
-            updateProcessVariables
+            updateProcessVariables,
+            sendMessageRequest.getCorrelationKeys()
         );
     }
 
     private Map<String, DmnValue<?>> updateSendMessageRequestWithNewDueDate(SendMessageRequest sendMessageRequest,
                                                                             ZonedDateTime updatedDueDate) {
         Map<String, DmnValue<?>> updateProcessVariables = sendMessageRequest.getProcessVariables();
-        updateProcessVariables.put("dueDate",
-                                   DmnValue.dmnStringValue(updatedDueDate.format(DateTimeFormatter.ISO_INSTANT)));
+        updateProcessVariables.put(
+            "dueDate",
+            DmnValue.dmnStringValue(updatedDueDate.format(DateTimeFormatter.ISO_INSTANT))
+        );
         updateProcessVariables.remove("workingDaysAllowed");
         return updateProcessVariables;
     }

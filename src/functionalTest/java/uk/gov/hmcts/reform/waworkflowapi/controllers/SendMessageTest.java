@@ -44,10 +44,15 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     @Test
     public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
         Map<String, DmnValue<?>> processVariables = new HashMap<>();
+        Map<String, DmnValue<?>> correlationKeys = null;
         given()
             .relaxedHTTPSValidation()
             .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest("createMessageTask", processVariables)).log().body()
+            .body(new SendMessageRequest(
+                "createMessageTask",
+                processVariables,
+                null
+            )).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
@@ -70,7 +75,11 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest("createTaskMessage", processVariables)).log().body()
+            .body(new SendMessageRequest(
+                "createTaskMessage",
+                processVariables,
+                null
+            )).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
@@ -124,7 +133,11 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest("createTaskMessage", processVariables)).log().body()
+            .body(new SendMessageRequest(
+                "createTaskMessage",
+                processVariables,
+                null
+            )).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
@@ -176,7 +189,11 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest("createTaskMessage", processVariables)).log().body()
+            .body(new SendMessageRequest(
+                "createTaskMessage",
+                processVariables,
+                null
+            )).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
@@ -223,7 +240,11 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest("non-existent-message", processVariables)).log().body()
+            .body(new SendMessageRequest(
+                "non-existent-message",
+                processVariables,
+                null
+            )).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
