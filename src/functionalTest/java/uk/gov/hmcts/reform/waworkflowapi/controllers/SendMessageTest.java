@@ -38,25 +38,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
-        Map<String, DmnValue<?>> processVariables = new HashMap<>();
-        given()
-            .relaxedHTTPSValidation()
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest(
-                "createMessageTask",
-                processVariables,
-                null
-            )).log().body()
-            .baseUri(testUrl)
-            .basePath("/workflow/message")
-            .when()
-            .post()
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN_403);
-    }
-
-    @Test
     public void transition_creates_a_task_with_default_due_date() {
 
         Map<String, DmnValue<?>> processVariables = mockProcessVariables(
@@ -167,31 +148,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         cleanUp(taskId, serviceAuthorizationToken);
     }
-
-    @Test
-    public void should_not_be_able_to_post_as_message_does_not_exist() {
-        Map<String, DmnValue<?>> processVariables = mockProcessVariables(
-            ZonedDateTime.now().toString(),
-            "Process Application", "processApplication",
-            "TCW"
-        );
-        given()
-            .relaxedHTTPSValidation()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest(
-                "non-existent-message",
-                processVariables,
-                null
-            )).log().body()
-            .baseUri(testUrl)
-            .basePath("/workflow/message")
-            .when()
-            .post()
-            .then()
-            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
-    }
-
 
     private Map<String, DmnValue<?>> mockProcessVariables(
         String dueDate,

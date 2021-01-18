@@ -30,21 +30,6 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
                 .getValue(SERVICE_AUTHORIZATION);
     }
 
-    @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
-
-        given()
-            .relaxedHTTPSValidation()
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(new EvaluateDmnRequest(null))
-            .baseUri(testUrl)
-            .pathParam("key", WA_TASK_INITIATION_IA_ASYLUM)
-            .basePath("/workflow/decision-definition/{key}/evaluate")
-            .when()
-            .post()
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN_403);
-    }
 
     @Test
     public void should_evaluate_and_return_dmn_results() {
@@ -66,24 +51,6 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body("results[0].taskId.value", equalTo("processApplication"))
             .body("results[0].group.value", equalTo("TCW"));
 
-
-    }
-
-    @Test
-    public void not_be_able_find_incorrect_dmn_table() {
-
-        given()
-            .relaxedHTTPSValidation()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(new EvaluateDmnRequest(mockVariables()))
-            .baseUri(testUrl)
-            .pathParam("key","non-existent")
-            .basePath("/workflow/decision-definition/key/{key}/evaluate")
-            .when()
-            .post()
-            .then()
-            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
 
     }
 
