@@ -21,9 +21,6 @@ import uk.gov.hmcts.reform.waworkflowapi.controllers.advice.ErrorMessage;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.CreateTaskRequest;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.ServiceDetails;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
-import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.CountryHolidayDates;
-import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.HolidayDate;
-import uk.gov.hmcts.reform.waworkflowapi.duedate.holidaydates.UkHolidayDates;
 
 import java.util.List;
 
@@ -47,9 +44,6 @@ class PojoTest {
         SendMessageRequest.class,
         ProcessVariables.class,
         TaskToCreate.class,
-        CountryHolidayDates.class,
-        HolidayDate.class,
-        UkHolidayDates.class,
         ServiceDetails.class,
         ErrorMessage.class
     };

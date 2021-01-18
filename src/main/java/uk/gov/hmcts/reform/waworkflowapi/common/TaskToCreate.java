@@ -1,22 +1,30 @@
 package uk.gov.hmcts.reform.waworkflowapi.common;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 public class TaskToCreate {
     private final String task;
     private final String group;
     private final int workingDaysAllowed;
     private final String name;
+    private final String delayUntil;
 
-    public TaskToCreate(String task, String group, int workingDaysAllowed, String name) {
+    public TaskToCreate(String task, String group, int workingDaysAllowed,
+                        String name, String delayUntil) {
         this.task = task;
         this.group = group;
         this.workingDaysAllowed = workingDaysAllowed;
         this.name = name;
+        this.delayUntil = delayUntil;
+
     }
 
-    public TaskToCreate(String task, String group, String name) {
-        this(task, group, 0, name);
+    public TaskToCreate(String task, String group,
+                        String name, String delayUntil) {
+        this(task, group, 0, name, delayUntil);
     }
 
     public String getTask() {
@@ -35,33 +43,8 @@ public class TaskToCreate {
         return name;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object == null || getClass() != object.getClass()) {
-            return false;
-        }
-        TaskToCreate that = (TaskToCreate) object;
-        return Objects.equals(task, that.task)
-               && Objects.equals(group, that.group)
-               && Objects.equals(workingDaysAllowed, that.workingDaysAllowed)
-               && Objects.equals(name, that.name);
+    public String getDelayUntil() {
+        return delayUntil;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(task, group);
-    }
-
-    @Override
-    public String toString() {
-        return "TaskToCreate{"
-               + "task=" + task
-               + ", group='" + group + '\''
-               + ", workingDaysAllowed='" + workingDaysAllowed + '\''
-               + ", name='" + name + '\''
-               + '}';
-    }
 }

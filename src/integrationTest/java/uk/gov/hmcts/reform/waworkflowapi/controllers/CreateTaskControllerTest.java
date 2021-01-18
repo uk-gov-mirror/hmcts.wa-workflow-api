@@ -19,10 +19,7 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.CamundaClient;
-import uk.gov.hmcts.reform.waworkflowapi.duedate.DateService;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -51,8 +48,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
     private AuthTokenGenerator authTokenGenerator;
     @MockBean
     private CamundaClient camundaClient;
-    @MockBean
-    private DateService dateService;
 
     @Captor
     private ArgumentCaptor<SendMessageRequest> captor;
@@ -61,9 +56,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
     @BeforeEach
     void setUp() {
         when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
-
-        ZonedDateTime nowDateMock = ZonedDateTime.parse(FIXED_DATE);
-        when(dateService.now()).thenReturn(nowDateMock);
     }
 
     @DisplayName("Should evaluate a DMN and return a 200")
@@ -147,90 +139,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             .expectedSendMessageRequest(expectedSendMessageRequest1)
             .build();
 
-        /*
-        Scenario2: When messageName is createTaskMessage and dueDate is not null
-                   Then message is sent to Camunda with the given dueDate
-         */
-
-        SendMessageRequest sendMessageRequest2 = new SendMessageRequest(
-            "createTaskMessage",
-            Map.of(
-                "name", dmnStringValue("some name"),
-                "group", dmnStringValue("some group"),
-                "jurisdiction", dmnStringValue("ia"),
-                "caseType", dmnStringValue("asylum"),
-                "taskId", dmnStringValue("some taskId"),
-                "dueDate", dmnStringValue(FIXED_DATE),
-                "workingDaysAllowed", dmnIntegerValue(0),
-                "caseId", dmnStringValue("some caseId")
-            ),
-            null
-        );
-
-        SendMessageRequest expectedSendMessageRequest2 = new SendMessageRequest(
-            "createTaskMessage",
-            Map.of(
-                "name", dmnStringValue("some name"),
-                "group", dmnStringValue("some group"),
-                "jurisdiction", dmnStringValue("ia"),
-                "caseType", dmnStringValue("asylum"),
-                "taskId", dmnStringValue("some taskId"),
-                "dueDate", dmnStringValue(FIXED_DATE),
-                "caseId", dmnStringValue("some caseId")
-            ),
-            null
-        );
-
-        Scenario messageIsCreateTaskThenDueTaskIsPastToCamunda = Scenario.builder()
-            .sendMessageRequest(sendMessageRequest2)
-            .expectedSendMessageRequest(expectedSendMessageRequest2)
-            .build();
-
-        /*
-         Scenario3: When messageName is createTaskMessage and dueDate is null
-                   Then message is sent to Camunda with the default dueDate
-                   And it is calculated using the workingDaysAllowed field
-         */
-
-        SendMessageRequest sendMessageRequest3 = new SendMessageRequest(
-            "createTaskMessage",
-            Map.of(
-                "name", dmnStringValue("some name"),
-                "group", dmnStringValue("some group"),
-                "jurisdiction", dmnStringValue("ia"),
-                "caseType", dmnStringValue("asylum"),
-                "taskId", dmnStringValue("some taskId"),
-                "workingDaysAllowed", dmnIntegerValue(2),
-                "dueDate", dmnStringValue(null),
-                "caseId", dmnStringValue("some caseId")
-            ),
-            null
-        );
-
-        String expectedDueDate = ZonedDateTime.parse(FIXED_DATE).plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
-        SendMessageRequest expectedSendMessageRequest3 = new SendMessageRequest(
-            "createTaskMessage",
-            Map.of(
-                "name", dmnStringValue("some name"),
-                "group", dmnStringValue("some group"),
-                "jurisdiction", dmnStringValue("ia"),
-                "caseType", dmnStringValue("asylum"),
-                "taskId", dmnStringValue("some taskId"),
-                "dueDate", dmnStringValue(expectedDueDate),
-                "caseId", dmnStringValue("some caseId")
-            ),
-            null
-        );
-
-        Scenario messageIsCreateTaskThenDueTaskIsCalculated = Scenario.builder()
-            .sendMessageRequest(sendMessageRequest3)
-            .expectedSendMessageRequest(expectedSendMessageRequest3)
-            .build();
-
         return Stream.of(
-            messageIsOtherThanCreateTaskThenDueTaskIsNotSet,
-            messageIsCreateTaskThenDueTaskIsPastToCamunda,
-            messageIsCreateTaskThenDueTaskIsCalculated
+            messageIsOtherThanCreateTaskThenDueTaskIsNotSet
         );
     }
 

@@ -17,11 +17,7 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnResponse;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.EvaluateDmnService;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.SendMessageService;
-import uk.gov.hmcts.reform.waworkflowapi.common.TaskToCreate;
-import uk.gov.hmcts.reform.waworkflowapi.duedate.DueDateService;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -33,16 +29,13 @@ public class CreateTaskController {
     public static final String CREATE_TASK_MESSAGE = "createTaskMessage";
     private final EvaluateDmnService evaluateDmnService;
     private final SendMessageService sendMessageService;
-    private final DueDateService dueDateService;
 
 
     @Autowired
     public CreateTaskController(EvaluateDmnService evaluateDmnService,
-                                SendMessageService sendMessageService,
-                                DueDateService dueDateService) {
+                                SendMessageService sendMessageService) {
         this.evaluateDmnService = evaluateDmnService;
         this.sendMessageService = sendMessageService;
-        this.dueDateService = dueDateService;
     }
 
     @PostMapping(path = "/workflow/decision-definition/key/{key}/evaluate", consumes = {MediaType.APPLICATION_JSON_VALUE})
@@ -67,54 +60,8 @@ public class CreateTaskController {
     })
     public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
 
-        if (CREATE_TASK_MESSAGE.equals(sendMessageRequest.getMessageName())) {
-            sendMessageService.createMessage(updateDueDateInSendMessageRequest(sendMessageRequest));
-        } else {
-            sendMessageService.createMessage(sendMessageRequest);
-        }
-
+        sendMessageService.createMessage(sendMessageRequest);
         return noContent().build();
-    }
-
-    private SendMessageRequest updateDueDateInSendMessageRequest(SendMessageRequest sendMessageRequest) {
-        ZonedDateTime dueDateUkTime = getDueDate(sendMessageRequest);
-        TaskToCreate taskToCreate = buildTaskToCreate(sendMessageRequest);
-        ZonedDateTime updatedDueDate = dueDateService.calculateDueDate(dueDateUkTime, taskToCreate);
-        Map<String, DmnValue<?>> updateProcessVariables = updateSendMessageRequestWithNewDueDate(
-            sendMessageRequest,
-            updatedDueDate
-        );
-
-        return new SendMessageRequest(
-            sendMessageRequest.getMessageName(),
-            updateProcessVariables,
-            sendMessageRequest.getCorrelationKeys()
-        );
-    }
-
-    private Map<String, DmnValue<?>> updateSendMessageRequestWithNewDueDate(SendMessageRequest sendMessageRequest,
-                                                                            ZonedDateTime updatedDueDate) {
-        Map<String, DmnValue<?>> updateProcessVariables = sendMessageRequest.getProcessVariables();
-        updateProcessVariables.put(
-            "dueDate",
-            DmnValue.dmnStringValue(updatedDueDate.format(DateTimeFormatter.ISO_INSTANT))
-        );
-        updateProcessVariables.remove("workingDaysAllowed");
-        return updateProcessVariables;
-    }
-
-    private TaskToCreate buildTaskToCreate(SendMessageRequest sendMessageRequest) {
-        return new TaskToCreate(
-            (String) sendMessageRequest.getProcessVariables().get("taskId").getValue(),
-            (String) sendMessageRequest.getProcessVariables().get("group").getValue(),
-            (Integer) sendMessageRequest.getProcessVariables().get("workingDaysAllowed").getValue(),
-            (String) sendMessageRequest.getProcessVariables().get("name").getValue()
-        );
-    }
-
-    private ZonedDateTime getDueDate(SendMessageRequest sendMessageRequest) {
-        String dueDateAsString = (String) sendMessageRequest.getProcessVariables().get("dueDate").getValue();
-        return (dueDateAsString == null) ? null : ZonedDateTime.parse(dueDateAsString);
     }
 
 }

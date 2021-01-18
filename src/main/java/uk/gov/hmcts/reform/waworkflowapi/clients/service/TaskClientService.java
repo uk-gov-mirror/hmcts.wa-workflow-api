@@ -14,7 +14,6 @@ import java.util.Map;
 public class TaskClientService {
     private final CamundaClient camundaClient;
     private final AuthTokenGenerator authTokenGenerator;
-    public static final String WA_TASK_INITIATION_DECISION_TABLE_NAME = "wa-task-initiation";
 
     @Autowired
     public TaskClientService(@Autowired CamundaClient camundaClient,
