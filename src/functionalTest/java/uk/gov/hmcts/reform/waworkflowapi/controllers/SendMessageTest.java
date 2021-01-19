@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static net.serenitybdd.rest.SerenityRest.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -82,6 +83,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
+        waitSeconds(1);
+
         String taskId = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
@@ -137,6 +140,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .post()
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
+
+        waitSeconds(1);
 
         String taskId = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -212,5 +217,13 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         processVariables.put("delayUntil", DmnValue.dmnStringValue(delayUntilTimer));
 
         return processVariables;
+    }
+
+    private void waitSeconds(int seconds) {
+        try {
+            TimeUnit.SECONDS.sleep(seconds);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
