@@ -253,6 +253,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  compile group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.3.0-alpha1'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
