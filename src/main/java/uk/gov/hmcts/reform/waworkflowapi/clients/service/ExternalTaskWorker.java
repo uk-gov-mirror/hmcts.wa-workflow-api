@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
 import org.camunda.bpm.client.ExternalTaskClient;
-import org.camunda.bpm.client.interceptor.auth.BasicAuthProvider;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -26,7 +23,7 @@ public class ExternalTaskWorker {
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    private final static Logger LOGGER = Logger.getLogger(ExternalTaskWorker.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ExternalTaskWorker.class.getName());
 
     public ExternalTaskWorker(
         @Value("${camunda.url}") String camundaUrl,
