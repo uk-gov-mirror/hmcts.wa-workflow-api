@@ -58,6 +58,7 @@ security:
   authorisedServices:
     - "wa_workflow_api"
     - "wa_case_event_handler"
+    - "camunda-bpm"
 
 auth:
   provider:

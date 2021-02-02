@@ -1,13 +1,18 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
 import org.camunda.bpm.client.ExternalTaskClient;
+import org.camunda.bpm.client.interceptor.auth.BasicAuthProvider;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -19,12 +24,16 @@ public class ExternalTaskWorker {
 
     private final String camundaUrl;
 
+    private final AuthTokenGenerator authTokenGenerator;
+
     private final static Logger LOGGER = Logger.getLogger(ExternalTaskWorker.class.getName());
 
     public ExternalTaskWorker(
-        @Value("${camunda.url}") String camundaUrl
+        @Value("${camunda.url}") String camundaUrl,
+        AuthTokenGenerator authTokenGenerator
     ) {
         this.camundaUrl = camundaUrl;
+        this.authTokenGenerator = authTokenGenerator;
     }
 
 
@@ -32,6 +41,7 @@ public class ExternalTaskWorker {
     public void setupClient() {
         ExternalTaskClient client = ExternalTaskClient.create()
             .baseUrl(camundaUrl)
+            .addInterceptor(new ServiceAuthProviderInterceptor(authTokenGenerator))
             .build();
 
         client.subscribe("idempotencyCheck")
@@ -42,16 +52,19 @@ public class ExternalTaskWorker {
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         boolean isDuplicate =  externalTask.getVariable("isDuplicate");
-
-        if (!isDuplicate) {
+        if (isDuplicate) {
             Map<String, Object> processVariables = singletonMap(
                 "isDuplicate",
-                true
+                false
             );
 
             LOGGER.info("Duplicate was hit.");
 
             externalTaskService.complete(externalTask, processVariables);
+        } else {
+            externalTaskService.complete(externalTask);
+            LOGGER.info("Duplicate was true");
+
         }
     }
 }
