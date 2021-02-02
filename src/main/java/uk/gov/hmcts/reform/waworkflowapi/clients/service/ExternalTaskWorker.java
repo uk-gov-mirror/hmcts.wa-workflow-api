@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
 import org.camunda.bpm.client.ExternalTaskClient;
+import org.camunda.bpm.client.backoff.ExponentialBackoffStrategy;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static java.util.Collections.singletonMap;
 
@@ -18,17 +20,19 @@ public class ExternalTaskWorker {
 
     private final String camundaUrl;
 
+    private final static Logger LOGGER = Logger.getLogger(ExternalTaskWorker.class.getName());
+
     public ExternalTaskWorker(
         @Value("${camunda.url}") String camundaUrl
     ) {
         this.camundaUrl = camundaUrl;
     }
 
+
     @EventListener(ApplicationReadyEvent.class)
     public void setupClient() {
         ExternalTaskClient client = ExternalTaskClient.create()
             .baseUrl(camundaUrl)
-            .asyncResponseTimeout(10000)
             .build();
 
         client.subscribe("idempotencyCheck")
@@ -45,6 +49,8 @@ public class ExternalTaskWorker {
                 "isDuplicate",
                 true
             );
+
+            LOGGER.info("Duplicate was hit.");
 
             externalTaskService.complete(externalTask, processVariables);
         }
