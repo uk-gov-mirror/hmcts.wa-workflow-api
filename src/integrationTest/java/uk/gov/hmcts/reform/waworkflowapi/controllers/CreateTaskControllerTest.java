@@ -72,11 +72,12 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
         when(camundaClient.evaluateDmn(
             eq(BEARER_SERVICE_TOKEN),
             anyString(),
+            anyString(),
             eq(evaluateDmnRequest)
         )).thenReturn(getEvalResponse());
 
         mockMvc.perform(
-            post("/workflow/decision-definition/key/getTask_IA_asylum/evaluate")
+            post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(evaluateDmnRequest))
         ).andExpect(status().isOk()).andReturn();
