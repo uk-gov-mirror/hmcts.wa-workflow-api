@@ -55,6 +55,7 @@ class CreateTaskControllerTest {
     @Test
     void evaluateDmn() {
         final String key = "Key";
+        final String tenantId = "id";
         final DmnValue<?> dmnValue = mock(DmnValue.class);
         final List<Map<String, DmnValue<?>>> evaluateDmnResponse = new ArrayList<Map<String, DmnValue<?>>>();
         final Map<String, DmnValue<?>> map = new HashMap<String, DmnValue<?>>();
@@ -62,8 +63,8 @@ class CreateTaskControllerTest {
         evaluateDmnResponse.add(map);
         EvaluateDmnRequest evaluateDmnRequest = mock(EvaluateDmnRequest.class);
 
-        when(evaluateDmnService.evaluateDmn(evaluateDmnRequest, key)).thenReturn(evaluateDmnResponse);
-        ResponseEntity<EvaluateDmnResponse> response = createTaskController.evaluateDmn(evaluateDmnRequest, key);
+        when(evaluateDmnService.evaluateDmn(evaluateDmnRequest, key, tenantId)).thenReturn(evaluateDmnResponse);
+        ResponseEntity<EvaluateDmnResponse> response = createTaskController.evaluateDmn(evaluateDmnRequest, key, tenantId);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());

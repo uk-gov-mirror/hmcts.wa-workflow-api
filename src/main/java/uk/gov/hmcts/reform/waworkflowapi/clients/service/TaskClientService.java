@@ -29,10 +29,11 @@ public class TaskClientService {
         );
     }
 
-    public List<Map<String, DmnValue<?>>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String key) {
+    public List<Map<String, DmnValue<?>>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String key, String tenantId) {
         return camundaClient.evaluateDmn(
             authTokenGenerator.generate(),
             key,
+            tenantId,
             evaluateDmnRequest
         );
     }
