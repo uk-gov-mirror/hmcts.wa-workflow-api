@@ -48,8 +48,8 @@ public class ExternalTaskWorker {
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        boolean isDuplicate =  externalTask.getVariable("isDuplicate");
-        if (isDuplicate) {
+        Boolean isDuplicate =  externalTask.getVariable("isDuplicate");
+        if (isDuplicate == null || isDuplicate) {
             Map<String, Object> processVariables = singletonMap(
                 "isDuplicate",
                 false
