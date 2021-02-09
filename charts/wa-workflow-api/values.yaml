@@ -22,5 +22,3 @@ java:
       secrets:
         - AppInsightsInstrumentationKey
         - s2s-secret-workflow-api
-  postgresql:
-    enabled: true
