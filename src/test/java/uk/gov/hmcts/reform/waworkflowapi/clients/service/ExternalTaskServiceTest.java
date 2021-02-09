@@ -5,6 +5,7 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.util.Map;
@@ -25,6 +26,7 @@ class ExternalTaskServiceTest {
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.initMocks(this);
         externalTask = mock(ExternalTask.class);
         externalTaskService = mock(ExternalTaskService.class);
     }
