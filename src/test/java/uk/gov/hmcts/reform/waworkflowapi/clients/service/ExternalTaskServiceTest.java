@@ -5,6 +5,7 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.util.Map;
@@ -25,6 +26,7 @@ class ExternalTaskServiceTest {
 
     @BeforeEach
     void setUp() {
+        MockitoAnnotations.initMocks(this);
         externalTask = mock(ExternalTask.class);
         externalTaskService = mock(ExternalTaskService.class);
     }
@@ -45,6 +47,18 @@ class ExternalTaskServiceTest {
         ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
 
         when(externalTask.getVariable("isDuplicate")).thenReturn(true);
+
+        handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
+
+        Map<String, Object> expectedProcessVariables = singletonMap("isDuplicate", false);
+        verify(externalTaskService).complete(externalTask,expectedProcessVariables);
+    }
+
+    @Test
+    void test_isDuplicate_Handler_when_null() {
+        ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
+
+        when(externalTask.getVariable("isDuplicate")).thenReturn(null);
 
         handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
 
