@@ -51,4 +51,16 @@ class ExternalTaskServiceTest {
         Map<String, Object> expectedProcessVariables = singletonMap("isDuplicate", false);
         verify(externalTaskService).complete(externalTask,expectedProcessVariables);
     }
+
+    @Test
+    void test_isDuplicate_Handler_when_null() {
+        ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
+
+        when(externalTask.getVariable("isDuplicate")).thenReturn(null);
+
+        handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
+
+        Map<String, Object> expectedProcessVariables = singletonMap("isDuplicate", false);
+        verify(externalTaskService).complete(externalTask,expectedProcessVariables);
+    }
 }
