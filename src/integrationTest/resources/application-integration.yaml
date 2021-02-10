@@ -1,6 +1,3 @@
-config:
-  stacktraceEnabled: false
-
 spring.flyway.enabled: false
 
 spring:
