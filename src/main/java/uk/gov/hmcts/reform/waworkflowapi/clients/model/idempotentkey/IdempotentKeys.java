@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey;
 
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import javax.persistence.Entity;
 
 @Entity
 @ToString
+@EqualsAndHashCode
 public class IdempotentKeys {
 
     @EmbeddedId

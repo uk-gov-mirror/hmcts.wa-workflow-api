@@ -3,7 +3,12 @@ spring.flyway.enabled: false
 spring:
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ia_timed_event_service
+    url: jdbc:h2:mem:wa_workflow_api
     username: sa
-    password:
+    password: password
+    initialization-mode: embedded
     platform: h2
+  h2:
+    console.enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
