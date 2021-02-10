@@ -7,10 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.Customer;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.CustomerRepository;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.IdempotentKeys;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotentKeysRepository;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @SpringBootApplication
 @EnableCircuitBreaker
@@ -29,18 +30,17 @@ public class Application {
     }
 
     @Bean
-    public CommandLineRunner demo(CustomerRepository repository) {
+    public CommandLineRunner demo(IdempotentKeysRepository repository) {
         return (args -> {
-            Customer customer = new Customer();
-            customer.setId(1L);
-            customer.setFirstName("David");
-            customer.setLastName("Crespo");
+            IdempotentKeys idempotentKeys = new IdempotentKeys(
+                UUID.randomUUID().toString(),
+                "ia",
+                UUID.randomUUID().toString(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+            );
 
-            repository.save(customer);
-
-            List<Customer> users = repository.findByLastName("Crespo");
-            log.info("**** users ****");
-            log.info(users.toString());
+            repository.save(idempotentKeys);
 
         });
     }

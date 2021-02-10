@@ -44,10 +44,6 @@ spring:
   flyway:
     enabled: true
     baselineOnMigrate: true
-    schemas: ${POSTGRES_NAME:wa_workflow_api}
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:wa_workflow_api}${POSTGRES_CONNECTION_OPTIONS:}
-    user: ccd
-    password: ccd
 
 security:
   anonymousPaths:
