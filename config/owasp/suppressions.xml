@@ -22,20 +22,4 @@
     <cpe>cpe:/a:pivotal_software:spring_security</cpe>
     <cve>CVE-2018-1258</cve>
   </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-     Suppressing as it's a false positive (see: https://pivotal.io/security/cve-2018-1258)
-   ]]></notes>
-    <gav regex="true">org.apache.httpcomponents/httpclient@4.5.9</gav>
-    <cpe>cpe:2.3:a:mybatis:mybatis:3.5.3:*:*:*:*:*:*:*</cpe>
-    <cve>CVE-2018-26945</cve>
-  </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-     Suppressing as it's a false positive (see: https://pivotal.io/security/cve-2018-1258)
-   ]]></notes>
-    <gav regex="true">org.mybatis/mybatis@3.5.3</gav>
-    <cpe>cpe:2.3:a:apache:httpclient:4.5.9:*:*:*:*:*:*:*</cpe>
-    <cve>CVE-2018-13956</cve>
-  </suppress>
 </suppressions>
