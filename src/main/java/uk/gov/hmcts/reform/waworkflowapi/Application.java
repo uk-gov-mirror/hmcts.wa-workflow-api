@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,6 +9,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.Customer;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.CustomerRepository;
+
+import java.util.List;
 
 @SpringBootApplication
 @EnableCircuitBreaker
@@ -18,6 +21,7 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.service.CustomerRepository;
         "uk.gov.hmcts.reform.authorisation",
         "uk.gov.hmcts.reform.waworkflowapi",
     })
+@Slf4j
 public class Application {
 
     public static void main(final String[] args) {
@@ -27,7 +31,17 @@ public class Application {
     @Bean
     public CommandLineRunner demo(CustomerRepository repository) {
         return (args -> {
-            repository.save(new Customer("David", "Crespo"));
+            Customer customer = new Customer();
+            customer.setId(1L);
+            customer.setFirstName("David");
+            customer.setLastName("Crespo");
+
+            repository.save(customer);
+
+            List<Customer> users = repository.findByLastName("Crespo");
+            log.info("**** users ****");
+            log.info(users.toString());
+
         });
     }
 
