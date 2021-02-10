@@ -27,6 +27,7 @@ class ExternalTaskServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+
         externalTask = mock(ExternalTask.class);
         externalTaskService = mock(ExternalTaskService.class);
     }
