@@ -34,6 +34,7 @@ public class ExternalTaskWorker {
         this.authTokenGenerator = authTokenGenerator;
     }
 
+
     @EventListener(ApplicationReadyEvent.class)
     public void setupClient() {
         ExternalTaskClient client = ExternalTaskClient.create()

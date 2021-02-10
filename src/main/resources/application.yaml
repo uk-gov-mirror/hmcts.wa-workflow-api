@@ -42,7 +42,6 @@ spring:
     enabled: true
     baselineOnMigrate: true
     schemas: ${POSTGRES_NAME:wa_workflow_api}
-
 security:
   anonymousPaths:
     - "/"

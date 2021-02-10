@@ -13,12 +13,9 @@ java:
     POSTGRES_HOST: wa-workflow-api-postgres-db-{{ .Values.global.environment }}.postgres.database.azure.com
     POSTGRES_USERNAME: wa-wa@wa-workflow-api-postgres-db-{{ .Values.global.environment }}
     POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
-    postgresql:
-      postgresqlUsername: wa-wa
-      postgresqlPassword: wa-wa
-      postgresqlDatabase: wa_workflow_api
   keyVaults:
     wa:
       secrets:
         - AppInsightsInstrumentationKey
         - s2s-secret-workflow-api
+        - workflow-api-POSTGRES-PASS
