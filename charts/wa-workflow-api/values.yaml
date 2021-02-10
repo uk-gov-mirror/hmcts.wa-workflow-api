@@ -18,3 +18,4 @@ java:
       secrets:
         - AppInsightsInstrumentationKey
         - s2s-secret-workflow-api
+        - wa-workflow-api-POSTGRES-PASS
