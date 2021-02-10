@@ -83,7 +83,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
-        waitSeconds(1);
+        waitSeconds(3);
 
         String taskId = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -141,7 +141,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
-        waitSeconds(1);
+        waitSeconds(2);
 
         String taskId = given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)

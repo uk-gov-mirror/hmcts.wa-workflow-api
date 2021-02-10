@@ -7,5 +7,5 @@ spring:
       aliases:
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         s2s-secret-workflow-api: S2S_SECRET_WORKFLOW_API
-        wa-workflow-api-POSTGRES-PASS: spring.datasource.password
+        workflow-api-POSTGRES-PASS: POSTGRES_PASSWORD
 
