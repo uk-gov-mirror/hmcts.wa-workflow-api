@@ -1,11 +1,10 @@
-package uk.gov.hmcts.reform.waworkflowapi.clients.model;
+package uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey;
 
 import lombok.ToString;
 
 import java.time.LocalDateTime;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 
 @Entity
 @ToString
@@ -18,6 +17,7 @@ public class IdempotentKeys {
     private LocalDateTime lastUpdatedAt;
 
     public IdempotentKeys() {
+        //needed for JPA
     }
 
     public IdempotentKeys(IdempotentId idempotentId,
