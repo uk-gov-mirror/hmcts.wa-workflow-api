@@ -19,7 +19,7 @@ public class IdempotentKeys {
     private LocalDateTime lastUpdatedAt;
 
     public IdempotentKeys() {
-        //needed for JPA
+        //needed for spring boot data JPA
     }
 
     public IdempotentKeys(IdempotentId idempotentId,

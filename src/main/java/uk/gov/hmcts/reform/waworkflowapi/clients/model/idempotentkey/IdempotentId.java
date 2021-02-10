@@ -15,7 +15,7 @@ public class IdempotentId implements Serializable {
     private String tenantId;
 
     public IdempotentId() {
-        //needed for JPA
+        //needed for spring boot data JPA
     }
 
     public IdempotentId(String idempotencyKey, String tenantId) {
