@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.IdempotentKeys;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotentKeysRepository;
 
@@ -33,8 +34,7 @@ public class Application {
     public CommandLineRunner demo(IdempotentKeysRepository repository) {
         return (args -> {
             IdempotentKeys idempotentKeys = new IdempotentKeys(
-                UUID.randomUUID().toString(),
-                "ia",
+                new IdempotentId(UUID.randomUUID().toString(), "ia"),
                 UUID.randomUUID().toString(),
                 LocalDateTime.now(),
                 LocalDateTime.now()

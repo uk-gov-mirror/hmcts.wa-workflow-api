@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -10,9 +11,8 @@ import javax.persistence.Id;
 @ToString
 public class IdempotentKeys {
 
-    @Id
-    private String idempotencyKey;
-    private String tenantId;
+    @EmbeddedId
+    private IdempotentId idempotentId;
     private String processId;
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdatedAt;
@@ -20,24 +20,18 @@ public class IdempotentKeys {
     public IdempotentKeys() {
     }
 
-    public IdempotentKeys(String idempotencyKey,
-                          String tenantId,
+    public IdempotentKeys(IdempotentId idempotentId,
                           String processId,
                           LocalDateTime createdAt,
                           LocalDateTime lastUpdatedAt) {
-        this.idempotencyKey = idempotencyKey;
-        this.tenantId = tenantId;
+        this.idempotentId = idempotentId;
         this.processId = processId;
         this.createdAt = createdAt;
         this.lastUpdatedAt = lastUpdatedAt;
     }
 
-    public String getIdempotencyKey() {
-        return idempotencyKey;
-    }
-
-    public String getTenantId() {
-        return tenantId;
+    public IdempotentId getIdempotentId() {
+        return idempotentId;
     }
 
     public String getProcessId() {
