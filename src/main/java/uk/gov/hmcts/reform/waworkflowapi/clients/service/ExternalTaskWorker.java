@@ -9,11 +9,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKey;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -56,27 +57,31 @@ public class ExternalTaskWorker {
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        IdempotentKey keys = new IdempotentKey(
-            new IdempotentId(UUID.randomUUID().toString(), "ia"),
-            "processId",
-            LocalDateTime.now(),
-            LocalDateTime.now().minusDays(2L)
-        );
-        idempotentKeysRepository.save(keys);
-        Boolean isDuplicate =  externalTask.getVariable("isDuplicate");
-        if (isDuplicate == null || isDuplicate) {
+
+
+        Optional<IdempotentKeys> existingTask = idempotentKeysRepository.findById(new IdempotentId(externalTask.getVariable("idempotentKey"),"ia"));
+        if (existingTask.isPresent()) {
+            Map<String, Object> processVariables = singletonMap(
+                "isDuplicate",
+                true
+            );
+            LOGGER.info("It was present!!!!!");
+            externalTaskService.complete(externalTask, processVariables);
+        } else {
+            LOGGER.info("It was not present!!!!!!");
+            IdempotentKeys keys = new IdempotentKeys(
+                new IdempotentId(UUID.randomUUID().toString(), "ia"),
+                "processIdTestc",
+                LocalDateTime.now(),
+                LocalDateTime.now().minusDays(2L)
+            );
+            idempotentKeysRepository.save(keys);
+
             Map<String, Object> processVariables = singletonMap(
                 "isDuplicate",
                 false
             );
-
-            LOGGER.info("Duplicate was hit.");
-
-            externalTaskService.complete(externalTask, processVariables);
-        } else {
-            externalTaskService.complete(externalTask);
-            LOGGER.info("Duplicate was true");
-
+            externalTaskService.complete(externalTask,processVariables);
         }
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKey;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotentKeysRepository;
 
 import java.time.LocalDateTime;
@@ -24,12 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
-@ActiveProfiles("integration")
-class IdempotentKeyTest {
+//@ActiveProfiles("integration")
+class IdempotentKeysTest {
 
     @Autowired
     private IdempotentKeysRepository repository;
-    private uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKey idempotentKeyWithRandomId;
+    private IdempotentKeys idempotentKeysWithRandomId;
     private IdempotentId randomIdempotentId;
 
     @BeforeEach
@@ -39,7 +39,7 @@ class IdempotentKeyTest {
             "ia"
         );
 
-        idempotentKeyWithRandomId = new uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKey(
+        idempotentKeysWithRandomId = new IdempotentKeys(
             randomIdempotentId,
             UUID.randomUUID().toString(),
             LocalDateTime.now(),
@@ -50,7 +50,7 @@ class IdempotentKeyTest {
     @Test
     void givenRecordWithPessimisticReadQuery_WhenQueryingNewOne_PessimisticLockExceptionThrown() {
 
-        repository.save(idempotentKeyWithRandomId);
+        repository.save(idempotentKeysWithRandomId);
 
         Runnable queryTask = () -> {
             try {
@@ -61,13 +61,13 @@ class IdempotentKeyTest {
 
                 TimeUnit.SECONDS.sleep(5);
 
-                IdempotentKey updatedIdempotentKey = repository.save(new IdempotentKey(
+                IdempotentKeys updatedIdempotentKeys = repository.save(new IdempotentKeys(
                     randomIdempotentId,
                     "updated by thread: " + threadName,
                     LocalDateTime.now(),
                     LocalDateTime.now()
                 ));
-                log.info("updatedIdempotentKey: " + updatedIdempotentKey);
+                log.info("updatedIdempotentKeys: " + updatedIdempotentKeys);
 
                 log.info("end with ThreadName: " + threadName);
 
@@ -119,22 +119,22 @@ class IdempotentKeyTest {
     public void simpleCrudExample() {
 
         //Create
-         IdempotentKey actualSavedEntity = repository.save(idempotentKeyWithRandomId);
+         IdempotentKeys actualSavedEntity = repository.save(idempotentKeysWithRandomId);
 
         //Read
-        Optional<IdempotentKey> actualFoundEntity = repository.findById(randomIdempotentId);
+        Optional<IdempotentKeys> actualFoundEntity = repository.findById(randomIdempotentId);
         assertThat(actualFoundEntity.isPresent()).isTrue();
         assertThat(actualSavedEntity).isEqualTo(actualFoundEntity.get());
 
         //Update
-        IdempotentKey actualUpdatedEntity = repository.save(new IdempotentKey(
+        IdempotentKeys actualUpdatedEntity = repository.save(new IdempotentKeys(
             randomIdempotentId,
             "updated by me",
             LocalDateTime.now(),
             LocalDateTime.now()
         ));
 
-        Optional<IdempotentKey> actualFoundAndUpdatedEntity = repository.findById(randomIdempotentId);
+        Optional<IdempotentKeys> actualFoundAndUpdatedEntity = repository.findById(randomIdempotentId);
         assertThat(actualFoundAndUpdatedEntity.isPresent()).isTrue();
         assertThat(actualUpdatedEntity).isEqualTo(actualFoundAndUpdatedEntity.get());
         assertThat(actualUpdatedEntity).isNotEqualTo(actualFoundEntity.get());

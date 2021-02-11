@@ -60,7 +60,7 @@ security:
   authorisedServices:
     - "wa_workflow_api"
     - "wa_case_event_handler"
-    - "camunda-bpm"
+    - "camunda-local-bpm"
 
 auth:
   provider:
