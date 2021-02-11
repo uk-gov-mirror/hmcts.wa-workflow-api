@@ -7,8 +7,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
 
+import javax.persistence.Id;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Collections.singletonMap;
 import static org.mockito.Mockito.mock;
@@ -21,10 +27,11 @@ class ExternalTaskServiceTest {
     private ExternalTask externalTask;
     private ExternalTaskService externalTaskService;
     private ExternalTaskWorker handleWarningExternalService;
+    private IdempotentKeysRepository idempotentKeysRepository;
 
     @BeforeEach
     void setUp() {
-        IdempotentKeysRepository idempotentKeysRepository = mock(IdempotentKeysRepository.class);
+        idempotentKeysRepository = mock(IdempotentKeysRepository.class);
         externalTask = mock(ExternalTask.class);
         externalTaskService = mock(ExternalTaskService.class);
         AuthTokenGenerator authTokenGenerator = mock(AuthTokenGenerator.class);
@@ -37,30 +44,26 @@ class ExternalTaskServiceTest {
     }
 
     @Test
-    void test_isDuplicate_Handler_when_false() {
-
-        when(externalTask.getVariable("isDuplicate")).thenReturn(false);
-
-        handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
-
-        verify(externalTaskService).complete(externalTask);
-    }
-
-    @Test
     void test_isDuplicate_Handler_when_true() {
 
-        when(externalTask.getVariable("isDuplicate")).thenReturn(true);
+        when(idempotentKeysRepository.findById(new IdempotentId(externalTask.getVariable("idempotentKey"),"ia")))
+        .thenReturn(Optional.of(new IdempotentKeys(
+            new IdempotentId(UUID.randomUUID().toString(), "ia"),
+            "processId",
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        )));
 
         handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
-
-        Map<String, Object> expectedProcessVariables = singletonMap("isDuplicate", false);
-        verify(externalTaskService).complete(externalTask,expectedProcessVariables);
+        Map<String, Object> processVariables = singletonMap("isDuplicate", true);
+        verify(externalTaskService).complete(externalTask,processVariables);
     }
 
     @Test
-    void test_isDuplicate_Handler_when_null() {
+    void test_isDuplicate_Handler_when_false() {
+        when(idempotentKeysRepository.findById(new IdempotentId(externalTask.getVariable("idempotentKey"),"ia")))
+            .thenReturn(Optional.empty());
 
-        when(externalTask.getVariable("isDuplicate")).thenReturn(null);
 
         handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
 

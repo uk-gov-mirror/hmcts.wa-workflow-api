@@ -57,26 +57,24 @@ public class ExternalTaskWorker {
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-
-
         Optional<IdempotentKeys> existingTask = idempotentKeysRepository.findById(new IdempotentId(externalTask.getVariable("idempotentKey"),"ia"));
+
         if (existingTask.isPresent()) {
             Map<String, Object> processVariables = singletonMap(
                 "isDuplicate",
                 true
             );
-            LOGGER.info("It was present!!!!!");
+            LOGGER.info("is already in the database.");
             externalTaskService.complete(externalTask, processVariables);
         } else {
-            LOGGER.info("It was not present!!!!!!");
+            LOGGER.info("Saving new id to database");
             IdempotentKeys keys = new IdempotentKeys(
                 new IdempotentId(UUID.randomUUID().toString(), "ia"),
-                "processIdTestc",
+                "processId",
                 LocalDateTime.now(),
-                LocalDateTime.now().minusDays(2L)
+                LocalDateTime.now()
             );
             idempotentKeysRepository.save(keys);
-
             Map<String, Object> processVariables = singletonMap(
                 "isDuplicate",
                 false
