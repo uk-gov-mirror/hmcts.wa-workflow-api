@@ -1,6 +1,7 @@
 logging:
   level:
     org.springframework: info
+    org.springframework.transaction: debug
     uk.gov.hmcts.reform: debug
 
 feign:
