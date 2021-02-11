@@ -5,8 +5,6 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
@@ -22,19 +20,24 @@ class ExternalTaskServiceTest {
 
     private ExternalTask externalTask;
     private ExternalTaskService externalTaskService;
-    private AuthTokenGenerator authTokenGenerator;
-
+    private ExternalTaskWorker handleWarningExternalService;
 
     @BeforeEach
     void setUp() {
-        authTokenGenerator = mock(AuthTokenGenerator.class);
+        IdempotentKeysRepository idempotentKeysRepository = mock(IdempotentKeysRepository.class);
         externalTask = mock(ExternalTask.class);
         externalTaskService = mock(ExternalTaskService.class);
+        AuthTokenGenerator authTokenGenerator = mock(AuthTokenGenerator.class);
+
+        handleWarningExternalService = new ExternalTaskWorker(
+            "someUrl",
+            authTokenGenerator,
+            idempotentKeysRepository
+        );
     }
 
     @Test
     void test_isDuplicate_Handler_when_false() {
-        ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
 
         when(externalTask.getVariable("isDuplicate")).thenReturn(false);
 
@@ -45,7 +48,6 @@ class ExternalTaskServiceTest {
 
     @Test
     void test_isDuplicate_Handler_when_true() {
-        ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
 
         when(externalTask.getVariable("isDuplicate")).thenReturn(true);
 
@@ -57,7 +59,6 @@ class ExternalTaskServiceTest {
 
     @Test
     void test_isDuplicate_Handler_when_null() {
-        ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
 
         when(externalTask.getVariable("isDuplicate")).thenReturn(null);
 

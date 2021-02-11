@@ -17,7 +17,7 @@ management:
 enableSwagger: ${ENABLE_SWAGGER:true}
 
 config:
-  stacktraceEnabled:  ${STACKTRACE_ENABLED:false}
+  stacktraceEnabled: ${STACKTRACE_ENABLED:false}
 
 camunda:
   url: ${CAMUNDA_URL:http://camunda-local-bpm/engine-rest}
@@ -27,6 +27,9 @@ govUkHolidays:
   url: https://www.gov.uk/
 
 spring:
+  jpa.properties.hibernate:
+    show_sql: true
+    default_schema: ${POSTGRES_NAME:wa_workflow_api}
   application:
     name: WA workflow api
   main:
@@ -57,7 +60,7 @@ security:
   authorisedServices:
     - "wa_workflow_api"
     - "wa_case_event_handler"
-    - "camunda-local-bpm"
+    - "camunda-bpm"
 
 auth:
   provider:

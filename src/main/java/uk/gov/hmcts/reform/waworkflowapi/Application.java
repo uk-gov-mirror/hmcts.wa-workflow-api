@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
@@ -14,6 +15,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
         "uk.gov.hmcts.reform.authorisation",
         "uk.gov.hmcts.reform.waworkflowapi",
     })
+@Slf4j
 public class Application {
 
     public static void main(final String[] args) {
