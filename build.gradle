@@ -256,8 +256,6 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
   compile group: 'org.camunda.bpm', name: 'camunda-engine', version: '7.3.0-alpha1'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger

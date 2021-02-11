@@ -8,8 +8,11 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.IdempotentId;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.IdempotentKeys;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -23,14 +26,18 @@ public class ExternalTaskWorker {
 
     private final AuthTokenGenerator authTokenGenerator;
 
+    private final IdempotentKeysRepository idempotentKeysRepository;
+
     private static final Logger LOGGER = Logger.getLogger(ExternalTaskWorker.class.getName());
 
     public ExternalTaskWorker(
         @Value("${camunda.url}") String camundaUrl,
-        AuthTokenGenerator authTokenGenerator
+        AuthTokenGenerator authTokenGenerator,
+        IdempotentKeysRepository idempotentKeysRepository
     ) {
         this.camundaUrl = camundaUrl;
         this.authTokenGenerator = authTokenGenerator;
+        this.idempotentKeysRepository = idempotentKeysRepository;
     }
 
 
@@ -48,6 +55,8 @@ public class ExternalTaskWorker {
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+        IdempotentKeys keys = new IdempotentKeys(new IdempotentId("keyId","ia"), "processId", LocalDateTime.now(),LocalDateTime.now().minusDays(2L));
+        idempotentKeysRepository.save(keys);
         Boolean isDuplicate =  externalTask.getVariable("isDuplicate");
         if (isDuplicate == null || isDuplicate) {
             Map<String, Object> processVariables = singletonMap(
