@@ -9,7 +9,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKey;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
 import java.time.LocalDateTime;
@@ -56,7 +56,7 @@ public class ExternalTaskWorker {
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        IdempotentKeys keys = new IdempotentKeys(
+        IdempotentKey keys = new IdempotentKey(
             new IdempotentId(UUID.randomUUID().toString(), "ia"),
             "processId",
             LocalDateTime.now(),

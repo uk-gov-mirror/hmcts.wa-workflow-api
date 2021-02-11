@@ -10,7 +10,7 @@ import javax.persistence.Entity;
 @Entity
 @ToString
 @EqualsAndHashCode
-public class IdempotentKeys {
+public class IdempotentKey {
 
     @EmbeddedId
     private IdempotentId idempotentId;
@@ -18,14 +18,14 @@ public class IdempotentKeys {
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdatedAt;
 
-    public IdempotentKeys() {
+    public IdempotentKey() {
         //needed for spring boot data JPA
     }
 
-    public IdempotentKeys(IdempotentId idempotentId,
-                          String processId,
-                          LocalDateTime createdAt,
-                          LocalDateTime lastUpdatedAt) {
+    public IdempotentKey(IdempotentId idempotentId,
+                         String processId,
+                         LocalDateTime createdAt,
+                         LocalDateTime lastUpdatedAt) {
         this.idempotentId = idempotentId;
         this.processId = processId;
         this.createdAt = createdAt;
