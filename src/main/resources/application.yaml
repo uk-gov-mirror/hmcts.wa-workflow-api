@@ -34,8 +34,8 @@ spring:
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:wa_workflow_api}${POSTGRES_CONNECTION_OPTIONS:}
-    username: ccd
-    password: ccd
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:}
     properties:
       charSet: UTF-8
   flyway:
