@@ -8,12 +8,13 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.IdempotentId;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.IdempotentKeys;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import static java.util.Collections.singletonMap;
@@ -55,7 +56,12 @@ public class ExternalTaskWorker {
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        IdempotentKeys keys = new IdempotentKeys(new IdempotentId("keyId","ia"), "processId", LocalDateTime.now(),LocalDateTime.now().minusDays(2L));
+        IdempotentKeys keys = new IdempotentKeys(
+            new IdempotentId(UUID.randomUUID().toString(), "ia"),
+            "processId",
+            LocalDateTime.now(),
+            LocalDateTime.now().minusDays(2L)
+        );
         idempotentKeysRepository.save(keys);
         Boolean isDuplicate =  externalTask.getVariable("isDuplicate");
         if (isDuplicate == null || isDuplicate) {

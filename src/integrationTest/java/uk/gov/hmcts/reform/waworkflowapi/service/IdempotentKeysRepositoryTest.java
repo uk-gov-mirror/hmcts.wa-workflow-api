@@ -15,9 +15,6 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotentKeysRepositor
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,74 +42,6 @@ class IdempotentKeysRepositoryTest {
             LocalDateTime.now(),
             LocalDateTime.now()
         );
-    }
-
-    @Test
-    void givenRecordWithPessimisticReadQuery_WhenQueryingNewOne_PessimisticLockExceptionThrown() {
-
-        repository.save(idempotentKeyWithRandomId);
-
-        Runnable queryTask = () -> {
-            try {
-                String threadName = Thread.currentThread().getName();
-                log.info("begin with ThreadName: " + threadName);
-
-                repository.findById(randomIdempotentId);
-
-                TimeUnit.SECONDS.sleep(5);
-
-                IdempotentKeys updatedIdempotentKey = repository.save(new IdempotentKeys(
-                    randomIdempotentId,
-                    "updated by thread: " + threadName,
-                    LocalDateTime.now(),
-                    LocalDateTime.now()
-                ));
-                log.info("updatedIdempotentKey: " + updatedIdempotentKey);
-
-                log.info("end with ThreadName: " + threadName);
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        };
-
-        ExecutorService executor = Executors.newFixedThreadPool(2);
-        executor.submit(queryTask);
-        executor.submit(queryTask);
-
-        try {
-            System.out.println("attempt to shutdown executor");
-            executor.shutdown();
-            executor.awaitTermination(20, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
-            System.err.println("tasks interrupted");
-        }
-        finally {
-            if (!executor.isTerminated()) {
-                System.err.println("cancel non-finished tasks");
-            }
-            executor.shutdownNow();
-            System.out.println("shutdown finished");
-        }try {
-            System.out.println("attempt to shutdown executor");
-            executor.shutdown();
-            executor.awaitTermination(10, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
-            System.err.println("tasks interrupted");
-        }
-        finally {
-            if (!executor.isTerminated()) {
-                System.err.println("cancel non-finished tasks");
-            }
-            executor.shutdownNow();
-            System.out.println("shutdown finished");
-        }
-
-        log.info("Done!");
-
     }
 
     @Test
