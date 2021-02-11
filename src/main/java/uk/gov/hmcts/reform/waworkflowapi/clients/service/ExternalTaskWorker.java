@@ -64,12 +64,12 @@ public class ExternalTaskWorker {
                 "isDuplicate",
                 true
             );
-            LOGGER.info("is already in the database.");
+            LOGGER.info(existingTask.get().getIdempotentId().getIdempotencyKey() + "is already in the database.");
             externalTaskService.complete(externalTask, processVariables);
         } else {
-            LOGGER.info("Saving new id to database");
+            LOGGER.info("Saving new tenant id to database");
             IdempotentKeys keys = new IdempotentKeys(
-                new IdempotentId(UUID.randomUUID().toString(), "ia"),
+                new IdempotentId(externalTask.getVariable("idempotentKey"), "ia"),
                 "processId",
                 LocalDateTime.now(),
                 LocalDateTime.now()

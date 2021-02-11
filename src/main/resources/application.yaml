@@ -17,7 +17,6 @@ management:
 enableSwagger: ${ENABLE_SWAGGER:true}
 
 config:
-  stacktraceEnabled: ${STACKTRACE_ENABLED:false}
 
 camunda:
   url: ${CAMUNDA_URL:http://camunda-local-bpm/engine-rest}
