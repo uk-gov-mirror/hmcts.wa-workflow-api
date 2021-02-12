@@ -24,11 +24,4 @@ public interface IdempotentKeysRepository extends CrudRepository<IdempotentKeys,
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value = "0")})
     Optional<IdempotentKeys> findById(@NonNull IdempotentId idempotentId);
 
-    // This is only for testing purpose
-    @NonNull
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Transactional
-    @Query("SELECT i FROM IdempotentKeys i WHERE i.idempotentId = ?1")
-    Optional<IdempotentKeys> fetchById(@NonNull IdempotentId idempotentId);
-
 }

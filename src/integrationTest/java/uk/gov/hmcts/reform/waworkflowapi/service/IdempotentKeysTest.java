@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.waworkflowapi.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
+import org.hibernate.PessimisticLockException;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,13 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys2;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotentKeysJpaRepo;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotentKeysRepository;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.JdbcRepo;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -84,49 +85,43 @@ class IdempotentKeysTest {
     }
 
     @Test
-    void givenQueriesForDifferentIdsThenTheyAreNotBlocked() {
-        log.info("delete all");
-        repository.deleteAll();
+    void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() {
+        repository.save(idempotentKeysWithRandomId);
 
-        IdempotentId idempotentId1 = new IdempotentId("1", "ia");
-        IdempotentKeys idempotentKeys1 = new IdempotentKeys(
-            idempotentId1,
-            UUID.randomUUID().toString(),
-            LocalDateTime.now(),
-            LocalDateTime.now()
-        );
+        Thread query1 = new Thread(() -> {
+            log.info("start query1-thread...");
 
-        log.info("writer");
-        writer(idempotentKeys1, 0);
+            // set exclusive lock on row
+            repository.findById(randomIdempotentId);
 
-        new Thread(() -> runReader(idempotentId1, 4), "readerThread").start();
-        new Thread(() -> writer(new IdempotentKeys(
-            idempotentId1,
-            "updated",
-            LocalDateTime.now(),
-            LocalDateTime.now()
-        ), 2), "writerThread").start();
+            // simulates isDuplicate processing time
+            Awaitility.await().timeout(15, TimeUnit.SECONDS);
 
-        Awaitility.await().atMost(5, TimeUnit.SECONDS);
-    }
+            // finally update the row
+            repository.save(new IdempotentKeys(
+                randomIdempotentId,
+                "updated",
+                LocalDateTime.now(),
+                LocalDateTime.now()
+            ));
 
-    private void runReader(IdempotentId idempotentId1, int timeout) {
-        log.info("begin reader ({})", idempotentId1);
-        log.info("begin reader ({}) before findById...", idempotentId1);
-        IdempotentKeys actualIdempotentKeys1 = idempotentKeysJpaRepo.findById(idempotentId1);
-        log.info("begin reader ({}) after findById...", idempotentId1);
-//        assertThat(actualIdempotentKeys1.isPresent()).isTrue();
-        log.info("begin reader (result:{}) ...", actualIdempotentKeys1.toString());
-        log.info("begin reader ({}) waiting...", idempotentId1);
-        Awaitility.await().atMost(timeout, TimeUnit.SECONDS);
-        log.info("end reader ({})", idempotentId1);
-    }
+        }, "query1-thread");
 
-    private void writer(IdempotentKeys idempotentKeys1, int timeout) {
-        log.info("begin writer ({})", idempotentKeys1);
-        Awaitility.await().atMost(timeout, TimeUnit.SECONDS);
-        repository.save(idempotentKeys1);
-        log.info("end writer ({})", idempotentKeys1);
+        Thread query2 = new Thread(() -> {
+            log.info("start query2-thread...");
+
+            Assertions.assertThrows(RuntimeException.class, () -> repository.findById(randomIdempotentId));
+
+            Assertions.fail("we should not get to this line");
+
+        }, "query2-thread");
+
+        query1.start();
+        // Allow some time to ensure query1 is executed first
+        Awaitility.await().timeout(2, TimeUnit.SECONDS);
+        query2.start();
+        Awaitility.await().timeout(10, TimeUnit.SECONDS);
+
     }
 
 }
