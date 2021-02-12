@@ -5,6 +5,8 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.util.Map;
@@ -14,16 +16,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+
+@ExtendWith(MockitoExtension.class)
 class ExternalTaskServiceTest {
 
     private ExternalTask externalTask;
     private ExternalTaskService externalTaskService;
-    @Mock
     private AuthTokenGenerator authTokenGenerator;
 
 
     @BeforeEach
     void setUp() {
+        authTokenGenerator = mock(AuthTokenGenerator.class);
         externalTask = mock(ExternalTask.class);
         externalTaskService = mock(ExternalTaskService.class);
     }
@@ -60,6 +64,5 @@ class ExternalTaskServiceTest {
         handleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
 
         verify(externalTaskService).complete(externalTask);
-
     }
 }

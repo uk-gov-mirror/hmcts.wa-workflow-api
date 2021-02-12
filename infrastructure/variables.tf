@@ -15,3 +15,12 @@ variable "deployment_namespace" {}
 variable "common_tags" {
   type = map(string)
 }
+
+
+variable "postgresql_database_name" {
+  default = "wa_workflow_api"
+}
+
+variable "postgresql_user" {
+  default = "wa_wa"
+}
