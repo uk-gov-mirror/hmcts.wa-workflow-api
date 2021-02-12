@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.logging.Logger;
 
 import static java.util.Collections.singletonMap;
