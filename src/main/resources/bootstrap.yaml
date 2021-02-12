@@ -8,4 +8,5 @@ spring:
         AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
         s2s-secret-workflow-api: S2S_SECRET_WORKFLOW_API
         workflow-api-POSTGRES-PASS: POSTGRES_PASSWORD
+        workflow-api-POSTGRES-USER: POSTGRES_USERNAME
 
