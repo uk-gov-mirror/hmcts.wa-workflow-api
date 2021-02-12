@@ -1,7 +1,11 @@
 logging:
   level:
-    org.springframework: info
-    org.springframework.transaction: debug
+    org.springframework:
+      transaction: debug
+      jdbc.core.JdbcTemplate: debug
+    org.hibernate:
+      SQL: debug
+      type.descriptor.sql.BasicBinder: trace
     uk.gov.hmcts.reform: debug
 
 feign:
