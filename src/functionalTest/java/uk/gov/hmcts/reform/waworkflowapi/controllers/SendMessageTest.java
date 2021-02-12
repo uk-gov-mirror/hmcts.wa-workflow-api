@@ -246,7 +246,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .get()
             .prettyPeek()
             .then()
-            .body("size()", is(1))
             .body("[0].name", is("Provide Respondent Evidence"))
             .body("[0].formKey", is("provideRespondentEvidence"))
             .extract()
