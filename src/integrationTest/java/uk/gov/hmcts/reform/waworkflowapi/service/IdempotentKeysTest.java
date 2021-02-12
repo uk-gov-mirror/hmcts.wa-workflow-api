@@ -8,8 +8,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
@@ -52,39 +54,6 @@ class IdempotentKeysTest {
     }
 
     @Test
-    void jpaTest() {
-        repository.save(idempotentKeysWithRandomId);
-
-        Thread user1 = new Thread(() -> {
-            log.info("start user1-thread...");
-            repository.findById(randomIdempotentId);
-            Awaitility.await().timeout(15, TimeUnit.SECONDS);
-            repository.save(new IdempotentKeys(
-                randomIdempotentId,
-                "updated",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-            ));
-        }, "user1-thread");
-
-        Thread user2 = new Thread(() -> {
-            log.info("start user2-thread...");
-            repository.findById(randomIdempotentId);
-            repository.save(new IdempotentKeys(
-                randomIdempotentId,
-                "updated2",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-            ));
-        }, "user2-thread");
-
-        user1.start();
-        Awaitility.await().timeout(2, TimeUnit.SECONDS);
-        user2.start();
-
-    }
-
-    @Test
     void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() {
         repository.save(idempotentKeysWithRandomId);
 
@@ -107,21 +76,18 @@ class IdempotentKeysTest {
 
         }, "query1-thread");
 
-        Thread query2 = new Thread(() -> {
-            log.info("start query2-thread...");
-
-            Assertions.assertThrows(RuntimeException.class, () -> repository.findById(randomIdempotentId));
-
-            Assertions.fail("we should not get to this line");
-
-        }, "query2-thread");
-
         query1.start();
         // Allow some time to ensure query1 is executed first
         Awaitility.await().timeout(2, TimeUnit.SECONDS);
-        query2.start();
-        Awaitility.await().timeout(10, TimeUnit.SECONDS);
 
+        log.info("start query2...");
+        try {
+            repository.findById(randomIdempotentId);
+        } catch (PessimisticLockingFailureException e) {
+            Assertions.assertTrue(true, "PessimisticLockingFailureException expected");
+            return;
+        }
+        Assertions.fail("expected PessimisticLockingFailureException is not thrown");
     }
 
 }
