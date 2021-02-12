@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
 
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +46,7 @@ class ExternalTaskServiceTest {
     void test_isDuplicate_Handler_when_true() {
 
         when(idempotentKeysRepository.findById(new IdempotentId(externalTask.getVariable("idempotentKey"),"ia")))
-        .thenReturn(Optional.of(new IdempotentKeys(
+            .thenReturn(Optional.of(new IdempotentKeys(
             new IdempotentId(UUID.randomUUID().toString(), "ia"),
             "processId",
             LocalDateTime.now(),

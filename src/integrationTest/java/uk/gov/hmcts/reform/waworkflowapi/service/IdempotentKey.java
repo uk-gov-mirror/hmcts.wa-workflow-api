@@ -45,10 +45,8 @@ class IdempotentKey {
     }
 
     @Test
-    public void simpleCrudExample() {
-
-        //Create
-         IdempotentKeys actualSavedEntity = repository.save(idempotentKeysWithRandomId);
+    void simpleCrudExample() {
+        IdempotentKeys actualSavedEntity = repository.save(idempotentKeysWithRandomId);
 
         //Read
         Optional<IdempotentKeys> actualFoundEntity = repository.findById(randomIdempotentId);
