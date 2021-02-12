@@ -2,13 +2,11 @@ package uk.gov.hmcts.reform.waworkflowapi.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
-import org.hibernate.PessimisticLockException;
-import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.PessimisticLockingFailureException;
@@ -26,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Slf4j
-//@ActiveProfiles("integration")
 class IdempotentKeysTest {
 
     @Autowired
@@ -54,6 +51,7 @@ class IdempotentKeysTest {
     }
 
     @Test
+//    @Ignore(value = "this test is supposed to run on the minikube local env to check the lock mechanism in postgres db")
     void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() {
         repository.save(idempotentKeysWithRandomId);
 
@@ -81,13 +79,11 @@ class IdempotentKeysTest {
         Awaitility.await().timeout(2, TimeUnit.SECONDS);
 
         log.info("start query2...");
-        try {
-            repository.findById(randomIdempotentId);
-        } catch (PessimisticLockingFailureException e) {
-            Assertions.assertTrue(true, "PessimisticLockingFailureException expected");
-            return;
-        }
-        Assertions.fail("expected PessimisticLockingFailureException is not thrown");
+        Assertions.assertThrows(
+            PessimisticLockingFailureException.class,
+            () -> repository.findById(randomIdempotentId)
+        );
+
     }
 
 }
