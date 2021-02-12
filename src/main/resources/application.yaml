@@ -29,6 +29,7 @@ govUkHolidays:
 spring:
   jpa.properties.hibernate:
     show_sql: true
+    format_sql: true
     default_schema: ${POSTGRES_NAME:wa_workflow_api}
   application:
     name: WA workflow api
