@@ -51,7 +51,7 @@ class IdempotentKeysTest {
     }
 
     @Test
-//    @Ignore(value = "this test is supposed to run on the minikube local env to check the lock mechanism in postgres db")
+    @Ignore(value = "this test is supposed to run on the minikube local env to check the lock mechanism in postgres db")
     void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() {
         repository.save(idempotentKeysWithRandomId);
 
