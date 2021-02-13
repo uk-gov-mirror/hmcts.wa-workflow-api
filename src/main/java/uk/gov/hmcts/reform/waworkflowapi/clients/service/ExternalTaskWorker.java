@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.ExternalTaskClient;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -13,14 +14,13 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentK
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 import static java.util.Collections.singletonMap;
 
-@SuppressWarnings({"PMD.UseUnderscoresInNumericLiterals","PMD.PositionLiteralsFirstInComparisons","PMD.LinguisticNaming"})
+@SuppressWarnings({"PMD.UseUnderscoresInNumericLiterals", "PMD.PositionLiteralsFirstInComparisons", "PMD.LinguisticNaming"})
 @Service
+@Slf4j
 public class ExternalTaskWorker {
 
     private final String camundaUrl;
@@ -28,8 +28,6 @@ public class ExternalTaskWorker {
     private final AuthTokenGenerator authTokenGenerator;
 
     private final IdempotentKeysRepository idempotentKeysRepository;
-
-    private static final Logger LOGGER = Logger.getLogger(ExternalTaskWorker.class.getName());
 
     public ExternalTaskWorker(
         @Value("${camunda.url}") String camundaUrl,
@@ -56,29 +54,40 @@ public class ExternalTaskWorker {
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        Optional<IdempotentKeys> existingTask = idempotentKeysRepository.findById(new IdempotentId(externalTask.getVariable("idempotentKey"),"ia"));
+        IdempotentId idempotentId = getIdempotentId(externalTask);
 
-        if (existingTask.isPresent()) {
-            Map<String, Object> processVariables = singletonMap(
-                "isDuplicate",
-                true
-            );
-            LOGGER.info(existingTask.get().getIdempotentId().getIdempotencyKey() + "is already in the database.");
-            externalTaskService.complete(externalTask, processVariables);
-        } else {
-            LOGGER.info("Saving new tenant id to database");
-            IdempotentKeys keys = new IdempotentKeys(
-                new IdempotentId(externalTask.getVariable("idempotentKey"), "ia"),
-                "processId",
-                LocalDateTime.now(),
-                LocalDateTime.now()
-            );
-            idempotentKeysRepository.save(keys);
-            Map<String, Object> processVariables = singletonMap(
-                "isDuplicate",
-                false
-            );
-            externalTaskService.complete(externalTask,processVariables);
-        }
+        Optional<IdempotentKeys> idempotentRow = idempotentKeysRepository.findById(idempotentId);
+
+        idempotentRow.ifPresentOrElse(
+            (row) -> handleIdempotentIdIsDuplicateScenario(externalTask, externalTaskService, row),
+            () -> handleIdempotentIdIsNotDuplicateScenario(externalTask, externalTaskService, idempotentId)
+        );
     }
+
+    private IdempotentId getIdempotentId(ExternalTask externalTask) {
+        String idempotentKey = externalTask.getVariable("idempotentKey");
+        String tenantId = externalTask.getVariable("jurisdiction");
+        return new IdempotentId(idempotentKey, tenantId);
+    }
+
+    private void handleIdempotentIdIsNotDuplicateScenario(ExternalTask externalTask,
+                                                          ExternalTaskService externalTaskService,
+                                                          IdempotentId idempotentId) {
+        log.info("idempotentKey({}) does not exist in the database.", idempotentId);
+        idempotentKeysRepository.save(new IdempotentKeys(
+            idempotentId,
+            "processId",
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        ));
+        externalTaskService.complete(externalTask, singletonMap("isDuplicate", false));
+    }
+
+    private void handleIdempotentIdIsDuplicateScenario(ExternalTask externalTask,
+                                                       ExternalTaskService externalTaskService,
+                                                       IdempotentKeys row) {
+        log.info("idempotentKey({}) already exists in the database.", row.getIdempotentId());
+        externalTaskService.complete(externalTask, singletonMap("isDuplicate", true));
+    }
+
 }

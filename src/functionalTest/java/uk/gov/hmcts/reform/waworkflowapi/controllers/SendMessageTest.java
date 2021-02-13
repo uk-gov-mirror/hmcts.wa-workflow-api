@@ -19,9 +19,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static net.serenitybdd.rest.SerenityRest.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -208,7 +210,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     @Test
     public void transition_creates_a_task_and_goes_through_external_task() {
         String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        String idempotentKey =  UUID.randomUUID().toString();
+        String idempotentKey = UUID.randomUUID().toString();
         Map<String, DmnValue<?>> processVariables = mockProcessVariables(
             dueDate,
             "Provide Respondent Evidence",
@@ -234,22 +236,33 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
-        waitSeconds(2);
+        AtomicReference<String> response = new AtomicReference<>();
+        await()
+            .ignoreException(AssertionError.class)
+            .pollInterval(2, TimeUnit.SECONDS)
+            .atMost(6, TimeUnit.SECONDS)
+            .until(() -> {
 
-        String taskId = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .baseUri(camundaUrl)
-            .basePath("/task")
-            .param("processVariables", "caseId_eq_" + caseId)
-            .when()
-            .get()
-            .prettyPeek()
-            .then()
-            .body("[0].name", is("Provide Respondent Evidence"))
-            .body("[0].formKey", is("provideRespondentEvidence"))
-            .extract()
-            .path("[0].id");
+                String taskId = given()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(camundaUrl)
+                    .basePath("/task")
+                    .param("processVariables", "caseId_eq_" + caseId)
+                    .when()
+                    .get()
+                    .prettyPeek()
+                    .then()
+                    .body("[0].name", is("Provide Respondent Evidence"))
+                    .body("[0].formKey", is("provideRespondentEvidence"))
+                    .extract()
+                    .path("[0].id");
+
+                response.set(taskId);
+
+                return true;
+            });
+        String taskId = response.get();
 
         given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -262,12 +275,11 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .body("[0].groupId", is("external"));
 
-        Optional<IdempotentKeys> savedEntity = idempotentKeysRepository.findById(new IdempotentId(idempotentKey,"ia"));
+        Optional<IdempotentKeys> savedEntity = idempotentKeysRepository.findById(new IdempotentId(idempotentKey, "ia"));
         assertThat(savedEntity.isPresent()).isTrue();
 
         cleanUp(taskId, serviceAuthorizationToken);
     }
-
 
     private Map<String, DmnValue<?>> mockProcessVariables(
         String dueDate,

@@ -16,8 +16,6 @@ management:
 
 enableSwagger: ${ENABLE_SWAGGER:true}
 
-config:
-
 camunda:
   url: ${CAMUNDA_URL:http://camunda-bpm/engine-rest}
   getTaskDmnId: getTask
