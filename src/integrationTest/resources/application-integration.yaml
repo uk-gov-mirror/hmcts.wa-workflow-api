@@ -3,10 +3,11 @@ spring.flyway.enabled: false
 spring:
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:wa_workflow_api
+    url: jdbc:h2:mem:wa_workflow_api;DEFAULT_LOCK_TIMEOUT=0;LOCK_TIMEOUT=0
     username: sa
     password: password
     initialization-mode: embedded
     platform: h2
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    hibernate.ddl-auto: create
