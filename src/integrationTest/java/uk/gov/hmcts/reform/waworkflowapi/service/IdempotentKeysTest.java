@@ -13,21 +13,29 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotentKeysRepository;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.JdbcRepo;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.JpaRepo;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import javax.persistence.LockTimeoutException;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Slf4j
-@ActiveProfiles("integration")
+//@ActiveProfiles("integration")
 class IdempotentKeysTest {
 
     @Autowired
     private IdempotentKeysRepository repository;
+    @Autowired
+    private JdbcRepo jdbcRepo;
     @Autowired
     private JpaRepo jpaRepo;
     private IdempotentKeys idempotentKeysWithRandomId;
@@ -49,35 +57,42 @@ class IdempotentKeysTest {
     }
 
     @Test
-    void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() {
+    void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() throws InterruptedException {
         repository.save(idempotentKeysWithRandomId);
 
-        Thread query1 = new Thread(() -> {
-            log.info("start query1-thread...");
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(this::reader);
+        Future<?> futureException = executorService.submit(this::writer);
 
-            // set exclusive lock on row
-            jpaRepo.findById(randomIdempotentId);
+        ExecutionException exception = Assertions.assertThrows(ExecutionException.class, futureException::get);
+        assertThat(exception.getMessage())
+            .startsWith("org.springframework.dao.PessimisticLockingFailureException");
 
-            // simulates isDuplicate checking takes some time
-            Awaitility.await().timeout(15, TimeUnit.SECONDS);
+        executorService.shutdown();
+        //noinspection ResultOfMethodCallIgnored
+        executorService.awaitTermination(3, TimeUnit.MINUTES);
+    }
 
-        }, "query1-thread");
-
-        query1.start();
-        // Allow some time to ensure query1 is executed first
+    private void writer() {
+        // Allow some time to ensure the reader is executed first
         Awaitility.await().timeout(2, TimeUnit.SECONDS);
 
-        log.info("start query2...");
+        log.info("start read and write ops...");
 
-        try {
-            jpaRepo.findById(randomIdempotentId);
-        } catch (LockTimeoutException e) {
-            Assertions.assertTrue(true);
-            return;
-        }
+        repository.findById(randomIdempotentId);
+        repository.save(new IdempotentKeys(
+            randomIdempotentId,
+            "should not update because of lock",
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        ));
 
-        Assertions.fail();
+    }
 
+    private void reader() {
+        log.info("start reader thread...");
+        repository.findById(randomIdempotentId);
+        Awaitility.await().timeout(5, TimeUnit.MINUTES);
     }
 
 }
