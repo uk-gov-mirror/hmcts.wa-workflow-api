@@ -13,8 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotentKeysRepository;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.JdbcRepo;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.JpaRepo;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -33,10 +31,6 @@ class IdempotentKeysTest {
 
     @Autowired
     private IdempotentKeysRepository repository;
-    @Autowired
-    private JdbcRepo jdbcRepo;
-    @Autowired
-    private JpaRepo jpaRepo;
     private IdempotentKeys idempotentKeysWithRandomId;
     private IdempotentId randomIdempotentId;
 
