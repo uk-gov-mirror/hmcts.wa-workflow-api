@@ -86,7 +86,6 @@ class IdempotentKeysTest {
     private void reader() {
         log.info("start reader thread...");
         repository.findById(randomIdempotentId);
-        Awaitility.await().timeout(5, TimeUnit.MINUTES);
     }
 
 }

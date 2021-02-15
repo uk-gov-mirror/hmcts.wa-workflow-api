@@ -87,11 +87,11 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     private List<String> getProcessIdsForGivenIdempotentKey(String idempotentKey) {
         AtomicReference<List<String>> processIdsResponse = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
+            .ignoreExceptions()
             .pollInterval(2, TimeUnit.SECONDS)
             .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
-                List<String> ids = null;
+                List<String> ids;
                 ids = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
                     .contentType(APPLICATION_JSON_VALUE)
@@ -119,7 +119,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     private void assertTaskHasExpectedVariableValues(String taskId) {
         await()
-            .ignoreException(AssertionError.class)
+            .ignoreExceptions()
+            .and()
             .pollInterval(2, TimeUnit.SECONDS)
             .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
@@ -143,7 +144,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     private String assertTaskIsCreated() {
         AtomicReference<String> response = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
+            .ignoreExceptions()
             .pollInterval(2, TimeUnit.SECONDS)
             .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
