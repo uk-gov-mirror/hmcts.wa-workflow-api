@@ -24,9 +24,7 @@ import static java.util.Collections.singletonMap;
 public class ExternalTaskWorker {
 
     private final String camundaUrl;
-
     private final AuthTokenGenerator authTokenGenerator;
-
     private final IdempotentKeysRepository idempotentKeysRepository;
 
     public ExternalTaskWorker(
