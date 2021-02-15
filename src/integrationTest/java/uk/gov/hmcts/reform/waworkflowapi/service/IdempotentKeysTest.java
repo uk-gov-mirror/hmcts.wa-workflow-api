@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ class IdempotentKeysTest {
     }
 
     @Test
+    @Disabled(value = "Cannot get it to work on H2 mem db. Still it's worth keeping this test to test it against the local postgres db")
     void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() throws InterruptedException {
         repository.save(idempotentKeysWithRandomId);
 
