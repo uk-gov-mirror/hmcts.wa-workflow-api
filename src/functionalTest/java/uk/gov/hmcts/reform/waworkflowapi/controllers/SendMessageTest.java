@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,8 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static net.serenitybdd.rest.SerenityRest.given;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -71,7 +74,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "Process Application",
             "processApplication",
             "TCW",
-            caseId
+            caseId,
+            UUID.randomUUID().toString()
         );
 
         given()
@@ -123,13 +127,15 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void transition_creates_a_task_with_due_date() throws InterruptedException {
+    public void transition_creates_a_task_with_due_date() {
         String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         Map<String, DmnValue<?>> processVariables = mockProcessVariables(
             dueDate,
             "Provide Respondent Evidence",
             "provideRespondentEvidence",
-            "external", caseId
+            "external",
+            caseId,
+            UUID.randomUUID().toString()
         );
 
         given()
@@ -148,23 +154,34 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
-        waitSeconds(2);
+        AtomicReference<String> taskIdResponse = new AtomicReference<>();
+        await()
+            .ignoreException(AssertionError.class)
+            .pollInterval(2, TimeUnit.SECONDS)
+            .atMost(10, TimeUnit.SECONDS)
+            .until(() -> {
 
-        String taskId = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .baseUri(camundaUrl)
-            .basePath("/task")
-            .param("processVariables", "caseId_eq_" + caseId)
-            .when()
-            .get()
-            .prettyPeek()
-            .then()
-            .body("size()", is(1))
-            .body("[0].name", is("Provide Respondent Evidence"))
-            .body("[0].formKey", is("provideRespondentEvidence"))
-            .extract()
-            .path("[0].id");
+                String taskId = given()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(camundaUrl)
+                    .basePath("/task")
+                    .param("processVariables", "caseId_eq_" + caseId)
+                    .when()
+                    .get()
+                    .prettyPeek()
+                    .then()
+                    .body("size()", is(1))
+                    .body("[0].name", is("Provide Respondent Evidence"))
+                    .body("[0].formKey", is("provideRespondentEvidence"))
+                    .extract()
+                    .path("[0].id");
+
+                taskIdResponse.set(taskId);
+                return StringUtils.isNotBlank(taskId);
+            });
+
+        String taskId = taskIdResponse.get();
 
         given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -186,7 +203,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             ZonedDateTime.now().toString(),
             "Process Application", "processApplication",
             "TCW",
-            caseId
+            caseId,
+            UUID.randomUUID().toString()
         );
         given()
             .relaxedHTTPSValidation()

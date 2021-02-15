@@ -61,9 +61,10 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             "Provide Respondent Evidence",
             "provideRespondentEvidence",
             "external",
-            caseId
+            caseId,
+            idempotentKey
         );
-        processVariables.put("idempotentKey", DmnValue.dmnStringValue(idempotentKey));
+
 
         sendMessage(processVariables);
         String taskId = assertTaskIsCreated();

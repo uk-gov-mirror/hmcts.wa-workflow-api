@@ -59,8 +59,8 @@ public class ExternalTaskWorker {
         Optional<IdempotentKeys> idempotentRow = idempotentKeysRepository.findById(idempotentId);
 
         idempotentRow.ifPresentOrElse(
-            (row) -> handleIdempotentIdIsDuplicateScenario(externalTask, externalTaskService, row),
-            () -> handleIdempotentIdIsNotDuplicateScenario(externalTask, externalTaskService, idempotentId)
+            (row) -> handleIdempotentIdIsPresentInDb(externalTask, externalTaskService, row),
+            () -> handleIdempotentIdIsNotPresentInDb(externalTask, externalTaskService, idempotentId)
         );
     }
 
@@ -70,24 +70,33 @@ public class ExternalTaskWorker {
         return new IdempotentId(idempotentKey, tenantId);
     }
 
-    private void handleIdempotentIdIsNotDuplicateScenario(ExternalTask externalTask,
-                                                          ExternalTaskService externalTaskService,
-                                                          IdempotentId idempotentId) {
+    private void handleIdempotentIdIsNotPresentInDb(ExternalTask externalTask,
+                                                    ExternalTaskService externalTaskService,
+                                                    IdempotentId idempotentId) {
         log.info("idempotentKey({}) does not exist in the database.", idempotentId);
         idempotentKeysRepository.save(new IdempotentKeys(
             idempotentId,
-            "processId",
+            externalTask.getProcessInstanceId(),
             LocalDateTime.now(),
             LocalDateTime.now()
         ));
         externalTaskService.complete(externalTask, singletonMap("isDuplicate", false));
     }
 
-    private void handleIdempotentIdIsDuplicateScenario(ExternalTask externalTask,
-                                                       ExternalTaskService externalTaskService,
-                                                       IdempotentKeys row) {
+    private void handleIdempotentIdIsPresentInDb(ExternalTask externalTask,
+                                                 ExternalTaskService externalTaskService,
+                                                 IdempotentKeys row) {
         log.info("idempotentKey({}) already exists in the database.", row.getIdempotentId());
-        externalTaskService.complete(externalTask, singletonMap("isDuplicate", true));
+        if (isSameProcessId(externalTask, row)) {
+            externalTaskService.complete(externalTask, singletonMap("isDuplicate", false));
+        } else {
+            externalTaskService.complete(externalTask, singletonMap("isDuplicate", true));
+        }
+
+    }
+
+    private boolean isSameProcessId(ExternalTask externalTask, IdempotentKeys row) {
+        return externalTask.getProcessInstanceId().equals(row.getProcessId());
     }
 
 }
