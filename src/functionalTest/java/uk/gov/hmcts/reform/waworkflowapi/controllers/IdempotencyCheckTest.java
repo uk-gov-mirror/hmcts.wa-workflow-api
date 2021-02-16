@@ -65,7 +65,6 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             idempotentKey
         );
 
-
         sendMessage(processVariables);
         String taskId = assertTaskIsCreated();
         assertTaskHasExpectedVariableValues(taskId);
