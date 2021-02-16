@@ -15,9 +15,3 @@ feign:
         loggerLevel: full
 
 spring.jackson.serialization.indent_output: true
-
-security:
-  authorisedServices:
-    - "wa_workflow_api"
-    - "wa_case_event_handler"
-    - "camunda-local-bpm"

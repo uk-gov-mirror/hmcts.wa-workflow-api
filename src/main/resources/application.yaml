@@ -24,9 +24,12 @@ govUkHolidays:
   url: https://www.gov.uk/
 
 spring:
-  jpa.properties.hibernate:
-    show_sql: true
-    default_schema: ${POSTGRES_NAME:wa_workflow_api}
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        show_sql: true
+        default_schema: ${POSTGRES_NAME:wa_workflow_api}
   application:
     name: WA workflow api
   main:
