@@ -28,6 +28,7 @@ import static net.serenitybdd.rest.SerenityRest.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -171,6 +172,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     }
 
     private void sendMessage(Map<String, DmnValue<?>> processVariables) {
+
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -189,19 +191,30 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     }
 
     private boolean getIsDuplicateVariableValue(String processInstanceId) {
+        AtomicReference<Boolean> response = new AtomicReference<>();
+        await()
+            .ignoreExceptions()
+            .pollInterval(2, TimeUnit.SECONDS)
+            .atMost(15, TimeUnit.SECONDS)
+            .until(() -> {
+                boolean isDuplicate = given()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(camundaUrl)
+                    .basePath("/history/variable-instance")
+                    .param("processInstanceId", processInstanceId)
+                    .and().param("variableName", "isDuplicate")
+                    .when()
+                    .get()
+                    .then()
+                    .assertThat().body("[0].value", notNullValue())
+                    .extract().body().path("[0].value");
 
-        return given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .baseUri(camundaUrl)
-            .basePath("/history/variable-instance")
-            .param("processInstanceId", processInstanceId)
-            .and().param("variableName", "isDuplicate")
-            .when()
-            .get()
-            .then()
-            .extract().body().path("[0].value");
+                response.set(isDuplicate);
 
+                return true;
+            });
+        return response.get();
     }
 
 
