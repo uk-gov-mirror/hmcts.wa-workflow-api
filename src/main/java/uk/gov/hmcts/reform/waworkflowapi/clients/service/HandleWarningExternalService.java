@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
 
@@ -45,16 +47,29 @@ public class HandleWarningExternalService {
     }
 
     public void checkHasWarnings(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        var hasWarnings =  ((Map<?, ?>) externalTask.getVariable("task")).get("hasWarnings");
+        Map<?,?> varm = externalTask.getAllVariables();
+        varm.forEach( (i,v) -> {
+            if (i.equals("hasWarnings") && v.equals(false)) {
+                    Map<String, Object> processVariables = singletonMap(
+                        "hasWarnings",
+                        true
+                    );
+                    externalTaskService.complete(externalTask, processVariables);
+            }
 
-        if (hasWarnings != null && hasWarnings.equals(false)) {
-            Map<String, Object> processVariables = singletonMap(
-                "hasWarnings",
-                true
-            );
-            externalTaskService.complete(externalTask, processVariables);
-        }
+            if (i.equals("hasWarnings") && v.equals(true)) {
+                Map<String, Object> processVariables = singletonMap(
+                    "hasWarnings",
+                    true
+                );
+                externalTaskService.complete(externalTask, processVariables);
+            }
 
-        externalTaskService.complete(externalTask);
+        });
+        Map<String, Object> processVariables = singletonMap(
+            "hasWarnings",
+            false
+        );
+            externalTaskService.complete(externalTask,processVariables);
     }
 }
