@@ -38,7 +38,7 @@ public class HandleWarningExternalService {
             .asyncResponseTimeout(10000)
             .build();
 
-        client.subscribe("warning-topic")
+        client.subscribe("wa-warning-topic")
             .lockDuration(1000)
             .handler(this::checkHasWarnings)
             .open();
