@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Slf4j
-@Disabled
+@Disabled(value = "Cannot get it to work on H2 mem db. Still it's worth keeping this test to test it against the local postgres db")
 class IdempotentKeysTest {
 
     @Autowired
@@ -51,7 +51,6 @@ class IdempotentKeysTest {
     }
 
     @Test
-    @Disabled(value = "Cannot get it to work on H2 mem db. Still it's worth keeping this test to test it against the local postgres db")
     void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() throws InterruptedException {
         repository.save(idempotentKeysWithRandomId);
 
