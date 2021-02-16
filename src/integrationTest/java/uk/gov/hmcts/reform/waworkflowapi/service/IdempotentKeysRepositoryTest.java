@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Slf4j
 @Disabled(value = "Cannot get it to work on H2 mem db. Still it's worth keeping this test to test it against the local postgres db")
-class IdempotentKeysTest {
+class IdempotentKeysRepositoryTest {
 
     @Autowired
     private IdempotentKeysRepository repository;
