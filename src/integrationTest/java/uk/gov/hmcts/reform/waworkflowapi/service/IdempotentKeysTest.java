@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Slf4j
+@Disabled
 class IdempotentKeysTest {
 
     @Autowired
