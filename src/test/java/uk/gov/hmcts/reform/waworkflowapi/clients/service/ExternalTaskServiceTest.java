@@ -39,12 +39,12 @@ class ExternalTaskServiceTest {
 
         handleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
 
-        Map<String, Object> expectedProcessVariables = singletonMap("hasWarnings", true);
         Map<String, Object> processVariables = singletonMap(
             "hasWarnings",
             true
         );
-        verify(externalTaskService).complete(externalTask,processVariables);    }
+        verify(externalTaskService).complete(externalTask,processVariables);
+    }
 
     @Test
     void test_HasWarning_Handler_when_true() {
@@ -72,5 +72,6 @@ class ExternalTaskServiceTest {
             "hasWarnings",
             true
         );
-        verify(externalTaskService).complete(externalTask,processVariables);    }
+        verify(externalTaskService).complete(externalTask,processVariables);
+    }
 }
