@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
 
@@ -47,29 +45,21 @@ public class HandleWarningExternalService {
     }
 
     public void checkHasWarnings(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        Map<?,?> varm = externalTask.getAllVariables();
-        varm.forEach( (i,v) -> {
-            if (i.equals("hasWarnings") && v.equals(false)) {
-                    Map<String, Object> processVariables = singletonMap(
-                        "hasWarnings",
-                        true
-                    );
-                    externalTaskService.complete(externalTask, processVariables);
-            }
+        Map<?,?> variables = externalTask.getAllVariables();
+        var hasWarnings = variables.get("hasWarnings");
+        if (hasWarnings == null) {
+            Map<String, Object> processVariables = singletonMap(
+                "hasWarnings",
+                true
+            );
+            externalTaskService.complete(externalTask, processVariables);
+        } else {
+            Map<String, Object> processVariables = singletonMap(
+                "hasWarnings",
+                true
+            );
+            externalTaskService.complete(externalTask, processVariables);
 
-            if (i.equals("hasWarnings") && v.equals(true)) {
-                Map<String, Object> processVariables = singletonMap(
-                    "hasWarnings",
-                    true
-                );
-                externalTaskService.complete(externalTask, processVariables);
-            }
-
-        });
-        Map<String, Object> processVariables = singletonMap(
-            "hasWarnings",
-            false
-        );
-            externalTaskService.complete(externalTask,processVariables);
+        }
     }
 }
