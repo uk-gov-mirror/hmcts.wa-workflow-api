@@ -53,13 +53,11 @@ public class HandleWarningExternalService {
                 true
             );
             externalTaskService.complete(externalTask, processVariables);
-        } else {
-            Map<String, Object> processVariables = singletonMap(
-                "hasWarnings",
-                true
-            );
-            externalTaskService.complete(externalTask, processVariables);
-
         }
+        Map<String, Object> processVariables = singletonMap(
+            "hasWarnings",
+            true
+        );
+        externalTaskService.complete(externalTask, processVariables);
     }
 }
