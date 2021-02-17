@@ -60,7 +60,7 @@ class IdempotentKeysRepositoryTest {
 
         ExecutionException exception = Assertions.assertThrows(ExecutionException.class, futureException::get);
         assertThat(exception.getMessage())
-            .startsWith("org.springframework.dao.PessimisticLockingFailureException");
+            .startsWith("org.springframework.orm.jpa.JpaSystemException");
 
         executorService.shutdown();
         //noinspection ResultOfMethodCallIgnored
