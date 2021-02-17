@@ -35,33 +35,42 @@ class ExternalTaskServiceTest {
     void test_HasWarning_Handler_when_false() {
         HandleWarningExternalService handleWarningExternalService = new HandleWarningExternalService("someUrl", authTokenGenerator);
 
-        when(externalTask.getVariable("task")).thenReturn(singletonMap("hasWarnings", false));
+        when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", false));
 
         handleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
 
         Map<String, Object> expectedProcessVariables = singletonMap("hasWarnings", true);
-        verify(externalTaskService).complete(externalTask, expectedProcessVariables);
-    }
+        Map<String, Object> processVariables = singletonMap(
+            "hasWarnings",
+            true
+        );
+        verify(externalTaskService).complete(externalTask,processVariables);    }
 
     @Test
     void test_HasWarning_Handler_when_true() {
         HandleWarningExternalService handleWarningExternalService = new HandleWarningExternalService("someUrl", authTokenGenerator);
 
-        when(externalTask.getVariable("task")).thenReturn(singletonMap("hasWarnings", true));
+        when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", true));
 
         handleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
-
-        verify(externalTaskService).complete(externalTask);
+        Map<String, Object> processVariables = singletonMap(
+            "hasWarnings",
+            true
+        );
+        verify(externalTaskService).complete(externalTask,processVariables);
     }
 
     @Test
     void test_HasWarning_Handler_when_empty() {
         HandleWarningExternalService handleWarningExternalService = new HandleWarningExternalService("someUrl", authTokenGenerator);
 
-        when(externalTask.getVariable("task")).thenReturn(singletonMap("hasWarnings", null));
+        when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", null));
 
         handleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
 
-        verify(externalTaskService).complete(externalTask);
-    }
+        Map<String, Object> processVariables = singletonMap(
+            "hasWarnings",
+            true
+        );
+        verify(externalTaskService).complete(externalTask,processVariables);    }
 }
