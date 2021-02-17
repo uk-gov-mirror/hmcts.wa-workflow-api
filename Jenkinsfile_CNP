@@ -34,10 +34,6 @@ withPipeline(type, product, component) {
 
   loadVaultSecrets(secrets)
 
-  before('functionalTest:preview') {
-    env.POSTGRES_HOST = "wa-workflow-api-pr-138-postgresql"
-  }
-
   after('test') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/integration/**/*'
