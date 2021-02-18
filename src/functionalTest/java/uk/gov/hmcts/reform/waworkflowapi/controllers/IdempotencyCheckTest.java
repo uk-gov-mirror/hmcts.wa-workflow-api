@@ -173,23 +173,16 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     private void sendMessage(Map<String, DmnValue<?>> processVariables) {
 
-        SendMessageRequest createTaskMessage = new SendMessageRequest(
-            "createTaskMessage",
-            processVariables,
-            null
-        );
-
-        SendMessageRequest msg = SendMessageRequest.builder()
-            .businessKey("pr-138")
-            .messageName("createTaskMessage")
-            .processVariables(processVariables)
-            .build();
-
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(msg).log().body()
+            .body(new SendMessageRequest(
+                "pr-138",
+                "createTaskMessage",
+                processVariables,
+                null
+            )).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
