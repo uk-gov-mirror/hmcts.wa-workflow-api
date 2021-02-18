@@ -47,6 +47,7 @@ public class IdempotencyTaskWorker {
 
         client.subscribe("idempotencyCheck")
             .lockDuration(1000)
+            .businessKey("pr-138")
             .handler(this::checkIdempotency)
             .open();
     }

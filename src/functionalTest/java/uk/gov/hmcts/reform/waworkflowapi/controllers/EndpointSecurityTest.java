@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers;
 import io.restassured.RestAssured;
 import net.serenitybdd.rest.SerenityRest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 public class EndpointSecurityTest extends SpringBootFunctionalBaseTest {
 
     @Value("${targets.instance}")

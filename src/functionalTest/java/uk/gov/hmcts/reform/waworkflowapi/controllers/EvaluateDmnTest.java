@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
@@ -15,6 +16,7 @@ import static net.serenitybdd.rest.SerenityRest.given;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@Ignore
 public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
 
     @Autowired

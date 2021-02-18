@@ -73,9 +73,9 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         //        assertNewIdempotentKeyIsAddedInDb(idempotentKey);
         cleanUp(taskId, serviceAuthorizationToken); //We can do the cleaning here now
 
-        //        sendMessage(processVariables); //We send another message for the same idempotencyKey
-        //        List<String> processIds = getProcessIdsForGivenIdempotentKey(idempotentKey);
-        //        assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(processIds);
+        sendMessage(processVariables); //We send another message for the same idempotencyKey
+        List<String> processIds = getProcessIdsForGivenIdempotentKey(idempotentKey);
+        assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(processIds);
     }
 
     private void assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(List<String> processIds) {
@@ -173,15 +173,23 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     private void sendMessage(Map<String, DmnValue<?>> processVariables) {
 
+        SendMessageRequest createTaskMessage = new SendMessageRequest(
+            "createTaskMessage",
+            processVariables,
+            null
+        );
+
+        SendMessageRequest msg = SendMessageRequest.builder()
+            .businessKey("pr-138")
+            .messageName("createTaskMessage")
+            .processVariables(processVariables)
+            .build();
+
         given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest(
-                "createTaskMessage",
-                processVariables,
-                null
-            )).log().body()
+            .body(msg).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
