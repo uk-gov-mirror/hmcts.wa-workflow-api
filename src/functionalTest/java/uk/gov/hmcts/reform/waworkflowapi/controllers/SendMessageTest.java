@@ -98,7 +98,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(1, TimeUnit.MINUTES)
+            .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
 
                 String taskId = given()
@@ -169,7 +169,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(1, TimeUnit.MINUTES)
+            .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
                 String taskId = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -194,8 +194,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         String taskId = taskIdResponse.get();
         await()
             .ignoreExceptions()
-            .pollInterval(1, TimeUnit.SECONDS)
-            .atMost(10, TimeUnit.SECONDS)
+            .pollInterval(5, TimeUnit.SECONDS)
+            .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
                 given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)

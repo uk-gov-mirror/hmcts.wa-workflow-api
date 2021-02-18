@@ -122,7 +122,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             .ignoreExceptions()
             .and()
             .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(1, TimeUnit.MINUTES)
+            .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
 
                 String groupId = given()
@@ -146,7 +146,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(1, TimeUnit.MINUTES)
+            .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
 
                 String taskId = given()
@@ -194,8 +194,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         AtomicReference<Boolean> response = new AtomicReference<>();
         await()
             .ignoreExceptions()
-            .pollInterval(2, TimeUnit.SECONDS)
-            .atMost(20, TimeUnit.SECONDS)
+            .pollInterval(5, TimeUnit.SECONDS)
+            .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
                 boolean isDuplicate = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
