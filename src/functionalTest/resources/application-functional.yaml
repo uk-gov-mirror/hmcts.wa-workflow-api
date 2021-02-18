@@ -2,3 +2,6 @@ spring.flyway.enabled: false
 
 targets:
   instance: ${TEST_URL:http://localhost:8099}
+
+
+

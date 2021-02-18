@@ -37,8 +37,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
-    @Autowired
-    private IdempotentKeysRepository idempotentKeysRepository;
+    //    @Autowired
+    //    private IdempotentKeysRepository idempotentKeysRepository;
 
     private String serviceAuthorizationToken;
     private String caseId;
@@ -112,10 +112,10 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         return processIdsResponse.get();
     }
 
-    private void assertNewIdempotentKeyIsAddedInDb(String idempotentKey) {
-        Optional<IdempotentKeys> savedEntity = idempotentKeysRepository.findById(new IdempotentId(idempotentKey, "ia"));
-        assertThat(savedEntity.isPresent()).isTrue();
-    }
+    //    private void assertNewIdempotentKeyIsAddedInDb(String idempotentKey) {
+    //        Optional<IdempotentKeys> savedEntity = idempotentKeysRepository.findById(new IdempotentId(idempotentKey, "ia"));
+    //        assertThat(savedEntity.isPresent()).isTrue();
+    //    }
 
     private void assertTaskHasExpectedVariableValues(String taskId) {
         await()
