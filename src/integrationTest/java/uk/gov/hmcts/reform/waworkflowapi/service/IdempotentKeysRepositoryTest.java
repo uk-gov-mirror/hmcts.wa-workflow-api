@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("integration")
 class IdempotentKeysRepositoryTest {
 
+    public static final String EXPECTED_EXCEPTION = "org.springframework.orm.jpa.JpaSystemException";
     @Autowired
     private IdempotentKeysRepository repository;
     private IdempotentKeys idempotentKeysWithRandomId;
@@ -55,12 +56,22 @@ class IdempotentKeysRepositoryTest {
         repository.save(idempotentKeysWithRandomId);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
+
         executorService.execute(this::reader);
         Future<?> futureException = executorService.submit(this::writer);
 
-        ExecutionException exception = Assertions.assertThrows(ExecutionException.class, futureException::get);
-        assertThat(exception.getMessage())
-            .startsWith("org.springframework.orm.jpa.JpaSystemException");
+        await()
+            .ignoreExceptions()
+            .pollInterval(1, TimeUnit.SECONDS)
+            .atMost(10, TimeUnit.SECONDS)
+            .until(() -> {
+
+                ExecutionException exception = Assertions.assertThrows(ExecutionException.class, futureException::get);
+                assertThat(exception.getMessage())
+                    .startsWith(EXPECTED_EXCEPTION);
+
+                return exception.getMessage().startsWith(EXPECTED_EXCEPTION);
+            });
 
         executorService.shutdown();
         //noinspection ResultOfMethodCallIgnored
@@ -69,7 +80,7 @@ class IdempotentKeysRepositoryTest {
 
     private void writer() {
         // Allow some time to ensure the reader is executed first
-        Awaitility.await().timeout(2, TimeUnit.SECONDS);
+        await().timeout(2, TimeUnit.SECONDS);
 
         log.info("start read and write ops...");
 
