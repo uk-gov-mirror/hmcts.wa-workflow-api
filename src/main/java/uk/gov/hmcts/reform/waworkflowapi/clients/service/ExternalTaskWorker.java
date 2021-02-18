@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.camunda.bpm.client.ExternalTaskClient;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -23,6 +24,7 @@ import static java.util.Collections.singletonMap;
 @Slf4j
 public class ExternalTaskWorker {
 
+    public static final String IS_DUPLICATE = "isDuplicate";
     private final String camundaUrl;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdempotentKeysRepository idempotentKeysRepository;
@@ -52,8 +54,16 @@ public class ExternalTaskWorker {
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        IdempotentId idempotentId = getIdempotentId(externalTask);
+        Optional<IdempotentId> idempotentId = getIdempotentId(externalTask);
+        idempotentId.ifPresentOrElse(
+            id -> handleIdempotentIdProvidedScenario(externalTask, externalTaskService, id),
+            () -> externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, false))
+        );
+    }
 
+    private void handleIdempotentIdProvidedScenario(ExternalTask externalTask,
+                                                    ExternalTaskService externalTaskService,
+                                                    IdempotentId idempotentId) {
         Optional<IdempotentKeys> idempotentRow = idempotentKeysRepository.findById(idempotentId);
 
         idempotentRow.ifPresentOrElse(
@@ -62,10 +72,13 @@ public class ExternalTaskWorker {
         );
     }
 
-    private IdempotentId getIdempotentId(ExternalTask externalTask) {
+    private Optional<IdempotentId> getIdempotentId(ExternalTask externalTask) {
         String idempotentKey = externalTask.getVariable("idempotentKey");
-        String tenantId = externalTask.getVariable("jurisdiction");
-        return new IdempotentId(idempotentKey, tenantId);
+        if (StringUtils.isNotBlank(idempotentKey)) {
+            String tenantId = externalTask.getVariable("jurisdiction");
+            return Optional.of(new IdempotentId(idempotentKey, tenantId));
+        }
+        return Optional.empty();
     }
 
     private void handleIdempotentIdIsNotPresentInDb(ExternalTask externalTask,
@@ -78,7 +91,7 @@ public class ExternalTaskWorker {
             LocalDateTime.now(),
             LocalDateTime.now()
         ));
-        externalTaskService.complete(externalTask, singletonMap("isDuplicate", false));
+        externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, false));
     }
 
     private void handleIdempotentIdIsPresentInDb(ExternalTask externalTask,
@@ -86,9 +99,9 @@ public class ExternalTaskWorker {
                                                  IdempotentKeys row) {
         log.info("idempotentKey({}) already exists in the database.", row.getIdempotentId());
         if (isSameProcessId(externalTask, row)) {
-            externalTaskService.complete(externalTask, singletonMap("isDuplicate", false));
+            externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, false));
         } else {
-            externalTaskService.complete(externalTask, singletonMap("isDuplicate", true));
+            externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, true));
         }
 
     }
