@@ -6,7 +6,7 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
@@ -14,15 +14,15 @@ import java.util.Map;
 
 import static java.util.Collections.singletonMap;
 
-@SuppressWarnings({"PMD.UseUnderscoresInNumericLiterals", "PMD.PositionLiteralsFirstInComparisons", "PMD.LinguisticNaming"})
-@Service
-public class ExternalTaskWorker {
+@SuppressWarnings({"PMD.UseUnderscoresInNumericLiterals","PMD.PositionLiteralsFirstInComparisons","PMD.LinguisticNaming"})
+@Component
+public class HandleWarningExternalService {
 
     private final String camundaUrl;
 
     private final AuthTokenGenerator authTokenGenerator;
 
-    public ExternalTaskWorker(
+    public HandleWarningExternalService(
         @Value("${camunda.url}") String camundaUrl,
         AuthTokenGenerator authTokenGenerator
     ) {
@@ -30,26 +30,36 @@ public class ExternalTaskWorker {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-
     @EventListener(ApplicationReadyEvent.class)
     public void setupClient() {
         ExternalTaskClient client = ExternalTaskClient.create()
             .baseUrl(camundaUrl)
             .addInterceptor(new ServiceAuthProviderInterceptor(authTokenGenerator))
+            .asyncResponseTimeout(10000)
             .build();
 
-        client.subscribe("idempotencyCheck")
+        client.subscribe("wa-warning-topic")
             .lockDuration(1000)
-            .handler(this::checkIdempotency)
+            .handler(this::checkHasWarnings)
             .open();
     }
 
-    public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        Map<String, Object> processVariables = singletonMap(
-            "isDuplicate",
-            false
-        );
-        externalTaskService.complete(externalTask, processVariables);
-    }
+    public void checkHasWarnings(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+        Map<?,?> variables = externalTask.getAllVariables();
+        var hasWarnings = variables.get("hasWarnings");
+        if (hasWarnings == null) {
+            Map<String, Object> processVariables = singletonMap(
+                "hasWarnings",
+                true
+            );
+            externalTaskService.complete(externalTask, processVariables);
+        } else {
+            externalTaskService.complete(externalTask, singletonMap(
+                "hasWarnings",
+                true
+            ));
 
+        }
+    }
 }
+
