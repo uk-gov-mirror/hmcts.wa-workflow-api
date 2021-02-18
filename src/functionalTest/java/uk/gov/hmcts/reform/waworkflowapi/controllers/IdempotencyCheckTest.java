@@ -89,7 +89,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .pollInterval(2, TimeUnit.SECONDS)
-            .atMost(20, TimeUnit.SECONDS)
+            .atMost(20, TimeUnit.MINUTES)
             .until(() -> {
                 List<String> ids;
                 ids = given()
@@ -121,8 +121,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .and()
-            .pollInterval(2, TimeUnit.SECONDS)
-            .atMost(20, TimeUnit.SECONDS)
+            .pollInterval(5, TimeUnit.SECONDS)
+            .atMost(1, TimeUnit.MINUTES)
             .until(() -> {
 
                 String groupId = given()
@@ -145,8 +145,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> response = new AtomicReference<>();
         await()
             .ignoreExceptions()
-            .pollInterval(2, TimeUnit.SECONDS)
-            .atMost(20, TimeUnit.SECONDS)
+            .pollInterval(5, TimeUnit.SECONDS)
+            .atMost(1, TimeUnit.MINUTES)
             .until(() -> {
 
                 String taskId = given()
