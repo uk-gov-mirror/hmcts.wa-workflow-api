@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.waworkflowapi.clients.service;
+package uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency;
 
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.task.ExternalTask;

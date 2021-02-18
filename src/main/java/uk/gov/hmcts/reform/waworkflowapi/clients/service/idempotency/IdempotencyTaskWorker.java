@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.waworkflowapi.clients.service;
+package uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -11,12 +11,13 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskService;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
 import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
-import static uk.gov.hmcts.reform.waworkflowapi.clients.service.IdempotencyTaskService.IS_DUPLICATE;
+import static uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskService.IS_DUPLICATE;
 
 @SuppressWarnings({"PMD.UseUnderscoresInNumericLiterals", "PMD.PositionLiteralsFirstInComparisons", "PMD.LinguisticNaming"})
 @Service

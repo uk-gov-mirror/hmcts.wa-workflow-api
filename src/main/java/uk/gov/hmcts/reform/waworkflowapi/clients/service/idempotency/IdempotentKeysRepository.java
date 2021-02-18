@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.waworkflowapi.clients.service;
+package uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency;
 
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
