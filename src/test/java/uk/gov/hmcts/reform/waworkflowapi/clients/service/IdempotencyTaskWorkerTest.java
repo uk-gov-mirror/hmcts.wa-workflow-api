@@ -23,18 +23,14 @@ import static org.mockito.Mockito.when;
 class IdempotencyTaskWorkerTest {
 
     @Mock
-    private AuthTokenGenerator authTokenGenerator;
-    @Mock
     private IdempotencyTaskService idempotencyTaskService;
     @InjectMocks
     private IdempotencyTaskWorker idempotencyTaskWorker;
 
-    private IdempotentId idempotentId;
     @Mock
     private ExternalTask externalTask;
     @Mock
     private ExternalTaskService externalTaskService;
-
 
     @Test
     void given_idempotencyKey_is_provided_then_handleIdempotencyProvidedScenario_is_called() {
