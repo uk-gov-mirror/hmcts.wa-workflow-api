@@ -94,24 +94,35 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
-        waitSeconds(3);
+        AtomicReference<String> taskIdResponse = new AtomicReference<>();
+        await()
+            .ignoreExceptions()
+            .pollInterval(1, TimeUnit.SECONDS)
+            .atMost(10, TimeUnit.SECONDS)
+            .until(() -> {
 
-        String taskId = given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .baseUri(camundaUrl)
-            .basePath("/task")
-            .param("processVariables", "caseId_eq_" + caseId)
-            .when()
-            .get()
-            .prettyPeek()
-            .then()
-            .body("size()", is(1))
-            .body("[0].name", is("Process Application"))
-            .body("[0].formKey", is("processApplication"))
-            .extract()
-            .path("[0].id");
+                String taskId = given()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(camundaUrl)
+                    .basePath("/task")
+                    .param("processVariables", "caseId_eq_" + caseId)
+                    .when()
+                    .get()
+                    .prettyPeek()
+                    .then()
+                    .body("size()", is(1))
+                    .body("[0].name", is("Process Application"))
+                    .body("[0].formKey", is("processApplication"))
+                    .extract()
+                    .path("[0].id");
 
+                taskIdResponse.set(taskId);
+
+                return true;
+            });
+
+        String taskId = taskIdResponse.get();
         given()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
@@ -156,11 +167,10 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
-            .pollInterval(2, TimeUnit.SECONDS)
+            .ignoreExceptions()
+            .pollInterval(1, TimeUnit.SECONDS)
             .atMost(10, TimeUnit.SECONDS)
             .until(() -> {
-
                 String taskId = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
                     .contentType(APPLICATION_JSON_VALUE)
@@ -182,17 +192,24 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             });
 
         String taskId = taskIdResponse.get();
+        await()
+            .ignoreExceptions()
+            .pollInterval(1, TimeUnit.SECONDS)
+            .atMost(10, TimeUnit.SECONDS)
+            .until(() -> {
+                given()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(camundaUrl)
+                    .basePath("/task/" + taskId + "/identity-links?type=candidate")
+                    .when()
+                    .get()
+                    .prettyPeek()
+                    .then()
+                    .body("[0].groupId", is("external"));
 
-        given()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .baseUri(camundaUrl)
-            .basePath("/task/" + taskId + "/identity-links?type=candidate")
-            .when()
-            .get()
-            .prettyPeek()
-            .then()
-            .body("[0].groupId", is("external"));
+                return true;
+            });
 
         cleanUp(taskId, serviceAuthorizationToken);
     }
@@ -223,11 +240,4 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
     }
 
-    private void waitSeconds(int seconds) {
-        try {
-            TimeUnit.SECONDS.sleep(seconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 }
