@@ -10,6 +10,7 @@ import static uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue.dmnString
 
 @EqualsAndHashCode
 @ToString
+@SuppressWarnings({"PMD.PositionLiteralsFirstInComparisons","PMD.UnusedFormalParameter","PMD.LinguisticNaming"})
 public class ProcessVariables {
     private final DmnValue<String> jurisdiction;
     private final DmnValue<String> caseType;
@@ -18,6 +19,7 @@ public class ProcessVariables {
     private final DmnValue<String> group;
     private final DmnValue<String> dueDate;
     private final DmnValue<String> name;
+    private final DmnValue<String> hasWarnings;
 
     public ProcessVariables(
         String jurisdiction,
@@ -26,7 +28,8 @@ public class ProcessVariables {
         String taskId,
         String group,
         ZonedDateTime dueDate,
-        String name
+        String name,
+        String hasWarnings
     ) {
         this.jurisdiction = dmnStringValue(jurisdiction);
         this.caseType = dmnStringValue(caseType);
@@ -35,6 +38,7 @@ public class ProcessVariables {
         this.group = dmnStringValue(group);
         this.dueDate = dmnStringValue(dueDate.format(DateTimeFormatter.ISO_INSTANT));
         this.name = dmnStringValue(name);
+        this.hasWarnings = dmnStringValue(name);
     }
 
     public DmnValue<String> getJurisdiction() {
@@ -63,5 +67,9 @@ public class ProcessVariables {
 
     public DmnValue<String> getName() {
         return name;
+    }
+
+    public DmnValue<String> getHasWarnings() {
+        return hasWarnings;
     }
 }

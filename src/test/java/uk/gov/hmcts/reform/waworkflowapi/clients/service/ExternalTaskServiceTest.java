@@ -5,6 +5,7 @@ import org.camunda.bpm.client.task.ExternalTaskService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
@@ -12,8 +13,10 @@ import java.util.Map;
 
 import static java.util.Collections.singletonMap;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 
 @ExtendWith(MockitoExtension.class)
 class ExternalTaskServiceTest {
@@ -21,6 +24,8 @@ class ExternalTaskServiceTest {
     private ExternalTask externalTask;
     private ExternalTaskService externalTaskService;
     private AuthTokenGenerator authTokenGenerator;
+    @Mock
+    private HandleWarningExternalService mocHandleWarningExternalService;
 
 
     @BeforeEach
@@ -31,37 +36,55 @@ class ExternalTaskServiceTest {
     }
 
     @Test
-    void test_isDuplicate_Handler_when_false() {
-        ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
+    void test_HasWarning_Handler_when_false() {
+        HandleWarningExternalService handleWarningExternalService = new HandleWarningExternalService("someUrl", authTokenGenerator);
 
-        when(externalTask.getVariable("isDuplicate")).thenReturn(false);
+        when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", false));
 
-        handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
+        handleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
 
-        verify(externalTaskService).complete(externalTask);
+        Map<String, Object> processVariables = singletonMap(
+            "hasWarnings",
+            true
+        );
+        verify(externalTaskService).complete(externalTask,processVariables);
     }
 
     @Test
-    void test_isDuplicate_Handler_when_true() {
-        ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
+    void test_HasWarning_Handler_when_true() {
+        HandleWarningExternalService handleWarningExternalService = new HandleWarningExternalService("someUrl", authTokenGenerator);
 
-        when(externalTask.getVariable("isDuplicate")).thenReturn(true);
+        when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", true));
 
-        handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
-
-        Map<String, Object> expectedProcessVariables = singletonMap("isDuplicate", false);
-        verify(externalTaskService).complete(externalTask,expectedProcessVariables);
+        handleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
+        Map<String, Object> processVariables = singletonMap(
+            "hasWarnings",
+            true
+        );
+        verify(externalTaskService).complete(externalTask,processVariables);
     }
 
     @Test
-    void test_isDuplicate_Handler_when_null() {
-        ExternalTaskWorker handleWarningExternalService = new ExternalTaskWorker("someUrl", authTokenGenerator);
+    void test_HasWarning_Handler_when_empty() {
+        HandleWarningExternalService handleWarningExternalService = new HandleWarningExternalService("someUrl", authTokenGenerator);
 
-        when(externalTask.getVariable("isDuplicate")).thenReturn(null);
+        when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", null));
 
-        handleWarningExternalService.checkIdempotency(externalTask, externalTaskService);
+        handleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
 
-        Map<String, Object> expectedProcessVariables = singletonMap("isDuplicate", false);
-        verify(externalTaskService).complete(externalTask,expectedProcessVariables);
+        Map<String, Object> processVariables = singletonMap(
+            "hasWarnings",
+            true
+        );
+        verify(externalTaskService).complete(externalTask,processVariables);
+    }
+
+    @Test
+    void test_HasWarning_Handler_when_check_setup() {
+        mocHandleWarningExternalService.setupClient();
+        mocHandleWarningExternalService.checkHasWarnings(externalTask, externalTaskService);
+
+        verify(mocHandleWarningExternalService, times(1)).setupClient();
+        verify(mocHandleWarningExternalService, times(1)).checkHasWarnings(externalTask,externalTaskService);
     }
 }
