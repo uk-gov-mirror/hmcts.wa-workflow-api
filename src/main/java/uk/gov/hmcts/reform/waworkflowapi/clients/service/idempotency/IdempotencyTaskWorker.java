@@ -55,8 +55,15 @@ public class IdempotencyTaskWorker {
         Optional<IdempotentId> idempotentId = getIdempotentId(externalTask);
         idempotentId.ifPresentOrElse(
             id -> idempotencyTaskService.handleIdempotentIdProvidedScenario(externalTask, externalTaskService, id),
-            () -> externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, false))
+            () -> completeTask(externalTask, externalTaskService)
         );
+    }
+
+    private void completeTask(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+        String msg = "No idempotencyKey found for process instance({}), "
+            + "probably a service other than wa/ia is using the BPM.";
+        log.info(msg, externalTask.getProcessInstanceId());
+        externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, false));
     }
 
     private Optional<IdempotentId> getIdempotentId(ExternalTask externalTask) {
