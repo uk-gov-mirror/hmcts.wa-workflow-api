@@ -2,3 +2,19 @@ spring.flyway.enabled: false
 
 targets:
   instance: ${TEST_URL:http://localhost:8099}
+
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:wa_workflow_api;DEFAULT_LOCK_TIMEOUT=0;LOCK_TIMEOUT=0
+    username: sa
+    password: password
+    initialization-mode: embedded
+    platform: h2
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        show_sql: true
+        default_schema: ${POSTGRES_NAME:wa_workflow_api}
+    hibernate.ddl-auto: create

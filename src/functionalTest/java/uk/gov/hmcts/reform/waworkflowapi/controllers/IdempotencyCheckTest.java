@@ -10,22 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotentKeysRepository;
 import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static net.serenitybdd.rest.SerenityRest.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -36,9 +31,6 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
-
-    @Autowired
-    private IdempotentKeysRepository idempotentKeysRepository;
 
     private String serviceAuthorizationToken;
     private String caseId;
@@ -112,9 +104,11 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         return processIdsResponse.get();
     }
 
+    //fixme: this has to be done using the DB api
     private void assertNewIdempotentKeyIsAddedInDb(String idempotentKey) {
-        Optional<IdempotentKeys> savedEntity = idempotentKeysRepository.findById(new IdempotentId(idempotentKey, "ia"));
-        assertThat(savedEntity.isPresent()).isTrue();
+        //        Optional<IdempotentKeys> savedEntity =
+        //        idempotentKeysRepository.findById(new IdempotentId(idempotentKey, "ia"));
+        //        assertThat(savedEntity.isPresent()).isTrue();
     }
 
     private void assertTaskHasExpectedVariableValues(String taskId) {
