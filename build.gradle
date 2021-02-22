@@ -264,11 +264,16 @@ dependencies {
   implementation ('org.springframework.boot:spring-boot-starter-data-jpa') {
     exclude group: 'org.hibernate', module: 'hibernate-core'
   }
+
+  //Data Rest
+  compile("org.springframework.boot:spring-boot-starter-data-rest")
+
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.5.RELEASE'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.5.RELEASE'
 
-  implementation group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
-  compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+  implementation (group: 'io.springfox', name: 'springfox-swagger2', version: '3.0.0')
+
+  compile (group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0')
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging

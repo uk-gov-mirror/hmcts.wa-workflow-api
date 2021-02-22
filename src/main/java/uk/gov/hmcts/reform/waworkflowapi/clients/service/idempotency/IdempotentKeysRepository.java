@@ -3,24 +3,64 @@ package uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.data.rest.core.config.Projection;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
 
 import java.util.Optional;
+import javax.persistence.IdClass;
 import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
 
 @Repository
+@RepositoryRestResource(collectionResourceRel = "idempotentKeys", path = "idempotentKeys")
 public interface IdempotentKeysRepository extends CrudRepository<IdempotentKeys, IdempotentId> {
 
-    @Override
+//    @Override
+//    @Lock(LockModeType.PESSIMISTIC_WRITE)
+//    @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value = "0")})
+//    @NonNull
+//    @Transactional
+//    @PreAuthorize("hasRole('admin')")
+//    Optional<IdempotentKeys> findById(@NonNull IdempotentId idempotentId);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({@QueryHint(name = "javax.persistence.lock.timeout", value = "0")})
     @NonNull
     @Transactional
-    Optional<IdempotentKeys> findById(@NonNull IdempotentId idempotentId);
+//    @PreAuthorize("hasRole('admin')")
+    Optional<IdempotentKeys> findByIdempotencyKeyAndTenantId(@NonNull @Param("idempotencyKey") String idempotencyKey,
+                                                             @NonNull @Param("tenantId") String tenantId);
 
+    @Override
+    @RestResource(exported = false)
+    @NonNull
+    <S extends IdempotentKeys> S save(@NonNull S entity);
+
+    @Override
+    @RestResource(exported = false)
+    <S extends IdempotentKeys> Iterable<S> saveAll(Iterable<S> entities);
+
+    @Override
+    @RestResource(exported = false)
+    void deleteById(IdempotentId idempotentId);
+
+    @Override
+    @RestResource(exported = false)
+    void delete(IdempotentKeys entity);
+
+    @Override
+    @RestResource(exported = false)
+    void deleteAll(Iterable<? extends IdempotentKeys> entities);
+
+    @Override
+    @RestResource(exported = false)
+    void deleteAll();
 }

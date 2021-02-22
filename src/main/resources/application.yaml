@@ -24,6 +24,8 @@ govUkHolidays:
   url: https://www.gov.uk/
 
 spring:
+  data.rest.basePath: /testing
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties:
