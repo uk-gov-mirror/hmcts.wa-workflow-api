@@ -47,7 +47,11 @@ public class CreateTaskController {
     public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
                                                            @PathVariable(name = "key") String key,
                                                            @PathVariable(name = "tenant-id") String tenantId) {
-        List<Map<String, DmnValue<?>>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(evaluateDmnRequest, key, tenantId);
+        List<Map<String, DmnValue<?>>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(
+            evaluateDmnRequest,
+            key,
+            tenantId
+        );
         return ResponseEntity.ok()
             .body(new EvaluateDmnResponse(evaluateDmnResponse));
 
