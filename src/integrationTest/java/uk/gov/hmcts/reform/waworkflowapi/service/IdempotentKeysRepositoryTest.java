@@ -7,10 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.HandleWarningExternalService;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskWorker;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotentKeysRepository;
 
 import java.time.LocalDateTime;
@@ -35,6 +38,12 @@ class IdempotentKeysRepositoryTest {
     private IdempotentKeysRepository repository;
     private IdempotentKeys idempotentKeysWithRandomId;
     private IdempotentId randomIdempotentId;
+
+    //because of the workers polling camunda at start-up
+    @MockBean
+    private IdempotencyTaskWorker idempotencyTaskWorker;
+    @MockBean
+    private HandleWarningExternalService handleWarningExternalService;
 
     @BeforeEach
     void setUp() {
@@ -64,7 +73,7 @@ class IdempotentKeysRepositoryTest {
         await()
             .ignoreExceptions()
             .pollInterval(1, TimeUnit.SECONDS)
-            .atMost(10, TimeUnit.SECONDS)
+            .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
 
                 ExecutionException exception = Assertions.assertThrows(ExecutionException.class, futureException::get);

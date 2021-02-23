@@ -61,13 +61,12 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         sendMessage(processVariables);
         String taskId = assertTaskIsCreated();
         assertTaskHasExpectedVariableValues(taskId);
-        // fixme: uncomment below lines once the idempotencyTaskWorker is released
-        //        assertNewIdempotentKeyIsAddedInDb(idempotentKey);
+        assertNewIdempotentKeyIsAddedInDb(idempotentKey);
         cleanUp(taskId, serviceAuthorizationToken); //We can do the cleaning here now
 
-        //        sendMessage(processVariables); //We send another message for the same idempotencyKey
-        //        List<String> processIds = getProcessIdsForGivenIdempotentKey(idempotentKey);
-        //        assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(processIds);
+        sendMessage(processVariables); //We send another message for the same idempotencyKey
+        List<String> processIds = getProcessIdsForGivenIdempotentKey(idempotentKey);
+        assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(processIds);
     }
 
     private void assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(List<String> processIds) {
@@ -104,11 +103,27 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         return processIdsResponse.get();
     }
 
-    //fixme: this has to be done using the DB api
     private void assertNewIdempotentKeyIsAddedInDb(String idempotentKey) {
-        //        Optional<IdempotentKeys> savedEntity =
-        //        idempotentKeysRepository.findById(new IdempotentId(idempotentKey, "ia"));
-        //        assertThat(savedEntity.isPresent()).isTrue();
+        await()
+            .ignoreExceptions()
+            .pollInterval(2, TimeUnit.SECONDS)
+            .atMost(10, TimeUnit.MINUTES)
+            .until(() -> {
+                given()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(testUrl)
+                    .basePath("/testing/idempotentKeys/search/findByIdempotencyKeyAndTenantId")
+                    .params("idempotencyKey", idempotentKey, "tenantId", "ia")
+                    .when()
+                    .get()
+                    .prettyPeek()
+                    .then()
+                    .body("idempotencyKey", is(idempotentKey))
+                    .body("tenantId", is("ia"));
+
+                return true;
+            });
     }
 
     private void assertTaskHasExpectedVariableValues(String taskId) {
@@ -118,7 +133,6 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             .pollInterval(5, TimeUnit.SECONDS)
             .atMost(15, TimeUnit.SECONDS)
             .until(() -> {
-
                 String groupId = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
                     .contentType(APPLICATION_JSON_VALUE)
