@@ -40,7 +40,8 @@ public class IdempotencyTaskService {
                                                     IdempotentId idempotentId) {
         log.info("idempotentKey({}) does not exist in the database.", idempotentId);
         idempotentKeysRepository.save(new IdempotentKeys(
-            idempotentId,
+            idempotentId.getIdempotencyKey(),
+            idempotentId.getTenantId(),
             externalTask.getProcessInstanceId(),
             LocalDateTime.now(),
             LocalDateTime.now()
@@ -51,7 +52,10 @@ public class IdempotencyTaskService {
     private void handleIdempotentIdIsPresentInDb(ExternalTask externalTask,
                                                  ExternalTaskService externalTaskService,
                                                  IdempotentKeys row) {
-        log.info("idempotentKey({}) already exists in the database.", row.getIdempotentId());
+        log.info(
+            "idempotentKey({}) already exists in the database.",
+            new IdempotentId(row.getIdempotencyKey(), row.getTenantId())
+        );
         if (isSameProcessId(externalTask, row)) {
             externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, false));
         } else {

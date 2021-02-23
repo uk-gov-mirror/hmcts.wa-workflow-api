@@ -4,9 +4,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.io.Serializable;
-import javax.persistence.Embeddable;
 
-@Embeddable
 @EqualsAndHashCode
 @ToString
 public class IdempotentId implements Serializable {

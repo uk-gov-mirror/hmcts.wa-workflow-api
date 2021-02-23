@@ -44,7 +44,8 @@ class IdempotentKeysRepositoryTest {
         );
 
         idempotentKeysWithRandomId = new IdempotentKeys(
-            randomIdempotentId,
+            randomIdempotentId.getIdempotencyKey(),
+            randomIdempotentId.getTenantId(),
             UUID.randomUUID().toString(),
             LocalDateTime.now(),
             LocalDateTime.now()
@@ -86,7 +87,8 @@ class IdempotentKeysRepositoryTest {
 
         repository.findById(randomIdempotentId);
         repository.save(new IdempotentKeys(
-            randomIdempotentId,
+            randomIdempotentId.getIdempotencyKey(),
+            randomIdempotentId.getTenantId(),
             "should not update because of lock",
             LocalDateTime.now(),
             LocalDateTime.now()

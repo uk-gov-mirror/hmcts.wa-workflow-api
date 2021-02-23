@@ -54,7 +54,8 @@ class IdempotencyTaskServiceTest {
 
         when(idempotentKeysRepository.findById(idempotentId))
             .thenReturn(Optional.of(new IdempotentKeys(
-                idempotentId,
+                idempotentId.getIdempotencyKey(),
+                idempotentId.getTenantId(),
                 processIdRow,
                 LocalDateTime.now(),
                 LocalDateTime.now()
@@ -93,8 +94,14 @@ class IdempotencyTaskServiceTest {
 
         IdempotentKeys actualIdempotentKeys = captor.getValue();
         assertThat(actualIdempotentKeys).isEqualToComparingOnlyGivenFields(
-            new IdempotentKeys(idempotentId, "some process id", null, null),
-            "idempotentId", "processId"
+            new IdempotentKeys(
+                idempotentId.getIdempotencyKey(),
+                idempotentId.getTenantId(),
+                "some process id",
+                null,
+                null
+            ),
+            "idempotencyKey", "tenantId", "processId"
         );
 
         verify(externalTaskService).complete(externalTask, singletonMap("isDuplicate", false));
