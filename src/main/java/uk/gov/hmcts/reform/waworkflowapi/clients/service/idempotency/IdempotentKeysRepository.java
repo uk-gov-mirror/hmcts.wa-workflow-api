@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import javax.persistence.LockModeType;
 import javax.persistence.QueryHint;
 
 @Repository
+@RepositoryRestResource(collectionResourceRel = "idempotentKeys", path = "idempotentKeys")
 public interface IdempotentKeysRepository extends CrudRepository<IdempotentKeys, IdempotentId> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
