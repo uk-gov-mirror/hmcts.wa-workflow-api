@@ -33,19 +33,20 @@ public interface IdempotentKeysRepository extends CrudRepository<IdempotentKeys,
 
     @Override
     @RestResource(exported = false)
-    <S extends IdempotentKeys> Iterable<S> saveAll(Iterable<S> entities);
+    @NonNull
+    <S extends IdempotentKeys> Iterable<S> saveAll(@NonNull Iterable<S> entities);
 
     @Override
     @RestResource(exported = false)
-    void deleteById(IdempotentId idempotentId);
+    void deleteById(@NonNull IdempotentId idempotentId);
 
     @Override
     @RestResource(exported = false)
-    void delete(IdempotentKeys entity);
+    void delete(@NonNull IdempotentKeys entity);
 
     @Override
     @RestResource(exported = false)
-    void deleteAll(Iterable<? extends IdempotentKeys> entities);
+    void deleteAll(@NonNull Iterable<? extends IdempotentKeys> entities);
 
     @Override
     @RestResource(exported = false)
