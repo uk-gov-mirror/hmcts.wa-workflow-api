@@ -34,45 +34,61 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     private String serviceAuthorizationToken;
     private String caseId;
+    private String idempotentKey;
+    private Map<String, DmnValue<?>> processVariables;
 
     @Before
     public void setUp() {
         caseId = UUID.randomUUID().toString();
+        idempotentKey = UUID.randomUUID().toString();
 
         serviceAuthorizationToken =
             authorizationHeadersProvider
                 .getAuthorizationHeaders()
                 .getValue(SERVICE_AUTHORIZATION);
+
+
+        processVariables = createProcessVariables(idempotentKey, "ia");
     }
 
     @Test
-    public void transition_creates_a_task_and_goes_through_external_task() {
-        String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        String idempotentKey = UUID.randomUUID().toString();
-        Map<String, DmnValue<?>> processVariables = mockProcessVariables(
-            dueDate,
-            "Provide Respondent Evidence",
-            "provideRespondentEvidence",
-            "external",
-            caseId,
-            idempotentKey
-        );
-
+    public void given_two_tasks_with_the_same_idempotentKey_and_different_tenantId_should_not_be_deemed_as_duplicated() {
         sendMessage(processVariables);
-        String taskId = assertTaskIsCreated();
+        String taskId = assertTaskIsCreated(caseId);
         assertTaskHasExpectedVariableValues(taskId);
-        assertNewIdempotentKeyIsAddedInDb(idempotentKey);
+        assertNewIdempotentKeyIsAddedInDb(idempotentKey, "ia");
+        cleanUp(taskId, serviceAuthorizationToken); //We do the cleaning here to avoid clashing with other tasks
+
+        processVariables = createProcessVariables(idempotentKey, "wa");
+        sendMessage(processVariables); //We send another message for the same idempotencyKey and different tenantId
+        taskId = assertTaskIsCreated(caseId);
+        assertTaskHasExpectedVariableValues(taskId);
+        assertNewIdempotentKeyIsAddedInDb(idempotentKey, "wa");
+        cleanUp(taskId, serviceAuthorizationToken); //We do the cleaning here to avoid clashing with other tasks
+
+        List<String> processIds = getProcessIdsForGivenIdempotentKey(idempotentKey);
+        assertNumberOfDuplicatedProcesses(processIds, 0);
+    }
+
+    @Test
+    public void given_two_tasks_with_the_same_idempotentId_should_tag_one_as_duplicated() {
+        sendMessage(processVariables);
+
+        String taskId = assertTaskIsCreated(caseId);
+        assertTaskHasExpectedVariableValues(taskId);
+        assertNewIdempotentKeyIsAddedInDb(idempotentKey, "ia");
+
         cleanUp(taskId, serviceAuthorizationToken); //We can do the cleaning here now
 
         sendMessage(processVariables); //We send another message for the same idempotencyKey
         List<String> processIds = getProcessIdsForGivenIdempotentKey(idempotentKey);
-        assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(processIds);
+        assertNumberOfDuplicatedProcesses(processIds, 1);
     }
 
-    private void assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(List<String> processIds) {
+    private void assertNumberOfDuplicatedProcesses(List<String> processIds, int expectedNumberOfDuplicatedProcesses) {
         Assertions.assertThat((int) processIds.stream()
             .filter(this::getIsDuplicateVariableValue)
-            .count()).isEqualTo(1);
+            .count()).isEqualTo(expectedNumberOfDuplicatedProcesses);
     }
 
     private List<String> getProcessIdsForGivenIdempotentKey(String idempotentKey) {
@@ -80,7 +96,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .pollInterval(2, TimeUnit.SECONDS)
-            .atMost(20, TimeUnit.MINUTES)
+            .atMost(20, TimeUnit.SECONDS)
             .until(() -> {
                 List<String> ids;
                 ids = given()
@@ -103,24 +119,40 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         return processIdsResponse.get();
     }
 
-    private void assertNewIdempotentKeyIsAddedInDb(String idempotentKey) {
+    private Map<String, DmnValue<?>> createProcessVariables(String idempotentKey, String jurisdiction) {
+        String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return mockProcessVariables(
+            dueDate,
+            "Provide Respondent Evidence",
+            "provideRespondentEvidence",
+            "external",
+            caseId,
+            idempotentKey,
+            jurisdiction
+        );
+    }
+
+    private void assertNewIdempotentKeyIsAddedInDb(String idempotentKey, String jurisdiction) {
         await()
             .ignoreExceptions()
             .pollInterval(2, TimeUnit.SECONDS)
-            .atMost(10, TimeUnit.MINUTES)
+            .atMost(10, TimeUnit.SECONDS)
             .until(() -> {
                 given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
                     .contentType(APPLICATION_JSON_VALUE)
                     .baseUri(testUrl)
                     .basePath("/testing/idempotentKeys/search/findByIdempotencyKeyAndTenantId")
-                    .params("idempotencyKey", idempotentKey, "tenantId", "ia")
+                    .params(
+                        "idempotencyKey", idempotentKey,
+                        "tenantId", jurisdiction
+                    )
                     .when()
                     .get()
                     .prettyPeek()
                     .then()
                     .body("idempotencyKey", is(idempotentKey))
-                    .body("tenantId", is("ia"));
+                    .body("tenantId", is(jurisdiction));
 
                 return true;
             });
@@ -149,7 +181,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             });
     }
 
-    private String assertTaskIsCreated() {
+    private String assertTaskIsCreated(String caseId) {
         AtomicReference<String> response = new AtomicReference<>();
         await()
             .ignoreExceptions()

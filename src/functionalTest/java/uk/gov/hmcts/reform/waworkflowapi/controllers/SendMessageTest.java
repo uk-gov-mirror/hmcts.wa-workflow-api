@@ -75,7 +75,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "processApplication",
             "TCW",
             caseId,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(), "ia"
         );
 
         given()
@@ -146,7 +146,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "provideRespondentEvidence",
             "external",
             caseId,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(), "ia"
         );
 
         given()
@@ -221,7 +221,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "Process Application", "processApplication",
             "TCW",
             caseId,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(), "ia"
         );
         given()
             .relaxedHTTPSValidation()
