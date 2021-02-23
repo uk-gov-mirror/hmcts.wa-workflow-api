@@ -26,7 +26,6 @@ import static org.springframework.http.ResponseEntity.noContent;
 @RestController
 public class CreateTaskController {
 
-    public static final String CREATE_TASK_MESSAGE = "createTaskMessage";
     private final EvaluateDmnService evaluateDmnService;
     private final SendMessageService sendMessageService;
 
@@ -38,7 +37,7 @@ public class CreateTaskController {
         this.sendMessageService = sendMessageService;
     }
 
-    @PostMapping(path = "/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a message form camunda")
     @ApiImplicitParam(name = "ServiceAuthorization", value = "Bearer xxxx", paramType = "header")
     @ApiResponses({
@@ -57,7 +56,7 @@ public class CreateTaskController {
 
     }
 
-    @PostMapping(path = "/workflow/message", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(path = "/workflow/message", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a message form camunda")
     @ApiImplicitParam(name = "ServiceAuthorization", value = "Bearer xxxx", paramType = "header")
     @ApiResponses({
