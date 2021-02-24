@@ -97,8 +97,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
             .ignoreExceptions()
-            .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(15, TimeUnit.SECONDS)
+            .pollInterval(1, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
                 String taskId = given()
@@ -168,8 +168,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
             .ignoreExceptions()
-            .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(15, TimeUnit.SECONDS)
+            .pollInterval(1, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
                 String taskId = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -194,8 +194,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         String taskId = taskIdResponse.get();
         await()
             .ignoreExceptions()
-            .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(15, TimeUnit.SECONDS)
+            .pollInterval(1, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
                 given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
