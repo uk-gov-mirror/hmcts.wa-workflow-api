@@ -32,7 +32,7 @@ import static org.awaitility.Awaitility.await;
 @SpringBootTest
 @Slf4j
 @ActiveProfiles("integration")
-@Disabled("It is not stable enough")
+@Disabled("It is not stable enough. We want to keep it for when we have to test or debug DB lock scenarios locally.")
 class IdempotentKeysRepositoryTest {
 
     public static final String EXPECTED_EXCEPTION = "org.springframework.orm.jpa.JpaSystemException";
