@@ -16,6 +16,6 @@ spring:
     properties:
       hibernate:
         show_sql: true
-        default_schema: ${POSTGRES_NAME:wa_workflow_api}
+        default_schema: wa_workflow_api
     hibernate.ddl-auto: create
 
