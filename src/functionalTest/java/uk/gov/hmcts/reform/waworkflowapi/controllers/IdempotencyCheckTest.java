@@ -29,6 +29,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
+    public static final int POLL_INTERVAL = 2;
+    public static final int TIMEOUT = 20;
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
@@ -95,8 +97,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         AtomicReference<List<String>> processIdsResponse = new AtomicReference<>();
         await()
             .ignoreExceptions()
-            .pollInterval(2, TimeUnit.SECONDS)
-            .atMost(20, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
+            .atMost(TIMEOUT, TimeUnit.SECONDS)
             .until(() -> {
                 List<String> ids;
                 ids = given()
@@ -135,8 +137,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     private void assertNewIdempotentKeyIsAddedInDb(String idempotentKey, String jurisdiction) {
         await()
             .ignoreExceptions()
-            .pollInterval(2, TimeUnit.SECONDS)
-            .atMost(10, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
+            .atMost(TIMEOUT, TimeUnit.SECONDS)
             .until(() -> {
                 given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -162,8 +164,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .and()
-            .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(15, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
+            .atMost(TIMEOUT, TimeUnit.SECONDS)
             .until(() -> {
                 String groupId = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -185,8 +187,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> response = new AtomicReference<>();
         await()
             .ignoreExceptions()
-            .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(15, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
+            .atMost(TIMEOUT, TimeUnit.SECONDS)
             .until(() -> {
 
                 String taskId = given()
@@ -234,8 +236,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         AtomicReference<Boolean> response = new AtomicReference<>();
         await()
             .ignoreExceptions()
-            .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(15, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
+            .atMost(TIMEOUT, TimeUnit.SECONDS)
             .until(() -> {
                 boolean isDuplicate = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
