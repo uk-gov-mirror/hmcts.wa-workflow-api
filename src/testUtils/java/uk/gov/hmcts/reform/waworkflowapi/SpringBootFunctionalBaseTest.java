@@ -25,6 +25,7 @@ public abstract class SpringBootFunctionalBaseTest {
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     public static final String WA_TASK_INITIATION_IA_ASYLUM = "wa-task-initiation-ia-asylum";
     public static final String TENANT_ID = "ia";
+    public static final int FT_STANDARD_TIMEOUT_SECS = 10;
 
     @Value("${targets.instance}")
     public String testUrl;
