@@ -91,7 +91,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .pollInterval(1, TimeUnit.SECONDS)
-            .atMost(10, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
                 String taskId = given()
@@ -131,7 +131,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void transition_creates_a_task_with_due_date() throws InterruptedException {
+    public void transition_creates_a_task_with_due_date() {
         String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         Map<String, DmnValue<?>> processVariables = mockProcessVariables(
             dueDate,
@@ -161,7 +161,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .pollInterval(1, TimeUnit.SECONDS)
-            .atMost(10, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
                 String taskId = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -188,7 +188,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         await()
             .ignoreExceptions()
             .pollInterval(1, TimeUnit.SECONDS)
-            .atMost(10, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
                 given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
@@ -254,11 +254,4 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         return processVariables;
     }
 
-    private void waitSeconds(int seconds) {
-        try {
-            TimeUnit.SECONDS.sleep(seconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
 }
