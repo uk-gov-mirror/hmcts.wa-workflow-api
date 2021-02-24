@@ -13,8 +13,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.HandleWarningExternalService;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskWorker;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.WarningTaskWorkerHandler;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskWorkerHandler;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotentKeysRepository;
 
 import java.time.LocalDateTime;
@@ -43,9 +43,9 @@ class IdempotentKeysRepositoryTest {
 
     //because of the workers polling camunda at start-up
     @MockBean
-    private IdempotencyTaskWorker idempotencyTaskWorker;
+    private IdempotencyTaskWorkerHandler idempotencyTaskWorkerHandler;
     @MockBean
-    private HandleWarningExternalService handleWarningExternalService;
+    private WarningTaskWorkerHandler warningTaskWorkerHandler;
 
     @BeforeEach
     void setUp() {
