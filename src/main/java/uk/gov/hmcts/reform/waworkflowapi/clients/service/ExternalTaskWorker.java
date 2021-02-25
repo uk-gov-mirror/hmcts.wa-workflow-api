@@ -1,35 +1,40 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
 import org.camunda.bpm.client.ExternalTaskClient;
-import org.camunda.bpm.client.task.ExternalTask;
-import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskWorkerHandler;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
-import java.util.Map;
-
-import static java.util.Collections.singletonMap;
-
-@SuppressWarnings({"PMD.UseUnderscoresInNumericLiterals","PMD.PositionLiteralsFirstInComparisons","PMD.LinguisticNaming"})
 @Component
-public class HandleWarningExternalService {
+@SuppressWarnings({"PMD.UseUnderscoresInNumericLiterals"})
+public class ExternalTaskWorker {
 
     private final String camundaUrl;
-
     private final AuthTokenGenerator authTokenGenerator;
+    private final IdempotencyTaskWorkerHandler idempotencyTaskWorkerHandler;
+    private final WarningTaskWorkerHandler warningTaskWorkerHandler;
 
-    public HandleWarningExternalService(
+    public ExternalTaskWorker(
         @Value("${camunda.url}") String camundaUrl,
-        AuthTokenGenerator authTokenGenerator
-    ) {
+        AuthTokenGenerator authTokenGenerator,
+        IdempotencyTaskWorkerHandler idempotencyTaskWorkerHandler,
+        WarningTaskWorkerHandler warningTaskWorkerHandler) {
+
         this.camundaUrl = camundaUrl;
         this.authTokenGenerator = authTokenGenerator;
+        this.idempotencyTaskWorkerHandler = idempotencyTaskWorkerHandler;
+        this.warningTaskWorkerHandler = warningTaskWorkerHandler;
     }
 
+    /*
+     Because of Camunda error:
+     ERROR: duplicate key value violates unique constraint "act_uniq_auth_user" from this table ACT_RU_AUTHORIZATION)
+     We have to subscribe to all the external tasks from one single class.
+     */
     @EventListener(ApplicationReadyEvent.class)
     public void setupClient() {
         ExternalTaskClient client = ExternalTaskClient.create()
@@ -40,26 +45,14 @@ public class HandleWarningExternalService {
 
         client.subscribe("wa-warning-topic")
             .lockDuration(1000)
-            .handler(this::checkHasWarnings)
+            .handler(warningTaskWorkerHandler::checkHasWarnings)
+            .open();
+
+        client.subscribe("idempotencyCheck")
+            .lockDuration(1000)
+            .handler(idempotencyTaskWorkerHandler::checkIdempotency)
             .open();
     }
 
-    public void checkHasWarnings(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        Map<?,?> variables = externalTask.getAllVariables();
-        var hasWarnings = variables.get("hasWarnings");
-        if (hasWarnings == null) {
-            Map<String, Object> processVariables = singletonMap(
-                "hasWarnings",
-                true
-            );
-            externalTaskService.complete(externalTask, processVariables);
-        } else {
-            externalTaskService.complete(externalTask, singletonMap(
-                "hasWarnings",
-                true
-            ));
 
-        }
-    }
 }
-
