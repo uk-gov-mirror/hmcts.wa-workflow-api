@@ -1,12 +1,4 @@
-targets:
-  instance: ${TEST_URL:http://localhost:8099}
-
 spring.flyway.enabled: false
 
-spring:
-  datasource:
-    driverClassName: org.h2.Driver
-    url: jdbc:h2:mem:ia_timed_event_service
-    username: sa
-    password:
-    platform: h2
+targets:
+  instance: ${TEST_URL:http://localhost:8099}

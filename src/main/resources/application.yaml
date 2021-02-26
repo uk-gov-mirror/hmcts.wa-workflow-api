@@ -16,9 +16,6 @@ management:
 
 enableSwagger: ${ENABLE_SWAGGER:true}
 
-config:
-  stacktraceEnabled:  ${STACKTRACE_ENABLED:false}
-
 camunda:
   url: ${CAMUNDA_URL:http://camunda-bpm/engine-rest}
   getTaskDmnId: getTask
@@ -27,6 +24,12 @@ govUkHolidays:
   url: https://www.gov.uk/
 
 spring:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        show_sql: true
+        default_schema: ${POSTGRES_NAME:wa_workflow_api}
   application:
     name: WA workflow api
   main:
