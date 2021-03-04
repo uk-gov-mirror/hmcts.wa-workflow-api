@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.waworkflowapi.common;
+package uk.gov.hmcts.reform.waworkflowapi.utils;
 
 
 import com.launchdarkly.sdk.LDUser;
