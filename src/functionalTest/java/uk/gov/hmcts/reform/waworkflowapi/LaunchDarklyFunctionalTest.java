@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.waworkflowapi;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.waworkflowapi.common.LaunchDarklyFunctionalTestClient;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -18,6 +17,6 @@ public class LaunchDarklyFunctionalTest extends SpringBootFunctionalBaseTest {
     public void should_hit_launch_darkly() {
         boolean launchDarklyFeature = launchDarklyFunctionalTestClient.getKey("tester");
 
-        assertThat(launchDarklyFeature, is(false));
+        assertThat(launchDarklyFeature, is(true));
     }
 }
