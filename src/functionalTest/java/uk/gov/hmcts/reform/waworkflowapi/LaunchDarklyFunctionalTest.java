@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.waworkflowapi;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.waworkflowapi.common.LaunchDarklyFunctionalTestClient;
 
 import static org.hamcrest.CoreMatchers.is;
