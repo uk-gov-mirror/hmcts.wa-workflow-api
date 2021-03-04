@@ -9,12 +9,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class LaunchDarklyFunctionalTest extends SpringBootFunctionalBaseTest {
 
-    private final LaunchDarklyClient launchDarklyClient;
-
     @Autowired
-    public LaunchDarklyFunctionalTest(LaunchDarklyClient launchDarklyClient) {
-        this.launchDarklyClient = launchDarklyClient;
-    }
+    private LaunchDarklyClient launchDarklyClient;
+
+
 
     @Test
     public void should_hit_launch_darkly() {
