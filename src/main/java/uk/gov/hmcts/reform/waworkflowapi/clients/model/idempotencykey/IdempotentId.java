@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey;
+package uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;

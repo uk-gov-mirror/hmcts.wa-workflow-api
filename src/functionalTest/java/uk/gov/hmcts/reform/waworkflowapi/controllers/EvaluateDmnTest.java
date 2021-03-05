@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
+import io.restassured.response.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body(new EvaluateDmnRequest(null))
             .baseUri(testUrl)
             .pathParam("key", WA_TASK_INITIATION_IA_ASYLUM)
-            .pathParam("tenant-id",TENANT_ID)
+            .pathParam("tenant-id", TENANT_ID)
             .basePath("/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
             .when()
             .post()
@@ -49,24 +50,27 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
 
     @Test
     public void should_evaluate_and_return_dmn_results() {
-        given()
+
+        Response result = given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
             .body(new EvaluateDmnRequest(mockVariables()))
             .baseUri(testUrl)
-            .pathParam("key",WA_TASK_INITIATION_IA_ASYLUM)
-            .pathParam("tenant-id",TENANT_ID)
+            .pathParam("key", WA_TASK_INITIATION_IA_ASYLUM)
+            .pathParam("tenant-id", TENANT_ID)
             .basePath("/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
             .when()
-            .post()
-            .then()
-            .statusCode(HttpStatus.OK_200)
-            .body("results[0].size()", equalTo(4))
-            .body("results[0].name.value", equalTo("Process Application"))
+            .post();
+
+
+        result.then().assertThat()
+            .body("size()", equalTo(1))
+            .body("results[0].name.value", equalTo("Review the appeal"))
             .body("results[0].workingDaysAllowed.value", equalTo(2))
-            .body("results[0].taskId.value", equalTo("processApplication"))
-            .body("results[0].group.value", equalTo("TCW"));
+            .body("results[0].taskId.value", equalTo("reviewTheAppeal"))
+            .body("results[0].group.value", equalTo("TCW"))
+            .body("results[0].taskCategory.value", equalTo("Case progression"));
 
 
     }
@@ -80,8 +84,8 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .contentType(APPLICATION_JSON_VALUE)
             .body(new EvaluateDmnRequest(mockVariables()))
             .baseUri(testUrl)
-            .pathParam("key","non-existent")
-            .pathParam("tenant-id",TENANT_ID)
+            .pathParam("key", "non-existent")
+            .pathParam("tenant-id", TENANT_ID)
             .basePath("/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
             .when()
             .post()
@@ -91,8 +95,8 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
     }
 
     private Map<String, DmnValue<?>> mockVariables() {
-        return Map.of("eventId",DmnValue.dmnStringValue("submitAppeal"),
-                      "postEventState",DmnValue.dmnStringValue(""));
+        return Map.of("eventId", DmnValue.dmnStringValue("submitAppeal"),
+            "postEventState", DmnValue.dmnStringValue("appealSubmitted"));
     }
 
 }

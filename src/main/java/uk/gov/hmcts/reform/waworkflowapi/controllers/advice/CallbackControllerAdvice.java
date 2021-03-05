@@ -27,10 +27,10 @@ public class CallbackControllerAdvice extends ResponseEntityExceptionHandler {
         LOG.error("Exception occurred: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(new ErrorMessage(
-                      ex,
-                      HttpStatus.INTERNAL_SERVER_ERROR,
-                      Timestamp.valueOf(LocalDateTime.now())
-                  )
+                    ex,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    Timestamp.valueOf(LocalDateTime.now())
+                )
             );
     }
 
