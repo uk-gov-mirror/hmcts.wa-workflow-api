@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey;
+package uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -10,7 +10,7 @@ import javax.persistence.Entity;
 @Entity
 @ToString
 @EqualsAndHashCode
-public class IdempotentKeys {
+public class IdempotencyKeys {
 
     @EmbeddedId
     private IdempotentId idempotentId;
@@ -18,14 +18,14 @@ public class IdempotentKeys {
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdatedAt;
 
-    public IdempotentKeys() {
+    public IdempotencyKeys() {
         //needed for spring boot data JPA
     }
 
-    public IdempotentKeys(IdempotentId idempotentId,
-                          String processId,
-                          LocalDateTime createdAt,
-                          LocalDateTime lastUpdatedAt) {
+    public IdempotencyKeys(IdempotentId idempotentId,
+                           String processId,
+                           LocalDateTime createdAt,
+                           LocalDateTime lastUpdatedAt) {
         this.idempotentId = idempotentId;
         this.processId = processId;
         this.createdAt = createdAt;
