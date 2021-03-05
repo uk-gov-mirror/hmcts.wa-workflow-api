@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskService;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskWorkerHandler;
 
@@ -33,8 +33,8 @@ class IdempotencyTaskWorkerHandlerTest {
 
     @Test
     void given_idempotencyKey_is_provided_then_handleIdempotencyProvidedScenario_is_called() {
-        String idempotentKey = "some idempotentKey";
-        when(externalTask.getVariable("idempotentKey")).thenReturn(idempotentKey);
+        String idempotencyKey = "some idempotencyKey";
+        when(externalTask.getVariable("idempotencyKey")).thenReturn(idempotencyKey);
 
         String jurisdiction = "some jurisdiction";
         when(externalTask.getVariable("jurisdiction")).thenReturn(jurisdiction);
@@ -44,7 +44,7 @@ class IdempotencyTaskWorkerHandlerTest {
         verify(idempotencyTaskService).handleIdempotentIdProvidedScenario(
             externalTask,
             externalTaskService,
-            new IdempotentId(idempotentKey, jurisdiction)
+            new IdempotentId(idempotencyKey, jurisdiction)
         );
     }
 
@@ -54,8 +54,8 @@ class IdempotencyTaskWorkerHandlerTest {
         "null",
         "''"
     }, nullValues = {"null"})
-    void given_idempotencyKey_is_not_provided_then_set_isDuplicate_to_false(String idempotentKey) {
-        when(externalTask.getVariable("idempotentKey")).thenReturn(idempotentKey);
+    void given_idempotencyKey_is_not_provided_then_set_isDuplicate_to_false(String idempotencyKey) {
+        when(externalTask.getVariable("idempotencyKey")).thenReturn(idempotencyKey);
 
         idempotencyTaskWorkerHandler.checkIdempotency(externalTask, externalTaskService);
 

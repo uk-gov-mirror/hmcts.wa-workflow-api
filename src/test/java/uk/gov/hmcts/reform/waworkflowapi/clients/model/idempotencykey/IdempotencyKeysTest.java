@@ -1,14 +1,14 @@
-package uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey;
+package uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey;
 
 import org.junit.jupiter.api.Test;
 import pl.pojo.tester.api.assertion.Method;
 
 import static pl.pojo.tester.api.assertion.Assertions.assertPojoMethodsFor;
 
-class IdempotentIdTest {
+class IdempotencyKeysTest {
 
     @SuppressWarnings("rawtypes")
-    private final Class classToTest = IdempotentId.class;
+    private final Class classToTest = IdempotencyKeys.class;
 
     @Test
     void isWellImplemented() {

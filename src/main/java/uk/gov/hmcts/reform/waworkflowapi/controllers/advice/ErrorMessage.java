@@ -42,10 +42,10 @@ public class ErrorMessage {
     @Override
     public String toString() {
         return "ErrorMessage{"
-            + "timestamp=" + timestamp
-            + ", error='" + error + '\''
-            + ", status=" + status
-            + ", message='" + message + '\''
-            + '}';
+               + "timestamp=" + timestamp
+               + ", error='" + error + '\''
+               + ", status=" + status
+               + ", message='" + message + '\''
+               + '}';
     }
 }
