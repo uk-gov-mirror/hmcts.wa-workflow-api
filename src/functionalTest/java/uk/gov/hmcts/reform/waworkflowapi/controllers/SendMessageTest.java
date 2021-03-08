@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
+import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotentKeysRepository;
 import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
@@ -30,9 +29,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
-
-    @Autowired
-    private IdempotentKeysRepository idempotentKeysRepository;
 
     private String serviceAuthorizationToken;
     private String caseId;
@@ -86,7 +82,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                 "createTaskMessage",
                 processVariables,
                 null
-            )).log().body()
+            ))
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
@@ -149,7 +145,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             UUID.randomUUID().toString()
         );
 
-        given()
+        Response request = given()
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
@@ -157,12 +153,13 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                 "createTaskMessage",
                 processVariables,
                 null
-            )).log().body()
+            ))
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
-            .post()
-            .then()
+            .post();
+
+        request.then()
             .statusCode(HttpStatus.NO_CONTENT_204);
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
@@ -171,24 +168,28 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .pollInterval(1, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
-                String taskId = given()
+
+                Response result = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
                     .contentType(APPLICATION_JSON_VALUE)
                     .baseUri(camundaUrl)
                     .basePath("/task")
                     .param("processVariables", "caseId_eq_" + caseId)
                     .when()
-                    .get()
-                    .prettyPeek()
-                    .then()
+                    .get();
+
+                result.then().assertThat()
                     .body("size()", is(1))
                     .body("[0].name", is("Provide Respondent Evidence"))
-                    .body("[0].formKey", is("provideRespondentEvidence"))
-                    .extract()
-                    .path("[0].id");
+                    .body("[0].formKey", is("provideRespondentEvidence"));
 
-                taskIdResponse.set(taskId);
-                return StringUtils.isNotBlank(taskId);
+                taskIdResponse.set(
+                    result.then()
+                        .extract()
+                        .path("[0].id")
+                );
+
+                return true;
             });
 
         String taskId = taskIdResponse.get();

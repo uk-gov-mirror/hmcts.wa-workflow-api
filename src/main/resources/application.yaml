@@ -33,7 +33,7 @@ spring:
   application:
     name: WA workflow api
   main:
-   allow-bean-definition-overriding: true
+    allow-bean-definition-overriding: true
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:wa_workflow_api}${POSTGRES_CONNECTION_OPTIONS:}

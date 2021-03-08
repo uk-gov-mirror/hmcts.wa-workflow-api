@@ -10,7 +10,7 @@ import static uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue.dmnString
 
 @EqualsAndHashCode
 @ToString
-@SuppressWarnings({"PMD.PositionLiteralsFirstInComparisons","PMD.UnusedFormalParameter","PMD.LinguisticNaming"})
+@SuppressWarnings({"PMD.PositionLiteralsFirstInComparisons", "PMD.UnusedFormalParameter", "PMD.LinguisticNaming"})
 public class ProcessVariables {
     private final DmnValue<String> jurisdiction;
     private final DmnValue<String> caseType;

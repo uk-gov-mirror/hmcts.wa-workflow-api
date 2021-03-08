@@ -64,9 +64,9 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
 
         EvaluateDmnRequest evaluateDmnRequest = new EvaluateDmnRequest(
             Map.of("name", dmnStringValue("Process Application"),
-                   "workingDaysAllowed", dmnIntegerValue(2),
-                   "taskId", dmnStringValue("processApplication"),
-                   "group", dmnStringValue("TCW")
+                "workingDaysAllowed", dmnIntegerValue(2),
+                "taskId", dmnStringValue("processApplication"),
+                "group", dmnStringValue("TCW")
             ));
 
         when(camundaClient.evaluateDmn(
@@ -157,7 +157,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             "group", dmnStringValue("TCW"),
             "workingDaysAllowed", dmnIntegerValue(5),
             "taskId", dmnStringValue("task name")
-                       )
+            )
         );
     }
 

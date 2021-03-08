@@ -11,10 +11,10 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentId;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotentkey.IdempotentKeys;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotencyKeys;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotentId;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyKeysRepository;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskService;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotentKeysRepository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,17 +27,16 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class IdempotencyTaskServiceTest {
 
+    @Captor
+    ArgumentCaptor<IdempotencyKeys> captor;
     @Mock
-    private IdempotentKeysRepository idempotentKeysRepository;
+    private IdempotencyKeysRepository idempotencyKeysRepository;
     @InjectMocks
     private IdempotencyTaskService idempotencyTaskService;
-
     @Mock
     private ExternalTask externalTask;
     @Mock
     private ExternalTaskService externalTaskService;
-    @Captor
-    ArgumentCaptor<IdempotentKeys> captor;
 
     @ParameterizedTest
     @CsvSource({
@@ -48,12 +47,12 @@ class IdempotencyTaskServiceTest {
                                              String processIdTask,
                                              boolean isDuplicate) {
         IdempotentId idempotentId = new IdempotentId(
-            "some idempotentKey",
+            "some idempotencyKey",
             "some tenant id"
         );
 
-        when(idempotentKeysRepository.findById(idempotentId))
-            .thenReturn(Optional.of(new IdempotentKeys(
+        when(idempotencyKeysRepository.findById(idempotentId))
+            .thenReturn(Optional.of(new IdempotencyKeys(
                 idempotentId,
                 processIdRow,
                 LocalDateTime.now(),
@@ -74,11 +73,11 @@ class IdempotencyTaskServiceTest {
     @Test
     void handleIdempotentIdIsNotPresentInDbTest() {
         IdempotentId idempotentId = new IdempotentId(
-            "some idempotentKey",
+            "some idempotencyKey",
             "some tenant id"
         );
 
-        when(idempotentKeysRepository.findById(idempotentId))
+        when(idempotencyKeysRepository.findById(idempotentId))
             .thenReturn(Optional.empty());
 
         when(externalTask.getProcessInstanceId()).thenReturn("some process id");
@@ -89,11 +88,11 @@ class IdempotencyTaskServiceTest {
             idempotentId
         );
 
-        verify(idempotentKeysRepository).save(captor.capture());
+        verify(idempotencyKeysRepository).save(captor.capture());
 
-        IdempotentKeys actualIdempotentKeys = captor.getValue();
-        assertThat(actualIdempotentKeys).isEqualToComparingOnlyGivenFields(
-            new IdempotentKeys(idempotentId, "some process id", null, null),
+        IdempotencyKeys actualIdempotencyKeys = captor.getValue();
+        assertThat(actualIdempotencyKeys).isEqualToComparingOnlyGivenFields(
+            new IdempotencyKeys(idempotentId, "some process id", null, null),
             "idempotentId", "processId"
         );
 
