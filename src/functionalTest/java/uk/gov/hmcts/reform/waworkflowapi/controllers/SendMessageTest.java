@@ -52,7 +52,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .body(new SendMessageRequest(
                 "createMessageTask",
                 processVariables,
-                null
+                null,
+                false
             )).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
@@ -81,7 +82,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .body(new SendMessageRequest(
                 "createTaskMessage",
                 processVariables,
-                null
+                null,
+                false
             ))
             .baseUri(testUrl)
             .basePath("/workflow/message")
@@ -152,7 +154,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .body(new SendMessageRequest(
                 "createTaskMessage",
                 processVariables,
-                null
+                null,
+                false
             ))
             .baseUri(testUrl)
             .basePath("/workflow/message")
@@ -231,7 +234,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             .body(new SendMessageRequest(
                 "non-existent-message",
                 processVariables,
-                null
+                null,
+                false
             )).log().body()
             .baseUri(testUrl)
             .basePath("/workflow/message")
