@@ -52,7 +52,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
     @Captor
     private ArgumentCaptor<SendMessageRequest> captor;
 
-
     @BeforeEach
     void setUp() {
         when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
