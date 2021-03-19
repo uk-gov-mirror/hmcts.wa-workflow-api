@@ -40,16 +40,13 @@ public class ExternalTaskWorker {
         ExternalTaskClient client = ExternalTaskClient.create()
             .baseUrl(camundaUrl)
             .addInterceptor(new ServiceAuthProviderInterceptor(authTokenGenerator))
-            .asyncResponseTimeout(10000)
             .build();
 
         client.subscribe("wa-warning-topic")
-            .lockDuration(1000)
             .handler(warningTaskWorkerHandler::checkHasWarnings)
             .open();
 
         client.subscribe("idempotencyCheck")
-            .lockDuration(1000)
             .handler(idempotencyTaskWorkerHandler::checkIdempotency)
             .open();
     }
