@@ -79,3 +79,8 @@ credentials:
     system:
       user: ${WA_SYSTEM_USERNAME:system-user}
       password: ${WA_SYSTEM_PASSWORD:system-password}
+
+launchDarkly:
+  sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
+  connectionTimeout: 5000
+  socketTimeout: 5000

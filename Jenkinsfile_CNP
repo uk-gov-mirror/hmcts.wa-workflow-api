@@ -9,7 +9,7 @@ def component = "workflow-api"
 
 def secrets = [
   'wa-${env}' : [
-
+    secret('ld-secret', 'LAUNCH_DARKLY_SDK_KEY'),
   ],
   's2s-${env}' : [
     secret('microservicekey-wa-workflow-api', 'S2S_SECRET_WORKFLOW_API'),
