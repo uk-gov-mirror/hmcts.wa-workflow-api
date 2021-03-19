@@ -8,22 +8,6 @@
     <cpe>cpe:/a:pivotal_software:spring_security</cpe>
     <cve>CVE-2018-1258</cve>
   </suppress>
-  <suppress until="2030-01-01">
-    <notes><![CDATA[
-     Suppressing as it's a false positive (see: https://pivotal.io/security/cve-2018-1258)
-   ]]></notes>
-    <gav regex="true">^org.springframework.security:spring-security-*.*</gav>
-    <cpe>cpe:/a:pivotal_software:spring_security</cpe>
-    <cve>CVE-2018-1258</cve>
-  </suppress>
-  <suppress until="2021-06-01">
-    <notes><![CDATA[
-      We do not use authority component to derive host name
-      latest library version has the problem too https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-      more details https://nvd.nist.gov/vuln/detail/CVE-2020-13956
-    ]]></notes>
-    <cve>CVE-2020-13956</cve>
-  </suppress>
   <suppress until="2021-06-01">
     <notes><![CDATA[
       We do not use authority component to derive host name
