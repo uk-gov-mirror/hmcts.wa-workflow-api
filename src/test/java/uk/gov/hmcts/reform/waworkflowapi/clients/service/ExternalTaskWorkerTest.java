@@ -9,7 +9,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskWorkerHandler;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class ExternalTaskWorkerTest {
@@ -40,5 +40,4 @@ class ExternalTaskWorkerTest {
         assertThat(ReflectionTestUtils.getField(externalTaskWorker, "warningTaskWorkerHandler")).isNotNull();
         assertThat(ReflectionTestUtils.getField(externalTaskWorker, "camundaUrl")).isEqualTo("some camunda url");
     }
-
 }

@@ -1,19 +1,15 @@
+## NOTE:
+  # To run integration tests with this active profile on your local machine
+  # you need to start up your docker app, not minikube but the docker app.
+
 logging:
   level:
     org.springframework:
-      dao: info
+      dao: debug
       transaction: debug
       jdbc.core.JdbcTemplate: debug
     org.hibernate:
       SQL: debug
       type.descriptor.sql.BasicBinder: trace
-      engine: info
+      engine: debug
     uk.gov.hmcts.reform: debug
-
-feign:
-  client:
-    config:
-      default:
-        loggerLevel: full
-
-spring.jackson.serialization.indent_output: true

@@ -27,7 +27,11 @@ public class IdempotencyTaskService {
     public void handleIdempotentIdProvidedScenario(ExternalTask externalTask,
                                                    ExternalTaskService externalTaskService,
                                                    IdempotentId idempotentId) {
-        Optional<IdempotencyKeys> idempotentRow = idempotencyKeysRepository.findById(idempotentId);
+        log.info("checking if idempotentId({}) is present in DB...", idempotentId);
+        Optional<IdempotencyKeys> idempotentRow = idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
+            idempotentId.getIdempotencyKey(),
+            idempotentId.getTenantId()
+        );
 
         idempotentRow.ifPresentOrElse(
             (row) -> handleIdempotentIdIsPresentInDb(externalTask, externalTaskService, row),
@@ -38,9 +42,10 @@ public class IdempotencyTaskService {
     private void handleIdempotentIdIsNotPresentInDb(ExternalTask externalTask,
                                                     ExternalTaskService externalTaskService,
                                                     IdempotentId idempotentId) {
-        log.info("idempotencyKey({}) does not exist in the database.", idempotentId);
+        log.info("Saving idempotentId({}) in the DB because is not present", idempotentId);
         idempotencyKeysRepository.save(new IdempotencyKeys(
-            idempotentId,
+            idempotentId.getIdempotencyKey(),
+            idempotentId.getTenantId(),
             externalTask.getProcessInstanceId(),
             LocalDateTime.now(),
             LocalDateTime.now()
@@ -51,7 +56,10 @@ public class IdempotencyTaskService {
     private void handleIdempotentIdIsPresentInDb(ExternalTask externalTask,
                                                  ExternalTaskService externalTaskService,
                                                  IdempotencyKeys row) {
-        log.info("idempotencyKey({}) already exists in the database.", row.getIdempotentId());
+        log.info(
+            "Not saving idempotentId({}) because already exists in the database.",
+            new IdempotentId(row.getIdempotencyKey(), row.getTenantId())
+        );
         if (isSameProcessId(externalTask, row)) {
             externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, false));
         } else {

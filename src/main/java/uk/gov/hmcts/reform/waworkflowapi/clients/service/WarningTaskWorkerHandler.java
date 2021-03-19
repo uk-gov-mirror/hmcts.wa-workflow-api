@@ -25,8 +25,8 @@ public class WarningTaskWorkerHandler {
                 "hasWarnings",
                 true
             ));
-
         }
     }
+
 }
 

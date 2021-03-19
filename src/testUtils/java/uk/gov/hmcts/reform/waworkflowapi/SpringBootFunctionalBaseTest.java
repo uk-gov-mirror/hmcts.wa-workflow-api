@@ -68,13 +68,14 @@ public abstract class SpringBootFunctionalBaseTest {
         String taskId,
         String group,
         String caseId,
-        String idempotencyKey
+        String idempotencyKey,
+        String jurisdiction
     ) {
         Map<String, DmnValue<?>> processVariables = new HashMap<>();
         processVariables.put("dueDate", DmnValue.dmnStringValue(dueDate));
         processVariables.put("group", DmnValue.dmnStringValue(group));
         processVariables.put("name", DmnValue.dmnStringValue(name));
-        processVariables.put("jurisdiction", DmnValue.dmnStringValue("ia"));
+        processVariables.put("jurisdiction", DmnValue.dmnStringValue(jurisdiction));
         processVariables.put("caseType", DmnValue.dmnStringValue("asylum"));
         processVariables.put("taskId", DmnValue.dmnStringValue(taskId));
         processVariables.put("caseId", DmnValue.dmnStringValue(caseId));

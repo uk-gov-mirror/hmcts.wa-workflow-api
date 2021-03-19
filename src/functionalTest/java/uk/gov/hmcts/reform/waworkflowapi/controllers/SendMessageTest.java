@@ -72,7 +72,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "processApplication",
             "TCW",
             caseId,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(), "ia"
         );
 
         given()
@@ -94,7 +94,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
-            .ignoreExceptions()
+            .ignoreException(AssertionError.class)
             .pollInterval(1, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
@@ -144,7 +144,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "provideRespondentEvidence",
             "external",
             caseId,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(), "ia"
         );
 
         Response request = given()
@@ -167,7 +167,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
-            .ignoreExceptions()
+            .ignoreException(AssertionError.class)
             .pollInterval(1, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
@@ -197,7 +197,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         String taskId = taskIdResponse.get();
         await()
-            .ignoreExceptions()
+            .ignoreException(AssertionError.class)
             .pollInterval(1, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
@@ -225,7 +225,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "Process Application", "processApplication",
             "TCW",
             caseId,
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(), "ia"
         );
         given()
             .relaxedHTTPSValidation()

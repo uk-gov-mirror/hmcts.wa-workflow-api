@@ -17,35 +17,43 @@ import static uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.Idem
 public class IdempotencyTaskWorkerHandler {
 
     private final IdempotencyTaskService idempotencyTaskService;
+    private final ExternalTaskErrorHandling externalTaskErrorHandlingWithThreeRetries;
 
-    public IdempotencyTaskWorkerHandler(
-        IdempotencyTaskService idempotencyTaskService) {
+    public IdempotencyTaskWorkerHandler(IdempotencyTaskService idempotencyTaskService,
+                                        ExternalTaskErrorHandling externalTaskErrorHandlingWithThreeRetries) {
         this.idempotencyTaskService = idempotencyTaskService;
+        this.externalTaskErrorHandlingWithThreeRetries = externalTaskErrorHandlingWithThreeRetries;
     }
 
     public void checkIdempotency(ExternalTask externalTask, ExternalTaskService externalTaskService) {
-        Optional<IdempotentId> idempotentId = getIdempotentId(externalTask);
-        idempotentId.ifPresentOrElse(
-            id -> idempotencyTaskService.handleIdempotentIdProvidedScenario(externalTask, externalTaskService, id),
-            () -> completeTask(externalTask, externalTaskService)
-        );
+        log.info("checking idempotency...");
+        try {
+            Optional<IdempotentId> idempotentId = getIdempotentId(externalTask);
+            idempotentId.ifPresentOrElse(
+                id -> idempotencyTaskService.handleIdempotentIdProvidedScenario(externalTask, externalTaskService, id),
+                () -> completeTask(externalTask, externalTaskService)
+            );
+        } catch (Exception e) {
+            externalTaskErrorHandlingWithThreeRetries.handleError(externalTask, externalTaskService, e);
+        }
     }
 
     private void completeTask(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         String msg = "No idempotencyKey found for process instance({}), "
-                     + "probably a service other than wa/ia is using the BPM.";
+            + "probably a service other than wa/ia is using the BPM.";
         log.info(msg, externalTask.getProcessInstanceId());
         externalTaskService.complete(externalTask, singletonMap(IS_DUPLICATE, false));
     }
 
     private Optional<IdempotentId> getIdempotentId(ExternalTask externalTask) {
         String idempotencyKey = externalTask.getVariable("idempotencyKey");
-        if (StringUtils.isNotBlank(idempotencyKey)) {
-            String tenantId = externalTask.getVariable("jurisdiction");
+        String tenantId = externalTask.getVariable("jurisdiction");
+        if (StringUtils.isNotBlank(idempotencyKey) && StringUtils.isNotBlank(tenantId)) {
+            log.info("build idempotentId with key({}) and tenantId({})...", idempotencyKey, tenantId);
             return Optional.of(new IdempotentId(idempotencyKey, tenantId));
         }
+        log.info("idempotentId id blank");
         return Optional.empty();
     }
-
 
 }

@@ -7,15 +7,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotencyKeys;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotentId;
+import uk.gov.hmcts.reform.waworkflowapi.clients.service.ExternalTaskWorker;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyKeysRepository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -23,19 +31,43 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest.FT_STANDARD_TIMEOUT_SECS;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Slf4j
-@ActiveProfiles("integration")
+@Testcontainers
+@ActiveProfiles("docker")
 class IdempotencyKeysRepositoryTest {
 
-    public static final String EXPECTED_EXCEPTION = "org.springframework.orm.jpa.JpaSystemException";
+    public static final String FAIL_TO_UPDATE_THIS = "fail to update this";
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:11"))
+        .withDatabaseName("wa_workflow_api")
+        .withUsername("postgres")
+        .withPassword("pass");
+
+    @DynamicPropertySource
+    static void registerPgProperties(DynamicPropertyRegistry registry) {
+        registry.add(
+            "spring.datasource.url",
+            () -> String.format(
+                "jdbc:postgresql://localhost:%d/%s",
+                postgres.getFirstMappedPort(),
+                postgres.getDatabaseName()
+            )
+        );
+        registry.add("spring.datasource.username", () -> postgres.getUsername());
+        registry.add("spring.datasource.password", () -> postgres.getPassword());
+    }
+
     @Autowired
     private IdempotencyKeysRepository repository;
     private IdempotencyKeys idempotencyKeysWithRandomId;
     private IdempotentId randomIdempotentId;
+
+    //because of the workers polling camunda at start-up
+    @MockBean
+    private ExternalTaskWorker externalTaskWorker;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +77,8 @@ class IdempotencyKeysRepositoryTest {
         );
 
         idempotencyKeysWithRandomId = new IdempotencyKeys(
-            randomIdempotentId,
+            randomIdempotentId.getIdempotencyKey(),
+            randomIdempotentId.getTenantId(),
             UUID.randomUUID().toString(),
             LocalDateTime.now(),
             LocalDateTime.now()
@@ -54,50 +87,64 @@ class IdempotencyKeysRepositoryTest {
 
     @Test
     void given_readQueryOnRow_then_anotherQueryOnSameRowThrowException() throws InterruptedException {
+        log.info("executing test with idempotencyKeysWithRandomId({})", idempotencyKeysWithRandomId.toString());
         repository.save(idempotencyKeysWithRandomId);
 
         ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-        executorService.execute(this::reader);
-        Future<?> futureException = executorService.submit(this::writer);
+        executorService.execute(this::reader1);
+        Future<?> futureException = executorService.submit(this::reader2);
 
         await()
-            .ignoreExceptions()
+            .ignoreException(AssertionError.class)
             .pollInterval(1, TimeUnit.SECONDS)
-            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
+            .atMost(10, TimeUnit.SECONDS)
             .until(() -> {
+                Exception exception = Assertions.assertThrows(Exception.class, futureException::get);
+                log.info(exception.toString());
+                assertThat(exception).hasMessageContaining("PessimisticLockException");
 
-                ExecutionException exception = Assertions.assertThrows(ExecutionException.class, futureException::get);
-                assertThat(exception.getMessage())
-                    .startsWith(EXPECTED_EXCEPTION);
-
-                return exception.getMessage().startsWith(EXPECTED_EXCEPTION);
+                return true;
             });
+
+        Optional<IdempotencyKeys> actual = repository.findByIdempotencyKeyAndTenantId(
+            idempotencyKeysWithRandomId.getIdempotencyKey(),
+            idempotencyKeysWithRandomId.getTenantId()
+        );
+
+        assertThat(actual.isPresent()).isTrue();
+        assertThat(actual.get().getProcessId()).isNotEqualTo(FAIL_TO_UPDATE_THIS);
 
         executorService.shutdown();
         //noinspection ResultOfMethodCallIgnored
-        executorService.awaitTermination(3, TimeUnit.MINUTES);
+        executorService.awaitTermination(13, TimeUnit.SECONDS);
     }
 
-    private void writer() {
+    private void reader2() {
         // Allow some time to ensure the reader is executed first
         await().timeout(2, TimeUnit.SECONDS);
+        log.info("start reader2...");
+        repository.findByIdempotencyKeyAndTenantId(
+            randomIdempotentId.getIdempotencyKey(),
+            randomIdempotentId.getTenantId()
+        );
 
-        log.info("start read and write ops...");
-
-        repository.findById(randomIdempotentId);
         repository.save(new IdempotencyKeys(
-            randomIdempotentId,
-            "should not update because of lock",
+            idempotencyKeysWithRandomId.getIdempotencyKey(),
+            idempotencyKeysWithRandomId.getTenantId(),
+            FAIL_TO_UPDATE_THIS,
             LocalDateTime.now(),
             LocalDateTime.now()
         ));
 
     }
 
-    private void reader() {
-        log.info("start reader thread...");
-        repository.findById(randomIdempotentId);
+    private void reader1() {
+        log.info("start reader1...");
+        repository.findByIdempotencyKeyAndTenantId(
+            randomIdempotentId.getIdempotencyKey(),
+            randomIdempotentId.getTenantId()
+        );
     }
 
 }

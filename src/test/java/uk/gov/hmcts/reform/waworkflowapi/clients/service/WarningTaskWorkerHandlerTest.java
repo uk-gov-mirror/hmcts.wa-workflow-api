@@ -20,17 +20,18 @@ class WarningTaskWorkerHandlerTest {
 
     private ExternalTask externalTask;
     private ExternalTaskService externalTaskService;
-    private final WarningTaskWorkerHandler warningTaskWorkerHandler = new WarningTaskWorkerHandler();
-
+    private WarningTaskWorkerHandler warningTaskWorkerHandler;
 
     @BeforeEach
     void setUp() {
         externalTask = mock(ExternalTask.class);
         externalTaskService = mock(ExternalTaskService.class);
+        warningTaskWorkerHandler = new WarningTaskWorkerHandler();
     }
 
     @Test
     void test_HasWarning_Handler_when_false() {
+
         when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", false));
 
         warningTaskWorkerHandler.checkHasWarnings(externalTask, externalTaskService);
@@ -44,6 +45,7 @@ class WarningTaskWorkerHandlerTest {
 
     @Test
     void test_HasWarning_Handler_when_true() {
+
         when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", true));
 
         warningTaskWorkerHandler.checkHasWarnings(externalTask, externalTaskService);
@@ -56,6 +58,7 @@ class WarningTaskWorkerHandlerTest {
 
     @Test
     void test_HasWarning_Handler_when_empty() {
+
         when(externalTask.getAllVariables()).thenReturn(singletonMap("hasWarnings", null));
 
         warningTaskWorkerHandler.checkHasWarnings(externalTask, externalTaskService);

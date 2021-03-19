@@ -9,9 +9,11 @@ def component = "workflow-api"
 
 def secrets = [
   'wa-${env}' : [
+    secret('workflow-api-POSTGRES-PASS', 'POSTGRES_PASSWORD'),
+    secret('workflow-api-POSTGRES-USER', 'POSTGRES_USERNAME'),
     secret('ld-secret', 'LAUNCH_DARKLY_SDK_KEY'),
   ],
-  's2s-${env}' : [
+  's2s-${env}': [
     secret('microservicekey-wa-workflow-api', 'S2S_SECRET_WORKFLOW_API'),
   ]
 ]
@@ -31,6 +33,7 @@ withPipeline(type, product, component) {
   env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
   env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
   env.CAMUNDA_URL = "http://camunda-api-aat.service.core-compute-aat.internal/engine-rest"
+  env.POSTGRES_HOST = "wa-workflow-api-postgres-db-aat.postgres.database.azure.com"
 
   loadVaultSecrets(secrets)
 
@@ -38,7 +41,6 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/**/*'
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/reports/tests/integration/**/*'
   }
-
 
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'

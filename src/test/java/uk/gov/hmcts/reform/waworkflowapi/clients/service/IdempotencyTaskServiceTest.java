@@ -51,13 +51,16 @@ class IdempotencyTaskServiceTest {
             "some tenant id"
         );
 
-        when(idempotencyKeysRepository.findById(idempotentId))
-            .thenReturn(Optional.of(new IdempotencyKeys(
-                idempotentId,
-                processIdRow,
-                LocalDateTime.now(),
-                LocalDateTime.now()
-            )));
+        when(idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
+            idempotentId.getIdempotencyKey(),
+            idempotentId.getTenantId()
+        )).thenReturn(Optional.of(new IdempotencyKeys(
+            idempotentId.getIdempotencyKey(),
+            idempotentId.getTenantId(),
+            processIdRow,
+            LocalDateTime.now(),
+            LocalDateTime.now()
+        )));
 
         when(externalTask.getProcessInstanceId()).thenReturn(processIdTask);
 
@@ -77,8 +80,10 @@ class IdempotencyTaskServiceTest {
             "some tenant id"
         );
 
-        when(idempotencyKeysRepository.findById(idempotentId))
-            .thenReturn(Optional.empty());
+        when(idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
+            idempotentId.getIdempotencyKey(),
+            idempotentId.getTenantId()
+        )).thenReturn(Optional.empty());
 
         when(externalTask.getProcessInstanceId()).thenReturn("some process id");
 
@@ -90,10 +95,16 @@ class IdempotencyTaskServiceTest {
 
         verify(idempotencyKeysRepository).save(captor.capture());
 
-        IdempotencyKeys actualIdempotencyKeys = captor.getValue();
-        assertThat(actualIdempotencyKeys).isEqualToComparingOnlyGivenFields(
-            new IdempotencyKeys(idempotentId, "some process id", null, null),
-            "idempotentId", "processId"
+        IdempotencyKeys actualIdempotentKeys = captor.getValue();
+        assertThat(actualIdempotentKeys).isEqualToComparingOnlyGivenFields(
+            new IdempotencyKeys(
+                idempotentId.getIdempotencyKey(),
+                idempotentId.getTenantId(),
+                "some process id",
+                null,
+                null
+            ),
+            "idempotencyKey", "tenantId", "processId"
         );
 
         verify(externalTaskService).complete(externalTask, singletonMap("isDuplicate", false));

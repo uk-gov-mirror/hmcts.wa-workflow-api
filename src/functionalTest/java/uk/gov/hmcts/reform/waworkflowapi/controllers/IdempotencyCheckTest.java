@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,60 +33,72 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
+    public static final int POLL_INTERVAL = 2;
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
-
     @Autowired
     private IdempotencyKeysRepository idempotencyKeysRepository;
 
     private String serviceAuthorizationToken;
     private String caseId;
+    private String idempotencyKey;
+    private Map<String, DmnValue<?>> processVariables;
 
     @Before
     public void setUp() {
         caseId = UUID.randomUUID().toString();
+        idempotencyKey = UUID.randomUUID().toString();
 
         serviceAuthorizationToken =
             authorizationHeadersProvider
                 .getAuthorizationHeaders()
                 .getValue(SERVICE_AUTHORIZATION);
+
+
+        processVariables = createProcessVariables(idempotencyKey, "ia");
     }
 
     @Test
-    public void transition_creates_a_task_and_goes_through_external_task() {
-        String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        String idempotentKey = UUID.randomUUID().toString();
-        Map<String, DmnValue<?>> processVariables = mockProcessVariables(
-            dueDate,
-            "Provide Respondent Evidence",
-            "provideRespondentEvidence",
-            "external",
-            caseId,
-            idempotentKey
-        );
-
+    public void given_two_tasks_with_the_same_idempotentKey_and_different_tenantId_should_not_be_deemed_as_duplicated() {
         sendMessage(processVariables);
-        String taskId = assertTaskIsCreated();
-        // fixme: uncomment below lines once the idempotencyTaskWorker is released
-        //        assertNewIdempotentKeyIsAddedInDb(idempotentKey);
-        cleanUp(taskId, serviceAuthorizationToken); //We can do the cleaning here now
+        String taskId = assertTaskIsCreated(caseId);
+        assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "ia");
+        cleanUp(taskId, serviceAuthorizationToken); //We do the cleaning here to avoid clashing with other tasks
 
-        //        sendMessage(processVariables); //We send another message for the same idempotencyKey
-        //        List<String> processIds = getProcessIdsForGivenIdempotentKey(idempotentKey);
-        //        assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(processIds);
+        processVariables = createProcessVariables(idempotencyKey, "wa");
+        sendMessage(processVariables); //We send another message for the same idempotencyKey and different tenantId
+        taskId = assertTaskIsCreated(caseId);
+        assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "wa");
+        cleanUp(taskId, serviceAuthorizationToken); //We do the cleaning here to avoid clashing with other tasks
+
+        List<String> processIds = getProcessIdsForGivenIdempotencyKey(idempotencyKey);
+        assertNumberOfDuplicatedProcesses(processIds, 0);
     }
 
-    private void assertThereIsOnlyOneProcessWithDuplicateEqualToTrue(List<String> processIds) {
-        Assertions.assertThat((int) processIds.stream()
+    @Test
+    public void given_two_tasks_with_the_same_idempotentId_should_tag_one_as_duplicated() {
+        sendMessage(processVariables);
+
+        String taskId = assertTaskIsCreated(caseId);
+        assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "ia");
+        cleanUp(taskId, serviceAuthorizationToken); //We can do the cleaning here now
+
+        sendMessage(processVariables); //We send another message for the same idempotencyKey
+        List<String> processIds = getProcessIdsForGivenIdempotencyKey(idempotencyKey);
+        assertNumberOfDuplicatedProcesses(processIds, 1);
+    }
+
+    private void assertNumberOfDuplicatedProcesses(List<String> processIds, int expectedNumberOfDuplicatedProcesses) {
+        assertThat((int) processIds.stream()
             .filter(this::getIsDuplicateVariableValue)
-            .count()).isEqualTo(1);
+            .count()).isEqualTo(expectedNumberOfDuplicatedProcesses);
     }
 
     private List<String> getProcessIdsForGivenIdempotencyKey(String idempotencyKey) {
         AtomicReference<List<String>> processIdsResponse = new AtomicReference<>();
         await()
-            .ignoreExceptions()
-            .pollInterval(1, TimeUnit.SECONDS)
+            .ignoreException(AssertionError.class)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
@@ -116,20 +127,86 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         return processIdsResponse.get();
     }
 
-    private void assertNewIdempotencyKeyIsAddedInDb(String idempotencyKey) {
-        Optional<IdempotencyKeys> savedEntity = idempotencyKeysRepository.findById(new IdempotentId(idempotencyKey, "ia"));
-        assertThat(savedEntity.isPresent()).isTrue();
+    private Map<String, DmnValue<?>> createProcessVariables(String idempotentKey, String jurisdiction) {
+        String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return mockProcessVariables(
+            dueDate,
+            "Provide Respondent Evidence",
+            "provideRespondentEvidence",
+            "external",
+            caseId,
+            idempotentKey,
+            jurisdiction
+        );
     }
 
-    private String assertTaskIsCreated() {
+    /*
+     * Because of more than one idempotencyCheck worker (Preview and AAT environments)
+     * then we have to look for  the idempotentId in both DBs, AAT and Preview.
+     */
+    private void assertNewIdempotentKeyIsAddedToDb(String idempotencyKey, String jurisdiction) {
+        boolean idempotencyKeysInAatDb = findIdempotencyKeysInAatDb(idempotencyKey, jurisdiction);
+        if (!idempotencyKeysInAatDb) {
+            getIdempotencyKeysInPreviewDb(idempotencyKey, jurisdiction);
+        }
+    }
+
+    private boolean findIdempotencyKeysInAatDb(String idempotencyKey, String jurisdiction) {
+        log.info("Asserting idempotentId({}) was added to AAT DB...", new IdempotentId(idempotencyKey, jurisdiction));
+        Optional<IdempotencyKeys> actual = idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
+            idempotencyKey,
+            jurisdiction
+        );
+        if (actual.isPresent()) {
+            log.info("idempotentKeys found in DB: {}", actual.get());
+            return true;
+        }
+        return false;
+    }
+
+    private void getIdempotencyKeysInPreviewDb(String idempotencyKey, String jurisdiction) {
+        log.info(
+            "Asserting idempotentId({}) was added to Preview DB...",
+            new IdempotentId(idempotencyKey, jurisdiction)
+        );
+        await()
+            .ignoreException(AssertionError.class)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
+            .until(() -> {
+                given()
+                    .log().method().log().uri().log().headers()
+                    .relaxedHTTPSValidation()
+                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .baseUri(testUrl)
+                    .basePath("/testing/idempotencyKeys/search/findByIdempotencyKeyAndTenantId")
+                    .params(
+                        "idempotencyKey", idempotencyKey,
+                        "tenantId", jurisdiction
+                    )
+                    .when()
+                    .get()
+                    .then()
+                    .log().status().log().body(true)
+                    .body("idempotencyKey", is(idempotencyKey))
+                    .body("tenantId", is(jurisdiction));
+
+                return true;
+            });
+        log.info("idempotentKeys found in DB: {}", new IdempotentId(idempotencyKey, jurisdiction));
+    }
+
+    private String assertTaskIsCreated(String caseId) {
         AtomicReference<String> response = new AtomicReference<>();
         await()
-            .ignoreExceptions()
-            .pollInterval(1, TimeUnit.SECONDS)
+            .ignoreException(AssertionError.class)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
                 Response result = given()
+                    .log().method().log().uri()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
                     .contentType(APPLICATION_JSON_VALUE)
                     .baseUri(camundaUrl)
@@ -138,7 +215,10 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
                     .when()
                     .get();
 
-                result.then().assertThat()
+                result
+                    .then()
+                    .log().status().log().body(true)
+                    .assertThat()
                     .statusCode(HttpStatus.OK_200)
                     .contentType(APPLICATION_JSON_VALUE)
                     .body("[0].name", is("Provide Respondent Evidence"))
@@ -158,6 +238,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     private void sendMessage(Map<String, DmnValue<?>> processVariables) {
 
         given()
+            .log().method().log().uri().log().body(true)
             .relaxedHTTPSValidation()
             .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
             .contentType(APPLICATION_JSON_VALUE)
@@ -166,21 +247,22 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
                 processVariables,
                 null,
                 false
-            )).log().body()
+            ))
             .baseUri(testUrl)
             .basePath("/workflow/message")
             .when()
             .post()
             .then()
+            .log().status()
             .statusCode(HttpStatus.NO_CONTENT_204);
     }
 
     private boolean getIsDuplicateVariableValue(String processInstanceId) {
         AtomicReference<Boolean> response = new AtomicReference<>();
         await()
-            .ignoreExceptions()
-            .pollInterval(5, TimeUnit.SECONDS)
-            .atMost(15, TimeUnit.SECONDS)
+            .ignoreException(AssertionError.class)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
                 boolean isDuplicate = given()
                     .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)

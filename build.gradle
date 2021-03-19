@@ -230,7 +230,7 @@ def versions = [
   junitPlatform   : '1.7.0',
   reformLogging   : '5.1.5',
   springBoot      : '2.4.2',
-  springfoxSwagger: '2.9.2',
+  springfoxSwagger: '3.0.0',
   serenity        : '2.2.12',
   gradlePitest    : '1.5.1',
   pitest          : '1.5.2',
@@ -279,8 +279,7 @@ dependencies {
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.13'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.13'
+  compile("org.springframework.boot:spring-boot-starter-data-rest")
 
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
   compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.0'
@@ -316,6 +315,8 @@ dependencies {
   integrationTestImplementation "org.junit.vintage:junit-vintage-engine:${versions.junit}"
 
   testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.2'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.15.2'
 
   testCompile group: 'org.pitest', name: 'pitest', version: versions.pitest
   testCompile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
