@@ -11,16 +11,16 @@ public class SendMessageRequest {
     private final String messageName;
     private final Map<String, DmnValue<?>> processVariables;
     private final Map<String, DmnValue<?>> correlationKeys;
-    private final boolean correlationKeysMatchAllProcessesFlag;
+    private final boolean all;
 
     public SendMessageRequest(String messageName,
                               Map<String, DmnValue<?>> processVariables,
                               Map<String, DmnValue<?>> correlationKeys,
-                              boolean correlationKeysMatchAllProcessesFlag) {
+                              boolean all) {
         this.messageName = messageName;
         this.processVariables = processVariables;
         this.correlationKeys = correlationKeys;
-        this.correlationKeysMatchAllProcessesFlag = correlationKeysMatchAllProcessesFlag;
+        this.all = all;
     }
 
     public String getMessageName() {
@@ -36,7 +36,7 @@ public class SendMessageRequest {
         return correlationKeys;
     }
 
-    public boolean isCorrelationKeysMatchAllProcessesFlag() {
-        return correlationKeysMatchAllProcessesFlag;
+    public boolean isAll() {
+        return all;
     }
 }
