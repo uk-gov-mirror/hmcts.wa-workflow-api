@@ -75,12 +75,6 @@ idam:
     secret: ${S2S_SECRET_WORKFLOW_API:AAAAAAAAAAAAAAAC}
     name: ${S2S_NAME_WORKFLOW_API:wa_workflow_api}
 
-credentials:
-  wa:
-    system:
-      user: ${WA_SYSTEM_USERNAME:system-user}
-      password: ${WA_SYSTEM_PASSWORD:system-password}
-
 launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
   connectionTimeout: 5000
