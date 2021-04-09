@@ -21,12 +21,12 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final List<String> anonymousPaths = new ArrayList<>();
-    private final ServiceAuthFilter serviceAuthFiler;
+    private final ServiceAuthFilter serviceAuthFilter;
 
     @Autowired
-    public SecurityConfiguration(final ServiceAuthFilter serviceAuthFiler) {
+    public SecurityConfiguration(final ServiceAuthFilter serviceAuthFilter) {
         super();
-        this.serviceAuthFiler = serviceAuthFiler;
+        this.serviceAuthFilter = serviceAuthFilter;
     }
 
     public List<String> getAnonymousPaths() {
@@ -46,7 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-            .addFilterBefore(serviceAuthFiler, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .csrf().disable()
