@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
+import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
@@ -21,39 +22,15 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
     @Autowired
     public AuthorizationHeadersProvider authorizationHeadersProvider;
 
-    private String serviceAuthorizationToken;
-
-    @Before
-    public void setUp() {
-        serviceAuthorizationToken =
-            authorizationHeadersProvider
-                .getAuthorizationHeaders()
-                .getValue(SERVICE_AUTHORIZATION);
-    }
-
-    @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
-
-        given()
-            .relaxedHTTPSValidation()
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(new EvaluateDmnRequest(null))
-            .baseUri(testUrl)
-            .pathParam("key", WA_TASK_INITIATION_IA_ASYLUM)
-            .pathParam("tenant-id", TENANT_ID)
-            .basePath("/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
-            .when()
-            .post()
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN_403);
-    }
 
     @Test
     public void should_evaluate_and_return_dmn_results() {
 
+        Headers authenticationHeaders = authorizationHeadersProvider.getAuthorizationHeaders();
+
         Response result = given()
             .relaxedHTTPSValidation()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .headers(authenticationHeaders)
             .contentType(APPLICATION_JSON_VALUE)
             .body(new EvaluateDmnRequest(mockVariables()))
             .baseUri(testUrl)
@@ -78,9 +55,11 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
     @Test
     public void not_be_able_find_incorrect_dmn_table() {
 
-        given()
+        Headers authenticationHeaders = authorizationHeadersProvider.getAuthorizationHeaders();
+
+        Response result = given()
             .relaxedHTTPSValidation()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
+            .headers(authenticationHeaders)
             .contentType(APPLICATION_JSON_VALUE)
             .body(new EvaluateDmnRequest(mockVariables()))
             .baseUri(testUrl)
@@ -88,8 +67,9 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .pathParam("tenant-id", TENANT_ID)
             .basePath("/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
             .when()
-            .post()
-            .then()
+            .post();
+
+        result.then().assertThat()
             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR_500);
 
     }

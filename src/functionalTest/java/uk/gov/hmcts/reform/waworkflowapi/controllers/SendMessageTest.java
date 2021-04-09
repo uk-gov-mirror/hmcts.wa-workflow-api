@@ -44,26 +44,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     }
 
     @Test
-    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
-        Map<String, DmnValue<?>> processVariables = new HashMap<>();
-        given()
-            .relaxedHTTPSValidation()
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest(
-                "createMessageTask",
-                processVariables,
-                null,
-                false
-            )).log().body()
-            .baseUri(testUrl)
-            .basePath("/workflow/message")
-            .when()
-            .post()
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN_403);
-    }
-
-    @Test
     public void transition_creates_a_task_with_default_due_date() {
 
         Map<String, DmnValue<?>> processVariables = mockProcessVariables(
