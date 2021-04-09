@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 
@@ -46,13 +47,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-            .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
+            .addFilterAfter(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .csrf().disable()
             .formLogin().disable()
             .logout().disable()
-            .authorizeRequests().anyRequest().authenticated()
-        ;
+            .authorizeRequests().anyRequest().authenticated();
     }
 }

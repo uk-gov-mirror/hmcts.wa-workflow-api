@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.waworkflowapi.controllers;
+package uk.gov.hmcts.reform.waworkflowapi;
 
 import io.restassured.RestAssured;
 import net.serenitybdd.rest.SerenityRest;
@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
 
 import static java.util.Collections.emptyMap;
@@ -60,7 +59,6 @@ public class EndpointSecurityTest extends SpringBootFunctionalBaseTest {
             .contains("UP");
     }
 
-
     @Test
     public void should_return_401_when_no_service_token_provided() {
 
@@ -76,7 +74,6 @@ public class EndpointSecurityTest extends SpringBootFunctionalBaseTest {
             .post()
             .then()
             .statusCode(HttpStatus.UNAUTHORIZED.value());
-
 
         given()
             .relaxedHTTPSValidation()

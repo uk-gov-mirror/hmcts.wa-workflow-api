@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.waworkflowapi;
 
 import net.serenitybdd.junit.spring.integration.SpringIntegrationSerenityRunner;
+import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
+import uk.gov.hmcts.reform.waworkflowapi.config.RestApiActions;
+import uk.gov.hmcts.reform.waworkflowapi.services.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.fasterxml.jackson.databind.PropertyNamingStrategy.LOWER_CAMEL_CASE;
+import static com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE;
 import static net.serenitybdd.rest.SerenityRest.given;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -22,20 +28,29 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ActiveProfiles("functional")
 public abstract class SpringBootFunctionalBaseTest {
 
-    public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
     public static final String WA_TASK_INITIATION_IA_ASYLUM = "wa-task-initiation-ia-asylum";
     public static final String TENANT_ID = "ia";
     public static final int FT_STANDARD_TIMEOUT_SECS = 30;
+    protected RestApiActions restApiActions;
+    protected RestApiActions camundaApiActions;
+    @Autowired
+    protected AuthorizationHeadersProvider authorizationHeadersProvider;
 
     @Value("${targets.instance}")
-    public String testUrl;
+    private String testUrl;
 
     @Value("${camunda.url}")
-    public String camundaUrl;
+    private String camundaUrl;
 
-    public void cleanUp(String taskId, String token) {
+    @Before
+    public void setUpGivens() {
+        restApiActions = new RestApiActions(testUrl, SNAKE_CASE).setUp();
+        camundaApiActions = new RestApiActions(camundaUrl, LOWER_CAMEL_CASE).setUp();
+    }
+
+    public void cleanUp(String taskId) {
         given()
-            .header(SERVICE_AUTHORIZATION, token)
+            .header(authorizationHeadersProvider.getAuthorizationHeaders())
             .contentType(APPLICATION_JSON_VALUE)
             .baseUri(camundaUrl)
             .basePath("/task/" + taskId + "/complete")
@@ -48,7 +63,7 @@ public abstract class SpringBootFunctionalBaseTest {
             .atMost(10, TimeUnit.SECONDS)
             .until(() -> {
                 String deleteReason = given()
-                    .header(SERVICE_AUTHORIZATION, token)
+                    .header(authorizationHeadersProvider.getAuthorizationHeaders())
                     .contentType(APPLICATION_JSON_VALUE)
                     .accept(APPLICATION_JSON_VALUE)
                     .baseUri(camundaUrl)

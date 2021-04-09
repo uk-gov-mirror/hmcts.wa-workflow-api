@@ -1,18 +1,20 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
+import io.restassured.http.Header;
+import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.http.HttpStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotencyKeys;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotentId;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyKeysRepository;
-import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
+import uk.gov.hmcts.reform.waworkflowapi.services.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static net.serenitybdd.rest.SerenityRest.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,16 +45,13 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     private String idempotencyKey;
     private Map<String, DmnValue<?>> processVariables;
 
+    private Header authenticationHeaders;
+
     @Before
     public void setUp() {
         caseId = UUID.randomUUID().toString();
         idempotencyKey = UUID.randomUUID().toString();
-
-        serviceAuthorizationToken =
-            authorizationHeadersProvider
-                .getAuthorizationHeaders()
-                .getValue(SERVICE_AUTHORIZATION);
-
+        authenticationHeaders = authorizationHeadersProvider.getAuthorizationHeaders();
 
         processVariables = createProcessVariables(idempotencyKey, "ia");
     }
@@ -63,13 +61,13 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         sendMessage(processVariables);
         String taskId = assertTaskIsCreated(caseId);
         assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "ia");
-        cleanUp(taskId, serviceAuthorizationToken); //We do the cleaning here to avoid clashing with other tasks
+        cleanUp(taskId); //We do the cleaning here to avoid clashing with other tasks
 
         processVariables = createProcessVariables(idempotencyKey, "wa");
         sendMessage(processVariables); //We send another message for the same idempotencyKey and different tenantId
         taskId = assertTaskIsCreated(caseId);
         assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "wa");
-        cleanUp(taskId, serviceAuthorizationToken); //We do the cleaning here to avoid clashing with other tasks
+        cleanUp(taskId); //We do the cleaning here to avoid clashing with other tasks
 
         List<String> processIds = getProcessIdsForGivenIdempotencyKey(idempotencyKey);
         assertNumberOfDuplicatedProcesses(processIds, 0);
@@ -81,7 +79,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
         String taskId = assertTaskIsCreated(caseId);
         assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "ia");
-        cleanUp(taskId, serviceAuthorizationToken); //We can do the cleaning here now
+        cleanUp(taskId); //We can do the cleaning here now
 
         sendMessage(processVariables); //We send another message for the same idempotencyKey
         List<String> processIds = getProcessIdsForGivenIdempotencyKey(idempotencyKey);
@@ -102,18 +100,17 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
-                Response result = given()
-                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .baseUri(camundaUrl)
-                    .basePath("/history/process-instance")
-                    .param("variables", "idempotencyKey_eq_" + idempotencyKey)
-                    .when()
-                    .get();
+                Response result = camundaApiActions.get(
+                    "/history/process-instance",
+                    new Headers(authenticationHeaders),
+                    Map.of(
+                        "idempotencyKey", "idempotencyKey_eq_" + idempotencyKey
+                    )
+                );
 
                 //number of messages sent, equivalent to processes created
                 result.then().assertThat()
-                    .statusCode(HttpStatus.OK_200)
+                    .statusCode(HttpStatus.OK.value())
                     .contentType(APPLICATION_JSON_VALUE)
                     .body("size()", is(2));
 
@@ -174,21 +171,19 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
-                given()
-                    .log().method().log().uri().log().headers()
-                    .relaxedHTTPSValidation()
-                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .baseUri(testUrl)
-                    .basePath("/testing/idempotencyKeys/search/findByIdempotencyKeyAndTenantId")
-                    .params(
+
+                Response result = restApiActions.get(
+                    "/testing/idempotencyKeys/search/findByIdempotencyKeyAndTenantId",
+                    new Headers(authenticationHeaders),
+                    Map.of(
                         "idempotencyKey", idempotencyKey,
                         "tenantId", jurisdiction
-                    )
-                    .when()
-                    .get()
-                    .then()
-                    .log().status().log().body(true)
+                    ));
+
+
+                result.then().assertThat()
+                    .statusCode(HttpStatus.OK.value())
+                    .contentType(APPLICATION_JSON_VALUE)
                     .body("idempotencyKey", is(idempotencyKey))
                     .body("tenantId", is(jurisdiction));
 
@@ -205,21 +200,15 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
-                Response result = given()
-                    .log().method().log().uri()
-                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .baseUri(camundaUrl)
-                    .basePath("/task")
-                    .param("processVariables", "caseId_eq_" + caseId)
-                    .when()
-                    .get();
+                Response result = camundaApiActions.get(
+                    "/task",
+                    new Headers(authenticationHeaders),
+                    Map.of("processVariables", "caseId_eq_" + caseId)
+                );
 
-                result
-                    .then()
-                    .log().status().log().body(true)
-                    .assertThat()
-                    .statusCode(HttpStatus.OK_200)
+                //number of messages sent, equivalent to processes created
+                result.then().assertThat()
+                    .statusCode(HttpStatus.OK.value())
                     .contentType(APPLICATION_JSON_VALUE)
                     .body("[0].name", is("Provide Respondent Evidence"))
                     .body("[0].formKey", is("provideRespondentEvidence"));
@@ -237,24 +226,19 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     private void sendMessage(Map<String, DmnValue<?>> processVariables) {
 
-        given()
-            .log().method().log().uri().log().body(true)
-            .relaxedHTTPSValidation()
-            .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-            .contentType(APPLICATION_JSON_VALUE)
-            .body(new SendMessageRequest(
+        Response result = restApiActions.post(
+            "/workflow/message",
+            new SendMessageRequest(
                 "createTaskMessage",
                 processVariables,
                 null,
                 false
-            ))
-            .baseUri(testUrl)
-            .basePath("/workflow/message")
-            .when()
-            .post()
-            .then()
-            .log().status()
-            .statusCode(HttpStatus.NO_CONTENT_204);
+            ),
+            authenticationHeaders
+        );
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
     private boolean getIsDuplicateVariableValue(String processInstanceId) {
@@ -264,16 +248,19 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
-                boolean isDuplicate = given()
-                    .header(SERVICE_AUTHORIZATION, serviceAuthorizationToken)
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .baseUri(camundaUrl)
-                    .basePath("/history/variable-instance")
-                    .param("processInstanceId", processInstanceId)
-                    .and().param("variableName", "isDuplicate")
-                    .when()
-                    .get()
-                    .then()
+
+
+                Response result = camundaApiActions.get(
+                    "/history/variable-instance",
+                    new Headers(authenticationHeaders),
+                    Map.of(
+                        "processInstanceId", processInstanceId,
+                        "variableName", "isDuplicate"
+                    ));
+
+
+                boolean isDuplicate = result.then().assertThat()
+                    .statusCode(HttpStatus.OK.value())
                     .assertThat().body("[0].value", notNullValue())
                     .extract().body().path("[0].value");
 

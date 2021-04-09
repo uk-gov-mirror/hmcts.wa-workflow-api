@@ -18,7 +18,7 @@ public class LaunchDarklyClient {
 
     public boolean getKey(String key) {
 
-        LDUser ldUser =  new LDUser.Builder("wa-workflow-api")
+        LDUser ldUser = new LDUser.Builder("wa-workflow-api")
             .build();
 
         return ldClient.boolVariation(key, ldUser, false);
