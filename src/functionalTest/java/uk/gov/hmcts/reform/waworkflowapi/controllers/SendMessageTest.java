@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;

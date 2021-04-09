@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers;
 import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import org.eclipse.jetty.http.HttpStatus;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
