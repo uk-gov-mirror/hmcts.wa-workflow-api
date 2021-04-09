@@ -23,6 +23,24 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
 
 
     @Test
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
+
+        given()
+            .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, "invalidToken")
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(new EvaluateDmnRequest(null))
+            .baseUri(testUrl)
+            .pathParam("key", WA_TASK_INITIATION_IA_ASYLUM)
+            .pathParam("tenant-id", TENANT_ID)
+            .basePath("/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.FORBIDDEN_403);
+    }
+
+    @Test
     public void should_evaluate_and_return_dmn_results() {
 
         Headers authenticationHeaders = authorizationHeadersProvider.getAuthorizationHeaders();
@@ -47,8 +65,6 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body("results[0].taskId.value", equalTo("reviewTheAppeal"))
             .body("results[0].group.value", equalTo("TCW"))
             .body("results[0].taskCategory.value", equalTo("Case progression"));
-
-
     }
 
     @Test

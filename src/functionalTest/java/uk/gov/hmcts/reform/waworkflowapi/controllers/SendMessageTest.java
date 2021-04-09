@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.waworkflowapi.utils.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +41,27 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             authorizationHeadersProvider
                 .getAuthorizationHeaders()
                 .getValue(SERVICE_AUTHORIZATION);
+    }
+
+    @Test
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_403_response_code() {
+        Map<String, DmnValue<?>> processVariables = new HashMap<>();
+        given()
+            .relaxedHTTPSValidation()
+            .header(SERVICE_AUTHORIZATION, "invalidToken")
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(new SendMessageRequest(
+                "createMessageTask",
+                processVariables,
+                null,
+                false
+            )).log().body()
+            .baseUri(testUrl)
+            .basePath("/workflow/message")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.FORBIDDEN_403);
     }
 
     @Test
