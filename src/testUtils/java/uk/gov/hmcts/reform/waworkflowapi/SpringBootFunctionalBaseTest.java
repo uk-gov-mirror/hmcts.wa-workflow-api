@@ -44,7 +44,7 @@ public abstract class SpringBootFunctionalBaseTest {
 
     @Before
     public void setUpGivens() {
-        restApiActions = new RestApiActions(testUrl, SNAKE_CASE).setUp();
+        restApiActions = new RestApiActions(testUrl, LOWER_CAMEL_CASE).setUp();
         camundaApiActions = new RestApiActions(camundaUrl, LOWER_CAMEL_CASE).setUp();
     }
 
