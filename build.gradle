@@ -178,7 +178,8 @@ sonarqube {
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.exclusions", "src/testUtils/java/uk/gov/hmcts/reform/waworkflowapi/**"
+    property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/waworkflowapi/config/**," +
+            "src/testUtils/java/uk/gov/hmcts/reform/waworkflowapi/**"
   }
 }
 
