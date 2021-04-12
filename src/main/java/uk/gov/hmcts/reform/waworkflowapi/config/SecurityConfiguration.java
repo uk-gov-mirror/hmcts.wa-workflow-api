@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 
 import java.util.ArrayList;
@@ -25,8 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final ServiceAuthFilter serviceAuthFilter;
 
     @Autowired
-    public SecurityConfiguration(final ServiceAuthFilter serviceAuthFilter) {
-        super();
+    public SecurityConfiguration(ServiceAuthFilter serviceAuthFilter) {
         this.serviceAuthFilter = serviceAuthFilter;
     }
 
@@ -37,9 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().mvcMatchers(
-            anonymousPaths
-                .stream()
-                .toArray(String[]::new)
+            anonymousPaths.toArray(String[]::new)
         );
     }
 
@@ -47,12 +44,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-            .addFilterAfter(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
-            .sessionManagement().sessionCreationPolicy(STATELESS)
-            .and()
-            .csrf().disable()
+            .httpBasic().disable()
             .formLogin().disable()
             .logout().disable()
-            .authorizeRequests().anyRequest().authenticated();
+            .csrf().disable()
+            .sessionManagement().sessionCreationPolicy(STATELESS)
+            .and()
+            .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class);
     }
 }
