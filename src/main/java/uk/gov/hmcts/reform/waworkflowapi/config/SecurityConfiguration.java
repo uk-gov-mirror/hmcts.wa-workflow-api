@@ -7,8 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public SecurityConfiguration(ServiceAuthFilter serviceAuthFilter) {
+        super();
         this.serviceAuthFilter = serviceAuthFilter;
     }
 
@@ -44,12 +44,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
+            .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
+            .sessionManagement().sessionCreationPolicy(STATELESS)
+            .and()
             .httpBasic().disable()
             .formLogin().disable()
             .logout().disable()
-            .csrf().disable()
-            .sessionManagement().sessionCreationPolicy(STATELESS)
-            .and()
-            .addFilterBefore(serviceAuthFilter, BearerTokenAuthenticationFilter.class);
+            .csrf().disable();
     }
 }
