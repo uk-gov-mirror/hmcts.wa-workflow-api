@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.waworkflowapi.controllers;
+package uk.gov.hmcts.reform.waworkflowapi;
 
 import io.restassured.RestAssured;
 import net.serenitybdd.rest.SerenityRest;
@@ -6,9 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
+import org.springframework.http.MediaType;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
 
+import static java.util.Collections.emptyMap;
+import static net.serenitybdd.rest.SerenityRest.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class EndpointSecurityTest extends SpringBootFunctionalBaseTest {
 
@@ -55,4 +59,36 @@ public class EndpointSecurityTest extends SpringBootFunctionalBaseTest {
             .contains("UP");
     }
 
+    @Test
+    public void should_return_401_when_no_service_token_provided() {
+
+        given()
+            .relaxedHTTPSValidation()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .baseUri(testUrl)
+            .when()
+            .pathParam("key", WA_TASK_INITIATION_IA_ASYLUM)
+            .pathParam("tenant-id", TENANT_ID)
+            .basePath("/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.UNAUTHORIZED.value());
+
+        given()
+            .relaxedHTTPSValidation()
+            .contentType(APPLICATION_JSON_VALUE)
+            .body(new SendMessageRequest(
+                "createTaskMessage",
+                emptyMap(),
+                null,
+                false
+            ))
+            .baseUri(testUrl)
+            .basePath("/workflow/message")
+            .when()
+            .post()
+            .then()
+            .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
 }

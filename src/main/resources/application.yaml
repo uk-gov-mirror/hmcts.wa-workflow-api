@@ -58,10 +58,6 @@ security:
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
-  authorisedServices:
-    - "wa_workflow_api"
-    - "wa_case_event_handler"
-    - "camunda-bpm"
 
 auth:
   provider:
@@ -73,7 +69,9 @@ idam:
   s2s-auth:
     url: ${S2S_URL:http://service-auth-provider-api}
     secret: ${S2S_SECRET_WORKFLOW_API:AAAAAAAAAAAAAAAC}
-    name: ${S2S_NAME_WORKFLOW_API:wa_workflow_api}
+    name: wa_workflow_api
+  s2s-authorised:
+    services: ${WA_S2S_AUTHORIZED_SERVICES:wa_workflow_api,wa_case_event_handler,camunda-bpm}
 
 launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}

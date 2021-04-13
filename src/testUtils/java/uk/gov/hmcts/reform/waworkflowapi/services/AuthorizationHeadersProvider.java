@@ -1,7 +1,6 @@
-package uk.gov.hmcts.reform.waworkflowapi.utils;
+package uk.gov.hmcts.reform.waworkflowapi.services;
 
 import io.restassured.http.Header;
-import io.restassured.http.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -11,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static uk.gov.hmcts.reform.waworkflowapi.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
+
 @Service
 public class AuthorizationHeadersProvider {
 
@@ -19,14 +19,12 @@ public class AuthorizationHeadersProvider {
     @Autowired
     private AuthTokenGenerator serviceAuthTokenGenerator;
 
-    public Headers getAuthorizationHeaders() {
+    public Header getAuthorizationHeaders() {
 
         String serviceToken = tokens.computeIfAbsent(
             SERVICE_AUTHORIZATION, user -> serviceAuthTokenGenerator.generate());
 
-        return new Headers(
-            new Header(SERVICE_AUTHORIZATION, serviceToken)
-        );
+        return new Header(SERVICE_AUTHORIZATION, serviceToken);
     }
 
 }

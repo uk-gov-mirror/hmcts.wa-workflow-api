@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.waworkflowapi.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import uk.gov.hmcts.reform.auth.checker.core.RequestAuthorizer;
-import uk.gov.hmcts.reform.auth.checker.core.service.Service;
-import uk.gov.hmcts.reform.auth.checker.spring.serviceonly.AuthCheckerServiceOnlyFilter;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import uk.gov.hmcts.reform.authorisation.filters.ServiceAuthFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +21,12 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final List<String> anonymousPaths = new ArrayList<>();
-    private final RequestAuthorizer<Service> serviceRequestAuthorizer;
-    private final AuthenticationManager authenticationManager;
+    private final ServiceAuthFilter serviceAuthFilter;
 
-    public SecurityConfiguration(
-        RequestAuthorizer<Service> serviceRequestAuthorizer,
-        AuthenticationManager authenticationManager
-    ) {
+    @Autowired
+    public SecurityConfiguration(ServiceAuthFilter serviceAuthFilter) {
         super();
-        this.serviceRequestAuthorizer = serviceRequestAuthorizer;
-        this.authenticationManager = authenticationManager;
+        this.serviceAuthFilter = serviceAuthFilter;
     }
 
     public List<String> getAnonymousPaths() {
@@ -41,28 +36,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         web.ignoring().mvcMatchers(
-            anonymousPaths
-                .stream()
-                .toArray(String[]::new)
+            anonymousPaths.toArray(String[]::new)
         );
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        AuthCheckerServiceOnlyFilter authCheckerServiceOnlyFilter = new AuthCheckerServiceOnlyFilter(
-            serviceRequestAuthorizer);
-
-        authCheckerServiceOnlyFilter.setAuthenticationManager(authenticationManager);
-
         http
-            .addFilter(authCheckerServiceOnlyFilter)
+            .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
-            .csrf().disable()
+            .httpBasic().disable()
             .formLogin().disable()
             .logout().disable()
-            .authorizeRequests().anyRequest().authenticated()
-        ;
+            .csrf().disable();
     }
 }
