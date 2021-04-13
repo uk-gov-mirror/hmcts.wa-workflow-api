@@ -40,7 +40,6 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
     @Autowired
     private IdempotencyKeysRepository idempotencyKeysRepository;
 
-    private String serviceAuthorizationToken;
     private String caseId;
     private String idempotencyKey;
     private Map<String, DmnValue<?>> processVariables;
@@ -184,7 +183,6 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
                         "tenantId", jurisdiction
                     ));
 
-
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
                     .contentType(APPLICATION_JSON_VALUE)
@@ -253,7 +251,6 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
-
                 Response result = camundaApiActions.get(
                     "/history/variable-instance",
                     new Headers(authenticationHeaders),
@@ -274,6 +271,5 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             });
         return response.get();
     }
-
 
 }

@@ -1,15 +1,16 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnRequest;
@@ -39,9 +40,12 @@ public class CreateTaskController {
 
     @PostMapping(path = "/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a message form camunda")
-    @ApiImplicitParam(name = "ServiceAuthorization", value = "Bearer xxxx", paramType = "header")
     @ApiResponses({
-        @ApiResponse(code = 200, message = "A DMN was found, evaluated and returned"),
+        @ApiResponse(
+            code = 200,
+            message = "A DMN was found, evaluated and returned",
+            response = EvaluateDmnResponse.class
+        )
     })
     public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
                                                            @PathVariable(name = "key") String key,
@@ -58,10 +62,13 @@ public class CreateTaskController {
 
     @PostMapping(path = "/workflow/message", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a message form camunda")
-    @ApiImplicitParam(name = "ServiceAuthorization", value = "Bearer xxxx", paramType = "header")
     @ApiResponses({
-        @ApiResponse(code = 201, message = "A new message was initiated"),
+        @ApiResponse(
+            code = 201,
+            message = "A new message was initiated"
+        )
     })
+    @ResponseStatus(HttpStatus.CREATED) //Fixes incorrect Swagger 200 response code
     public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
 
         sendMessageService.createMessage(sendMessageRequest);

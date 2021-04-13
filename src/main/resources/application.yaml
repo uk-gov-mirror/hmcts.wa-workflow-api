@@ -14,7 +14,8 @@ management:
       exposure:
         include: health, info, prometheus
 
-enableSwagger: ${ENABLE_SWAGGER:true}
+config:
+  enableSwagger: ${ENABLE_SWAGGER:true}
 
 camunda:
   url: ${CAMUNDA_URL:http://camunda-bpm/engine-rest}
@@ -53,8 +54,9 @@ security:
     - "/health/liveness"
     - "/health/readiness"
     - "/loggers/**"
-    - "/swagger-ui.html"
     - "/swagger-resources/**"
+    - "/swagger-ui/**"
+    - "/swagger-ui/index.html"
     - "/v2/api-docs"
     - "/webjars/springfox-swagger-ui/**"
     - "/favicon.ico"
