@@ -273,7 +273,7 @@ dependencies {
   }
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
-  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.13'
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.19'
 
   compile("org.springframework.boot:spring-boot-starter-data-rest")
 
