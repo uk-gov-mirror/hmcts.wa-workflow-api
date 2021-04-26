@@ -39,6 +39,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     @Before
     public void setUp() {
         authenticationHeaders = authorizationHeadersProvider.getAuthorizationHeaders();
+        caseId = UUID.randomUUID().toString();
     }
 
     @Test
@@ -101,6 +102,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                 Response result = camundaApiActions.get(
                     "/task",
                     new Headers(authenticationHeaders),
+                    // Because the ccd case does not exist it does not configure the local variables
+                    // so we will search using processVariables
                     Map.of(
                         "processVariables", "caseId_eq_" + caseId
                     ));
@@ -171,6 +174,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                 Response result = camundaApiActions.get(
                     "/task",
                     new Headers(authenticationHeaders),
+                    // Because the ccd case does not exist it does not configure the local variables
+                    // so we will search using processVariables
                     Map.of("processVariables", "caseId_eq_" + caseId)
                 );
 

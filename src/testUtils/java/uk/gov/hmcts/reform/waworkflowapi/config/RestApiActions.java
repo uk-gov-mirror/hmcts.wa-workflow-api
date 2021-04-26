@@ -121,7 +121,7 @@ public class RestApiActions {
                                   Map<String, String> params) {
 
         if (resourceId != null) {
-            log.info("Calling GET {} with resource id: {} and params", path, resourceId);
+            log.info("Calling GET {} with resource id: {} and params '{}'", path, resourceId, params);
             return given()
                 .contentType(contentType)
                 .accept(accept)
@@ -130,7 +130,7 @@ public class RestApiActions {
                 .when()
                 .get(path, resourceId);
         } else {
-            log.info("Calling GET {} with params", path);
+            log.info("Calling GET {} with params '{}'", path, params);
             return given()
                 .contentType(contentType)
                 .accept(accept)
