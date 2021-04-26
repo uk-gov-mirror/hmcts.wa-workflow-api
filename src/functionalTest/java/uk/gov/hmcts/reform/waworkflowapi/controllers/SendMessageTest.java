@@ -109,8 +109,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", is(1))
-                    .body("[0].name", is("Process Application"))
-                    .body("[0].formKey", is("processApplication"));
+                    .body("[0].name", is("Process Application"));
 
                 taskIdResponse.set(
                     result.then()
@@ -179,8 +178,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     .statusCode(HttpStatus.OK.value())
                     .contentType(APPLICATION_JSON_VALUE)
                     .body("size()", is(1))
-                    .body("[0].name", is("Provide Respondent Evidence"))
-                    .body("[0].formKey", is("provideRespondentEvidence"));
+                    .body("[0].name", is("Provide Respondent Evidence"));
 
                 taskIdResponse.set(
                     result.then()

@@ -212,8 +212,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
                     .contentType(APPLICATION_JSON_VALUE)
-                    .body("[0].name", is("Provide Respondent Evidence"))
-                    .body("[0].formKey", is("provideRespondentEvidence"));
+                    .body("[0].name", is("Provide Respondent Evidence"));
 
                 response.set(
                     result.then()
