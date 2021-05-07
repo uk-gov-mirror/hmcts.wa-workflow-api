@@ -5,11 +5,11 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
@@ -22,9 +22,13 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.service.SendMessageService;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.noContent;
 
 @RestController
+@RequestMapping(
+    consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE
+)
 public class CreateTaskController {
 
     private final EvaluateDmnService evaluateDmnService;
@@ -38,14 +42,11 @@ public class CreateTaskController {
         this.sendMessageService = sendMessageService;
     }
 
-    @PostMapping(path = "/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
     @ApiOperation("Creates a message form camunda")
     @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "A DMN was found, evaluated and returned",
-            response = EvaluateDmnResponse.class
-        )
+        @ApiResponse(code = 200, message = "A DMN was found, evaluated and returned",
+            response = EvaluateDmnResponse.class)
     })
     public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
                                                            @PathVariable(name = "key") String key,
@@ -60,15 +61,12 @@ public class CreateTaskController {
 
     }
 
-    @PostMapping(path = "/workflow/message", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/workflow/message")
     @ApiOperation("Creates a message form camunda")
     @ApiResponses({
-        @ApiResponse(
-            code = 201,
-            message = "A new message was initiated"
-        )
+        @ApiResponse(code = 204, message = "A new message was initiated", response = Object.class)
     })
-    @ResponseStatus(HttpStatus.CREATED) //Fixes incorrect Swagger 200 response code
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
 
         sendMessageService.createMessage(sendMessageRequest);
