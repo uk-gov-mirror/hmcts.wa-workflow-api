@@ -238,7 +238,8 @@ def versions = [
   gradlePitest    : '1.5.1',
   pitest          : '1.5.2',
   sonarPitest     : '0.5',
-  camunda         : '7.14.0'
+  camunda         : '7.14.0',
+  logbook         : '2.6.2'
 ]
 
 ext.libraries = [
@@ -260,6 +261,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: versions.springBoot
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client', version: versions.springBoot
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server', version: versions.springBoot
+  implementation group: 'org.zalando', name:'logbook-spring-boot-starter', version: versions.logbook
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.5.RELEASE'
 

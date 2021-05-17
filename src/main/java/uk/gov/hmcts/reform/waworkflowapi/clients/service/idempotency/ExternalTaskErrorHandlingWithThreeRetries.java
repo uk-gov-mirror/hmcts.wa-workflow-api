@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency;
 
+import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.waworkflowapi.exceptions.IdempotencyTaskWorkerException;
 
+@Slf4j
 @Component
 public class ExternalTaskErrorHandlingWithThreeRetries implements ExternalTaskErrorHandling {
 
@@ -31,6 +33,7 @@ public class ExternalTaskErrorHandlingWithThreeRetries implements ExternalTaskEr
             externalTask.getId(),
             externalTask.getProcessInstanceId()
         );
+        log.error(message);
         throw new IdempotencyTaskWorkerException(message);
     }
 
@@ -38,6 +41,8 @@ public class ExternalTaskErrorHandlingWithThreeRetries implements ExternalTaskEr
                             ExternalTaskService externalTaskService,
                             int retries,
                             Exception exception) {
+        log.warn("Retrying external task '{}' for processInstanceId '{}' with retry count '{}'",
+                 externalTask.getId(), externalTask.getProcessInstanceId(), retries);
         externalTaskService.handleFailure(
             externalTask.getId(),
             exception.toString(),

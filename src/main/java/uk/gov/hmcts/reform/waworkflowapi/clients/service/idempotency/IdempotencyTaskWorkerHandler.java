@@ -52,7 +52,7 @@ public class IdempotencyTaskWorkerHandler {
             log.info("build idempotentId with key({}) and tenantId({})...", idempotencyKey, tenantId);
             return Optional.of(new IdempotentId(idempotencyKey, tenantId));
         }
-        log.info("idempotentId id blank");
+        log.info("idempotentId is blank");
         return Optional.empty();
     }
 

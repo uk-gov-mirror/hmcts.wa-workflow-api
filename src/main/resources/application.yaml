@@ -79,3 +79,18 @@ launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
   connectionTimeout: 5000
   socketTimeout: 5000
+
+logging:
+  level:
+    root: INFO
+    org.zalando.logbook: TRACE
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: basic
+
+logbook:
+  include: /workflow/**
+
