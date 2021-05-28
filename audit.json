@@ -22,7 +22,9 @@
   "10054_Cookie without SameSite Attribute_http://wa-workflow-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
   "10054_Cookie without SameSite Attribute_http://wa-workflow-api-aat.service.core-compute-aat.internal/_GET": "ignore",
   "10054_Cookie without SameSite Attribute_http://wa-workflow-api-aat.service.core-compute-aat.internal/workflow/decision-definition/key/key/tenant-id/tenant-id/evaluate_POST": "ignore",
-  "10054_Cookie without SameSite Attribute_http://wa-workflow-api-aat.service.core-compute-aat.internal/workflow/message_POST": "ignore"
+  "10054_Cookie without SameSite Attribute_http://wa-workflow-api-aat.service.core-compute-aat.internal/workflow/message_POST": "ignore",
+  "10023_Information Disclosure - Debug Error Messages_http://wa-workflow-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "90022_Application Error Disclosure_http://wa-workflow-api-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore"
 }
 
 
