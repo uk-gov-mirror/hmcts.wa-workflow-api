@@ -153,15 +153,31 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     private boolean findIdempotencyKeysInAatDb(String idempotencyKey, String jurisdiction) {
         log.info("Asserting idempotentId({}) was added to AAT DB...", new IdempotentId(idempotencyKey, jurisdiction));
-        Optional<IdempotencyKeys> actual = idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
-            idempotencyKey,
-            jurisdiction
-        );
-        if (actual.isPresent()) {
-            log.info("idempotentKeys found in DB: {}", actual.get());
-            return true;
-        }
-        return false;
+
+        AtomicReference<Boolean> result = new AtomicReference<>();
+        await()
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
+            .until(() -> {
+
+                Optional<IdempotencyKeys> actual = idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
+                    idempotencyKey,
+                    jurisdiction
+                );
+
+                if (actual.isPresent()) {
+                    log.info("idempotentId[{}] found in DB.", actual.get());
+                    result.set(true);
+
+                } else {
+                    log.info(
+                        "idempotentId[{}] NOT found in DB.", new IdempotentId(idempotencyKey, jurisdiction));
+                    result.set(false);
+                }
+                return true;
+            });
+
+        return result.get();
     }
 
     private void getIdempotencyKeysInPreviewDb(String idempotencyKey, String jurisdiction) {
@@ -181,7 +197,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
                     Map.of(
                         "idempotencyKey", idempotencyKey,
                         "tenantId", jurisdiction
-                    ));
+                    )
+                );
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -191,7 +208,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
                 return true;
             });
-        log.info("idempotentKeys found in Preview DB: {}", new IdempotentId(idempotencyKey, jurisdiction));
+        log.info("idempotentId[{}] found in Preview DB.", new IdempotentId(idempotencyKey, jurisdiction));
     }
 
     private String assertTaskIsCreated(String caseId) {
@@ -256,7 +273,8 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
                     Map.of(
                         "processInstanceId", processInstanceId,
                         "variableName", "isDuplicate"
-                    ));
+                    )
+                );
 
                 boolean isDuplicate = result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())

@@ -34,7 +34,6 @@ public abstract class SpringBootFunctionalBaseTest {
     public static final int FT_STANDARD_TIMEOUT_SECS = 30;
 
     public static final String REASON_COMPLETED = "completed";
-    public static final String REASON_DELETED = "deleted";
 
     private static final String ENDPOINT_COMPLETE_TASK = "task/{task-id}/complete";
     private static final String ENDPOINT_HISTORY_TASK = "history/task";
