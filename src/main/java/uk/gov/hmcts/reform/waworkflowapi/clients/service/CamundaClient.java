@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
+import uk.gov.hmcts.reform.waworkflowapi.config.CamundaFeignConfiguration;
 
 import java.util.List;
 import java.util.Map;
@@ -15,17 +16,24 @@ import java.util.Map;
 @SuppressWarnings("PMD.UseObjectForClearerAPI")
 @FeignClient(
     name = "camunda",
-    url = "${camunda.url}"
+    url = "${camunda.url}",
+    configuration = CamundaFeignConfiguration.class
 )
 public interface CamundaClient {
 
     String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
-    @PostMapping(value = "/message", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+        value = "/message",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     void sendMessage(@RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
                      SendMessageRequest sendMessageRequest);
 
-    @PostMapping(value = "/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+        value = "/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
     List<Map<String, DmnValue<?>>> evaluateDmn(
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @PathVariable("key") String key,

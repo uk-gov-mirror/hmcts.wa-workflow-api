@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode
 @ToString
 public class DmnValue<T> {
