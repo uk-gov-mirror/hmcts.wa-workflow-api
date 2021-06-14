@@ -65,7 +65,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body("results[0].workingDaysAllowed.value", equalTo(2))
             .body("results[0].taskId.value", equalTo("reviewTheAppeal"))
             .body("results[0].group.value", equalTo("TCW"))
-            .body("results[0].taskCategory.value", equalTo("Case progression"));
+            .body("results[0].processCategories.value", equalTo("caseProgression"));
     }
 
     @Test
