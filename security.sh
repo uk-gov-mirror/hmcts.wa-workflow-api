@@ -11,8 +11,8 @@ export LANG=C.UTF-8
 zap-cli --zap-url http://0.0.0.0 -p 1001 report -o api-report.html -f html
 zap-cli --zap-url http://0.0.0.0 -p 1001 alerts -l Informational --exit-code False
 mkdir -p functional-output
-chmod a+wx functional-output
+
 cp report.json functional-output/
-cp /zap/api-report.html functional-output/
+cp api-report.html functional-output/
 
 
