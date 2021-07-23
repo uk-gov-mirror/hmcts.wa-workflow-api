@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.LaunchDarklyFeatureToggler;
+import uk.gov.hmcts.reform.waworkflowapi.config.features.FeatureFlag;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -22,26 +23,23 @@ class LaunchDarklyFeatureTogglerTest {
 
     @Test
     void should_return_default_value_when_key_does_not_exist() {
-        String notExistingKey = "not-existing-key";
-
         when(ldClient.boolVariation(
-            notExistingKey,
+            FeatureFlag.WA_NON_IAC_WARNINGS.getKey(),
             null,
             true)
         ).thenReturn(true);
 
-        assertTrue(launchDarklyFeatureToggler.getValue(notExistingKey, true));
+        assertTrue(launchDarklyFeatureToggler.getValue(FeatureFlag.WA_NON_IAC_WARNINGS, true));
     }
 
     @Test
     void should_return_value_when_key_exists() {
-        String existingKey = "existing-key";
         when(ldClient.boolVariation(
-            existingKey,
+            FeatureFlag.WA_NON_IAC_WARNINGS.getKey(),
             null,
             false)
         ).thenReturn(true);
 
-        assertTrue(launchDarklyFeatureToggler.getValue(existingKey, false));
+        assertTrue(launchDarklyFeatureToggler.getValue(FeatureFlag.WA_NON_IAC_WARNINGS, false));
     }
 }
