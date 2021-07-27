@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.waworkflowapi.config.features.FeatureFlag;
 
 @Service
 public class LaunchDarklyFeatureToggler implements FeatureToggler {
@@ -13,10 +12,10 @@ public class LaunchDarklyFeatureToggler implements FeatureToggler {
     }
 
     @Override
-    public boolean getValue(FeatureFlag featureFlag, Boolean defaultValue) {
+    public boolean getValue(String key, Boolean defaultValue) {
 
         return ldClient.boolVariation(
-            featureFlag.getKey(),
+            key,
             null,
             defaultValue
         );

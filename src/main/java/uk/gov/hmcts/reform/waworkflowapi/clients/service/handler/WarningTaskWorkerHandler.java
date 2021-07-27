@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.Warning;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.WarningValues;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.LaunchDarklyFeatureToggler;
-import uk.gov.hmcts.reform.waworkflowapi.config.features.FeatureFlag;
 
 import java.util.List;
 import java.util.Map;
@@ -20,12 +18,6 @@ import java.util.stream.Stream;
 @Component
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class WarningTaskWorkerHandler {
-
-    private final LaunchDarklyFeatureToggler featureToggler;
-
-    public WarningTaskWorkerHandler(LaunchDarklyFeatureToggler featureToggler) {
-        this.featureToggler = featureToggler;
-    }
 
     public void completeWarningTaskService(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         Map<?, ?> variables = externalTask.getAllVariables();
@@ -58,13 +50,7 @@ public class WarningTaskWorkerHandler {
             processVariableWarningValues = new WarningValues(warningStr);
         }
 
-        WarningValues combinedWarningValues;
-        final boolean nonIacWarningFeature = featureToggler.getValue(FeatureFlag.WA_NON_IAC_WARNINGS, false);
-        if (nonIacWarningFeature) {
-            combinedWarningValues = mapNonIacWaringAttributes(variables, processVariableWarningValues);
-        } else {
-            combinedWarningValues = mapWarningAttributes(variables, processVariableWarningValues);
-        }
+        WarningValues combinedWarningValues = mapWarningAttributes(variables, processVariableWarningValues);
 
         String caseId = (String) variables.get("caseId");
         log.info("caseId {} and its warning values : {}", caseId, combinedWarningValues.getValuesAsJson());
@@ -72,31 +58,21 @@ public class WarningTaskWorkerHandler {
         return combinedWarningValues.getValuesAsJson();
     }
 
-    private WarningValues mapWarningAttributes(Map<?, ?> variables, WarningValues processVariableWarningValues) {
-        final String warningCode = (String) variables.get("warningCode");
-        final String warningText = (String) variables.get("warningText");
+    private WarningValues mapWarningAttributes(Map<?, ?> variables, WarningValues processVariableWarningTextValues) {
+        final String warningsToAddAsJson = (String) variables.get("warningsToAdd");
 
-        if (warningCode != null && warningText != null) {
-            processVariableWarningValues.getValues().add(new Warning(warningCode, warningText));
-        }
-        return processVariableWarningValues;
-    }
+        if (!StringUtils.isEmpty(warningsToAddAsJson)) {
+            final WarningValues warningValues = new WarningValues(warningsToAddAsJson);
+            final List<Warning> warningsToBeAdded = warningValues.getValues();
 
-    private WarningValues mapNonIacWaringAttributes(Map<?, ?> variables, WarningValues processVariableWarningValues) {
-        final String warningsAsJson = (String) variables.get("warnings");
-
-        if (!StringUtils.isEmpty(warningsAsJson)) {
-            final WarningValues warningValues = new WarningValues(warningsAsJson);
-            final List<Warning> handlerWarnings = warningValues.getValues();
-
-            final List<Warning> processVariableWarnings = processVariableWarningValues.getValues();
+            final List<Warning> processVariableWarnings = processVariableWarningTextValues.getValues();
 
             // without duplicate warning attributes
-            final List<Warning> distinctWarnings = Stream.concat(handlerWarnings.stream(), processVariableWarnings.stream())
+            final List<Warning> warningTextValues = Stream.concat(warningsToBeAdded.stream(), processVariableWarnings.stream())
                 .distinct().collect(Collectors.toList());
-            return new WarningValues(distinctWarnings);
+            return new WarningValues(warningTextValues);
         }
-        return processVariableWarningValues;
+        return processVariableWarningTextValues;
     }
 
 }
