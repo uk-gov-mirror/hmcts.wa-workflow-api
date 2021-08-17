@@ -58,7 +58,7 @@ To build the project execute the following command:
 - In order to test if the application is up, you can call its health endpoint:
 
     ```bash
-      curl http://localhost:8090/health
+      curl http://localhost:8099/health
     ```
 
     You should get a response similar to this:
@@ -81,6 +81,29 @@ To build the project execute the following command:
        ```
            ./gradlew tests
        ```
+
+### Running contract or pact tests:
+
+You can run contract or pact tests as follows:
+
+```
+./gradlew contract
+```
+
+You can then publish your pact tests locally by first running the pact docker-compose:
+
+```
+docker-compose -f docker-pactbroker-compose.yml up
+
+```
+
+and then using it to publish your tests:
+
+```
+./gradlew pactPublish
+```
+
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

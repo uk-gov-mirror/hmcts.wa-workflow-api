@@ -20,6 +20,8 @@ plugins {
   id 'info.solidsoft.pitest' version '1.5.2'
   id 'io.freefair.lombok' version '5.3.0'
   id 'org.flywaydb.flyway' version '5.2.4'
+  // If Pact version is changed, make sure serenity report works.
+  id 'au.com.dius.pact' version '4.1.8'
 }
 
 apply plugin: 'net.serenity-bdd.aggregator'
@@ -68,6 +70,15 @@ sourceSets {
       srcDir file('src/smokeTest/java')
     }
     resources.srcDir file('src/smokeTest/resources')
+  }
+
+  contractTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/contractTest/java')
+    }
+    resources.srcDir file('src/contractTest/resources')
   }
 }
 
@@ -119,6 +130,10 @@ task smoke(type: Test) {
   description = "Runs Smoke Tests"
   testClassesDirs = sourceSets.smokeTest.output.classesDirs
   classpath = sourceSets.smokeTest.runtimeClasspath
+}
+project.ext {
+  pacticipant = 'wa_workflow_api'
+  pacticipantVersion = getCheckedOutGitCommitHash()
 }
 
 task tests {
@@ -241,7 +256,8 @@ def versions = [
   pitest          : '1.5.2',
   sonarPitest     : '0.5',
   camunda         : '7.14.0',
-  logbook         : '2.6.2'
+  logbook         : '2.6.2',
+  pactVersion     : '4.1.7',
 ]
 
 ext.libraries = [
@@ -319,6 +335,18 @@ dependencies {
   testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
   testCompile "org.junit.vintage:junit-vintage-engine:${versions.junit}"
 
+  //Pact contract testing
+  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pactVersion
+  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pactVersion
+
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pactVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pactVersion
+  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pactVersion
+
+  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.2")
+  contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+  contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
+
   testUtilsImplementation sourceSets.main.runtimeClasspath
   testUtilsImplementation sourceSets.test.runtimeClasspath
 
@@ -330,7 +358,53 @@ dependencies {
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
+
+  contractTestCompile sourceSets.main.runtimeClasspath
+  contractTestCompile sourceSets.test.runtimeClasspath
 }
+
+
+task runAndPublishConsumerPactTests(type: Test) {
+  logger.lifecycle("Runs pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+}
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+pact {
+  broker {
+    pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+  }
+  publish {
+    pactDirectory = 'pacts'
+    tags = [System.getenv("PACT_BRANCH_NAME") ?: 'Dev']
+    version = project.pacticipantVersion
+  }
+}
+
+task contract(type: Test) {
+  description = "Runs the consumer Pact tests"
+  group = 'Verification'
+  useJUnitPlatform()
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+}
+def getCheckedOutGitCommitHash() {
+  'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+task runProviderPactVerification(type: Test) {
+  logger.lifecycle("Runs provider pact Tests")
+  testClassesDirs = sourceSets.contractTest.output.classesDirs
+  classpath = sourceSets.contractTest.runtimeClasspath
+  systemProperty 'pact.verifier.publishResults', System.getProperty('pact.verifier.publishResults')
+  systemProperty 'pact.provider.version', project.pacticipantVersion
+}
+
+runProviderPactVerification.dependsOn contract
+
+runProviderPactVerification.finalizedBy pactVerify
 
 mainClassName = 'uk.gov.hmcts.reform.waworkflowapi.Application'
 
