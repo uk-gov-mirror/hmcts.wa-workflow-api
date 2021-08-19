@@ -46,12 +46,15 @@ withNightlyPipeline(type, product, component) {
   env.POSTGRES_HOST = "wa-workflow-api-postgres-db-aat.postgres.database.azure.com"
 
   enableSecurityScan()
+  enableFortifyScan()
   enableMutationTest()
   loadVaultSecrets(secrets)
   enableFullFunctionalTest()
   enableSlackNotifications('#wa-build')
+
+  after('fortify-scan') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+  }
 }
-
-
 
 
