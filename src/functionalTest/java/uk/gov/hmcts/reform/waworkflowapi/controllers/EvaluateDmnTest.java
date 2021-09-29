@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -66,6 +67,45 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body("results[0].taskId.value", equalTo("reviewTheAppeal"))
             .body("results[0].group.value", equalTo("TCW"))
             .body("results[0].processCategories.value", equalTo("caseProgression"));
+    }
+
+    @Test
+    public void should_evaluate_json_data_and_return_dmn_results() {
+
+        Map<String, Object> appealMap = new HashMap<>();
+        appealMap.put("appealType", "protection");
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("Data", appealMap);
+
+        EvaluateDmnRequest body = new EvaluateDmnRequest(
+            Map.of(
+                "eventId", DmnValue.dmnStringValue("submitAppeal"),
+                "postEventState", DmnValue.dmnStringValue("appealSubmitted"),
+                "additionalData", DmnValue.dmnMapValue(dataMap)
+            ));
+
+        Response result = restApiActions.post(
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID),
+            null,
+            body,
+            authenticationHeaders
+        );
+
+        final String s = result.getBody().asString();
+        result.then().assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", equalTo(1))
+            .body("results[0].name.value", equalTo("Check Fee Status"))
+            .body("results[0].workingDaysAllowed.value", equalTo(2))
+            .body("results[0].delayDuration.value", equalTo(28))
+            .body("results[0].taskId.value", equalTo("checkFeeStatus"))
+            .body("results[0].group.value", equalTo("TCW"))
+            .body("results[0].processCategories.value", equalTo("followUpOverdue"))
+            .body("results[1].name.value", equalTo("Review the appeal"))
+            .body("results[1].workingDaysAllowed.value", equalTo(2))
+            .body("results[1].taskId.value", equalTo("reviewTheAppeal"))
+            .body("results[1].group.value", equalTo("TCW"))
+            .body("results[1].processCategories.value", equalTo("caseProgression"));
     }
 
     @Test
