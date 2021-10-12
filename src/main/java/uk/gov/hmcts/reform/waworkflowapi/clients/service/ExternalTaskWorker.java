@@ -42,6 +42,7 @@ public class ExternalTaskWorker {
 
         ExternalTaskClient idempotencyClient = ExternalTaskClient.create()
             .baseUrl(camundaUrl)
+            .asyncResponseTimeout(1000)
             .addInterceptor(new ServiceAuthProviderInterceptor(authTokenGenerator))
             .backoffStrategy(new ExponentialBackoffStrategy(2000L, 2, 8000L))
             .lockDuration(30000) // 30 seconds
@@ -55,6 +56,7 @@ public class ExternalTaskWorker {
 
         ExternalTaskClient warningClient = ExternalTaskClient.create()
             .baseUrl(camundaUrl)
+            .asyncResponseTimeout(1000)
             .addInterceptor(new ServiceAuthProviderInterceptor(authTokenGenerator))
             .backoffStrategy(new ExponentialBackoffStrategy(2000L, 2, 8000L))
             .lockDuration(30000) // 30 seconds

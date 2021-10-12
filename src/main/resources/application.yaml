@@ -21,6 +21,9 @@ camunda:
   url: ${CAMUNDA_URL:http://camunda-bpm/engine-rest}
   getTaskDmnId: getTask
 
+task-management-api:
+  url: ${TASK_MANAGEMENT_URL:http://localhost:8087}
+
 govUkHolidays:
   url: https://www.gov.uk/
 

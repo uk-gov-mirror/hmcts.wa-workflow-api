@@ -6,18 +6,38 @@ import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.waworkflowapi.clients.TaskManagementServiceApi;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.Warning;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.WarningValues;
+import uk.gov.hmcts.reform.waworkflowapi.config.LaunchDarklyFeatureFlagProvider;
+import uk.gov.hmcts.reform.waworkflowapi.domain.taskconfiguration.request.NoteResource;
+import uk.gov.hmcts.reform.waworkflowapi.domain.taskconfiguration.request.NotesRequest;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.reform.waworkflowapi.config.features.FeatureFlag.RELEASE_2_CFT_TASK_WARNING;
+
 @Slf4j
 @Component
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class WarningTaskWorkerHandler {
+
+    final TaskManagementServiceApi taskManagementServiceApi;
+    final AuthTokenGenerator authTokenGenerator;
+    final LaunchDarklyFeatureFlagProvider launchDarklyFeatureFlagProvider;
+
+    public WarningTaskWorkerHandler(TaskManagementServiceApi taskManagementServiceApi,
+                                    AuthTokenGenerator authTokenGenerator,
+                                    LaunchDarklyFeatureFlagProvider launchDarklyFeatureFlagProvider) {
+        this.taskManagementServiceApi = taskManagementServiceApi;
+        this.authTokenGenerator = authTokenGenerator;
+        this.launchDarklyFeatureFlagProvider = launchDarklyFeatureFlagProvider;
+    }
 
     public void completeWarningTaskService(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         Map<?, ?> variables = externalTask.getAllVariables();
@@ -39,6 +59,22 @@ public class WarningTaskWorkerHandler {
             updatedWarningValues
         ));
 
+        boolean isCftTaskWarningEnabled = launchDarklyFeatureFlagProvider.getBooleanValue(RELEASE_2_CFT_TASK_WARNING);
+        if (isCftTaskWarningEnabled) {
+            //Also update the warning in CFT Task DB
+            addWarningInCftTaskDb(externalTask.getId());
+        }
+
+    }
+
+    private void addWarningInCftTaskDb(String taskId) {
+        NotesRequest notesRequest = new NotesRequest(
+            singletonList(
+                new NoteResource(null, "WARNING", null, null)
+            )
+        );
+
+        taskManagementServiceApi.addTaskNote(authTokenGenerator.generate(), taskId, notesRequest);
     }
 
     private String mapWarningValues(Map<?, ?> variables) throws JsonProcessingException {
