@@ -4,7 +4,8 @@
 !gradle/wrapper/gradle-wrapper.jar
 *.class
 bin/main/application.yaml
-
+/bin
+/pacts
 ### STS ###
 .apt_generated
 .classpath
