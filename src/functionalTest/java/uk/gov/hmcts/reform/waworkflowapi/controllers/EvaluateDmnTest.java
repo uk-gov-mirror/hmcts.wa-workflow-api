@@ -47,8 +47,8 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
 
         EvaluateDmnRequest body = new EvaluateDmnRequest(
             Map.of(
-                "eventId", DmnValue.dmnStringValue("submitAppeal"),
-                "postEventState", DmnValue.dmnStringValue("appealSubmitted")
+                "eventId", DmnValue.dmnStringValue("uploadHomeOfficeBundle"),
+                "postEventState", DmnValue.dmnStringValue("awaitingRespondentEvidence")
             ));
 
         Response result = restApiActions.post(
@@ -62,11 +62,12 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .statusCode(HttpStatus.OK.value())
             .and()
             .body("size()", equalTo(1))
-            .body("results[0].name.value", equalTo("Review the appeal"))
+            .body("results[0].name.value", equalTo("Review Respondent Evidence"))
             .body("results[0].workingDaysAllowed.value", equalTo(2))
-            .body("results[0].taskId.value", equalTo("reviewTheAppeal"))
+            .body("results[0].taskId.value", equalTo("reviewRespondentEvidence"))
             .body("results[0].group.value", equalTo("TCW"))
             .body("results[0].processCategories.value", equalTo("caseProgression"));
+        
     }
 
     @Test
@@ -91,21 +92,15 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             authenticationHeaders
         );
 
-        final String s = result.getBody().asString();
         result.then().assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("size()", equalTo(1))
-            .body("results[0].name.value", equalTo("Check Fee Status"))
+            .body("results[0].name.value", equalTo("Review the appeal"))
             .body("results[0].workingDaysAllowed.value", equalTo(2))
-            .body("results[0].delayDuration.value", equalTo(28))
-            .body("results[0].taskId.value", equalTo("checkFeeStatus"))
+            .body("results[0].taskId.value", equalTo("reviewTheAppeal"))
             .body("results[0].group.value", equalTo("TCW"))
-            .body("results[0].processCategories.value", equalTo("followUpOverdue"))
-            .body("results[1].name.value", equalTo("Review the appeal"))
-            .body("results[1].workingDaysAllowed.value", equalTo(2))
-            .body("results[1].taskId.value", equalTo("reviewTheAppeal"))
-            .body("results[1].group.value", equalTo("TCW"))
-            .body("results[1].processCategories.value", equalTo("caseProgression"));
+            .body("results[0].processCategories.value", equalTo("caseProgression"));
+
     }
 
     @Test
