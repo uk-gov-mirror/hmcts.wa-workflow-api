@@ -2,9 +2,15 @@ package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.AddProcessVariableRequest;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaProcess;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaProcessVariables;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
@@ -41,5 +47,35 @@ public interface CamundaClient {
         EvaluateDmnRequest evaluateDmnRequest
     );
 
+    @PostMapping(value = "/process-instance",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    List<CamundaProcess> getProcessInstancesByVariables(
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+        @RequestParam("variables") String variables,
+        @RequestParam("activityIdIn") List<String> activityId
+    );
+
+    @GetMapping(value = "/process-instance/{key}/variables",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    CamundaProcessVariables getProcessInstanceVariables(
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+        @PathVariable("key") String processInstanceKey
+    );
+
+    @PostMapping(
+        value = "/process-instance/{key}/variables",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    void updateProcessVariables(
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+        @PathVariable("key") String key,
+        AddProcessVariableRequest addProcessVariableRequest
+    );
 }
 

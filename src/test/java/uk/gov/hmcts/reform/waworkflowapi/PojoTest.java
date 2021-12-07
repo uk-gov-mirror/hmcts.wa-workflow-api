@@ -9,6 +9,9 @@ import pl.pojo.tester.api.assertion.Method;
 import pl.pojo.tester.internal.field.DefaultFieldValueChanger;
 import pl.pojo.tester.internal.instantiator.ObjectGenerator;
 import pl.pojo.tester.internal.utils.ThoroughFieldPermutator;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.AddProcessVariableRequest;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaProcess;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaProcessVariables;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnResult;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
@@ -45,7 +48,10 @@ class PojoTest {
         ProcessVariables.class,
         TaskToCreate.class,
         ServiceDetails.class,
-        ErrorMessage.class
+        ErrorMessage.class,
+        CamundaProcess.class,
+        CamundaProcessVariables.class,
+        AddProcessVariableRequest.class
     };
     // Cannot test equals for generic classes
     private final Class[] ignoreEquals = {

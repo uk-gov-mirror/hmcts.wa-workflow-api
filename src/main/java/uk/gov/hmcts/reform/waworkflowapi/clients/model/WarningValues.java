@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,13 +15,14 @@ import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Slf4j
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
 public class WarningValues {
 
-    private List<Warning> values =  new ArrayList<>();
+    private List<Warning> values = new ArrayList<>();
 
     public WarningValues(List<Warning> values) {
         requireNonNull(values);
@@ -30,7 +33,8 @@ public class WarningValues {
         requireNonNull(values);
         try {
             this.values = new ObjectMapper().reader()
-                .forType(new TypeReference<List<Warning>>() {})
+                .forType(new TypeReference<List<Warning>>() {
+                })
                 .readValue(values);
         } catch (JsonProcessingException jsonProcessingException) {
             log.error("Could not deserialize values");
@@ -41,6 +45,7 @@ public class WarningValues {
         return values;
     }
 
+    @JsonIgnore
     public String getValuesAsJson() throws JsonProcessingException {
         return new ObjectMapper().writeValueAsString(values);
     }

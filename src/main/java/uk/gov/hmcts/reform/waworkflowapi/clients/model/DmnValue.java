@@ -31,6 +31,14 @@ public class DmnValue<T> {
         return new DmnValue<>(value, null);
     }
 
+    public static DmnValue<String> jsonValue(String value) {
+        return new DmnValue<>(value, "json");
+    }
+
+    public static DmnValue<Boolean> booleanValue(Boolean value) {
+        return new DmnValue<>(value, "boolean");
+    }
+
     public static DmnValue<Integer> dmnIntegerValue(Integer value) {
         return new DmnValue<>(value, "Integer");
     }
