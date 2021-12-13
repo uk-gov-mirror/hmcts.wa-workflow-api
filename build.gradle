@@ -141,7 +141,7 @@ task tests {
   dependsOn test, integration, functional
 }
 
-task fortifyScan(type: JavaExec)  {
+task fortifyScan(type: JavaExec) {
   main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
@@ -200,7 +200,7 @@ sonarqube {
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/waworkflowapi/config/**," +
-            "src/testUtils/java/uk/gov/hmcts/reform/waworkflowapi/**"
+      "src/testUtils/java/uk/gov/hmcts/reform/waworkflowapi/**"
   }
 }
 
@@ -294,7 +294,7 @@ dependencies {
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.3'
 
-  implementation group: 'org.zalando', name:'logbook-spring-boot-starter', version: versions.logbook
+  implementation group: 'org.zalando', name: 'logbook-spring-boot-starter', version: versions.logbook
 
   implementation group: 'com.github.hmcts.java-logging', name: 'java-logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'java-logging-appinsights', version: versions.reformLogging
@@ -303,8 +303,8 @@ dependencies {
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.13'
 
-  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.0'
-  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.14.0'
+  compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.15.0'
+  compile group: 'org.apache.logging.log4j', name: 'log4j-to-slf4j', version: '2.15.0'
 
   compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.54'
   compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.54'
@@ -399,6 +399,7 @@ task contract(type: Test) {
   testClassesDirs = sourceSets.contractTest.output.classesDirs
   classpath = sourceSets.contractTest.runtimeClasspath
 }
+
 def getCheckedOutGitCommitHash() {
   'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
