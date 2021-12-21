@@ -46,7 +46,7 @@ withNightlyPipeline(type, product, component) {
   env.POSTGRES_HOST = "wa-workflow-api-postgres-db-aat.postgres.database.azure.com"
 
   enableSecurityScan()
-  enableFortifyScan()
+//  enableFortifyScan()
   enableMutationTest()
   loadVaultSecrets(secrets)
   enableFullFunctionalTest()
