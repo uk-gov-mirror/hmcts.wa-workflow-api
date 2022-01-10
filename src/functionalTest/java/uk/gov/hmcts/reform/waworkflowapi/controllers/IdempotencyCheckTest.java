@@ -133,7 +133,6 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             dueDate,
             "Provide Respondent Evidence",
             "provideRespondentEvidence",
-            "external",
             caseId,
             idempotentKey,
             jurisdiction

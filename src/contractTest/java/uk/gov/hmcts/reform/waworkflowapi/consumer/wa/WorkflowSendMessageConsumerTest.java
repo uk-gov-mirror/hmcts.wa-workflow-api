@@ -60,7 +60,6 @@ public class WorkflowSendMessageConsumerTest extends SpringBootContractBaseTest 
             "some other message",
             Map.of(
                 "name", dmnStringValue("some name"),
-                "group", dmnStringValue("some group"),
                 "jurisdiction", dmnStringValue("ia"),
                 "caseType", dmnStringValue("asylum"),
                 "taskId", dmnStringValue("some taskId"),

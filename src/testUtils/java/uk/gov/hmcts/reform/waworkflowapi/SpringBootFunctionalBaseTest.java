@@ -75,19 +75,16 @@ public abstract class SpringBootFunctionalBaseTest {
             .body("[0].deleteReason", is(reason));
     }
 
-
     public Map<String, DmnValue<?>> mockProcessVariables(
         String dueDate,
         String name,
         String taskId,
-        String group,
         String caseId,
         String idempotencyKey,
         String jurisdiction
     ) {
         Map<String, DmnValue<?>> processVariables = new HashMap<>();
         processVariables.put("dueDate", DmnValue.dmnStringValue(dueDate));
-        processVariables.put("group", DmnValue.dmnStringValue(group));
         processVariables.put("name", DmnValue.dmnStringValue(name));
         processVariables.put("jurisdiction", DmnValue.dmnStringValue(jurisdiction));
         processVariables.put("caseType", DmnValue.dmnStringValue("asylum"));

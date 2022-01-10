@@ -76,18 +76,16 @@ class CreateTaskControllerTest {
     @Test
     void sendMessage_with_create_task_message() {
         final ZonedDateTime zonedDateTime = ZonedDateTime.parse("2020-12-15T23:02:32.334031Z");
-        final TaskToCreate taskToCreate = new TaskToCreate("some taskId", "some group",
-                                                           2, "test", zonedDateTime.toString());
+        final TaskToCreate taskToCreate = new TaskToCreate("some taskId",
+                2, "test", zonedDateTime.toString());
         final DmnValue<String> dueDate =
             DmnValue.dmnStringValue(ZonedDateTime.parse("2020-12-15T23:02:32.334031Z").toString());
         final DmnValue<String> taskId = DmnValue.dmnStringValue("some taskId");
-        final DmnValue<String> group = DmnValue.dmnStringValue("some group");
         final DmnValue<Integer> workingDaysAllowed = DmnValue.dmnIntegerValue(2);
         final DmnValue<String> name = DmnValue.dmnStringValue("test");
 
         Map<String, DmnValue<?>> map = new HashMap<>(Map.of("dueDate", dueDate,
                                                             "taskId", taskId,
-                                                            "group", group,
                                                             "workingDaysAllowed", workingDaysAllowed,
                                                             "name", name
         ));
