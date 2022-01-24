@@ -97,4 +97,30 @@ public abstract class SpringBootFunctionalBaseTest {
 
         return processVariables;
     }
+
+    public Map<String, DmnValue<?>> standaloneMockProcessVariables(
+        String dueDate,
+        String name,
+        String taskId,
+        String caseId,
+        String idempotencyKey,
+        String jurisdiction,
+        String roleCategory
+
+    ) {
+        Map<String, DmnValue<?>> processVariables = new HashMap<>();
+        processVariables.put("dueDate", DmnValue.dmnStringValue(dueDate));
+        processVariables.put("name", DmnValue.dmnStringValue(name));
+        processVariables.put("jurisdiction", DmnValue.dmnStringValue(jurisdiction));
+        processVariables.put("caseType", DmnValue.dmnStringValue("asylum"));
+        processVariables.put("taskId", DmnValue.dmnStringValue(taskId));
+        processVariables.put("caseId", DmnValue.dmnStringValue(caseId));
+        processVariables.put("idempotencyKey", DmnValue.dmnStringValue(idempotencyKey));
+
+        String delayUntilTimer = ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        processVariables.put("delayUntil", DmnValue.dmnStringValue(delayUntilTimer));
+        processVariables.put("roleCategory", DmnValue.dmnStringValue(roleCategory));
+
+        return processVariables;
+    }
 }

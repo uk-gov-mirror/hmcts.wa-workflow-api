@@ -125,6 +125,96 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         cleanUpTask(taskId, REASON_COMPLETED);
     }
 
+
+
+    @Test
+    public void should_creates_a_judicial_standalone_task_with_default_due_date() {
+        String taskName = "Review Specific Access Request";
+        String taskType = "reviewSpecificAccessRequestJudiciary";
+        String roleCategory = "JUDICIAL";
+        createSpecifiedStandaloneTask(taskName,taskType,roleCategory);
+    }
+
+    @Test
+    public void should_creates_a_legal_ops_standalone_task_with_default_due_date() {
+        String taskName = "Review Specific Access Request";
+        String taskType = "reviewSpecificAccessRequestLegalOps";
+        String roleCategory = "LEGAL_OPERATIONS";
+        createSpecifiedStandaloneTask(taskName,taskType,roleCategory);
+    }
+
+    @Test
+    public void should_creates_a_admin_standalone_task_with_default_due_date() {
+
+        String taskName = "Review Specific Access Request";
+        String taskType = "reviewSpecificAccessRequestAdmin";
+        String roleCategory = "ADMINISTRATOR";
+        createSpecifiedStandaloneTask(taskName,taskType,roleCategory);
+    }
+
+    private void createSpecifiedStandaloneTask(String taskName, String taskType, String roleCategory) {
+
+        String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        Map<String, DmnValue<?>> processVariables = standaloneMockProcessVariables(
+            dueDate,
+            taskName,
+            taskType,
+            caseId,
+            UUID.randomUUID().toString(), "ia",
+            roleCategory
+        );
+
+        SendMessageRequest body = new SendMessageRequest(
+            "createTaskMessage",
+            processVariables,
+            null,
+            false
+        );
+
+        Response response = restApiActions.post(
+            "/workflow/message",
+            body,
+            authenticationHeaders
+        );
+
+        response
+            .then().assertThat()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+
+        AtomicReference<String> taskIdResponse = new AtomicReference<>();
+        await()
+            .ignoreException(AssertionError.class)
+            .pollInterval(1, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
+            .until(() -> {
+
+                Response result = camundaApiActions.get(
+                    "/task",
+                    new Headers(authenticationHeaders),
+                    // Because the ccd case does not exist it does not configure the local variables
+                    // so we will search using processVariables
+                    Map.of(
+                        "processVariables", "caseId_eq_" + caseId
+                    ));
+
+
+                result.then().assertThat()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", is(1))
+                    .body("[0].name", is(taskName));
+
+                taskIdResponse.set(
+                    result.then()
+                        .extract().path("[0].id")
+                );
+
+                return true;
+            });
+
+        String taskId = taskIdResponse.get();
+        cleanUpTask(taskId, REASON_COMPLETED);
+    }
+
     @Test
     public void transition_creates_a_task_with_due_date() {
         String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);

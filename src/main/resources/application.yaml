@@ -78,7 +78,7 @@ idam:
     secret: ${S2S_SECRET_WORKFLOW_API:AAAAAAAAAAAAAAAC}
     name: wa_workflow_api
   s2s-authorised:
-    services: ${WA_S2S_AUTHORIZED_SERVICES:wa_workflow_api,wa_case_event_handler,camunda-bpm}
+    services: ${WA_S2S_AUTHORIZED_SERVICES:wa_workflow_api,wa_case_event_handler,camunda-bpm,xui_webapp}
 
 launchDarkly:
   sdkKey: ${LAUNCH_DARKLY_SDK_KEY:sdk-key}
