@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,34 +53,32 @@ public class CreateTaskController {
     @PostMapping(
         path = "/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate"
     )
-    @ApiOperation("Evaluates business rules given the specified decision definition key.")
-    @ApiResponses({
-        @ApiResponse(
-            code = 200,
-            message = "A decision definition was found, evaluated and it's output returned.",
-            response = EvaluateDmnResponse.class
-        ),
-        @ApiResponse(
-            code = 403,
-            message = FORBIDDEN
-        ),
-        @ApiResponse(
-            code = 401,
-            message = UNAUTHORIZED
-        ),
-        @ApiResponse(
-            code = 404,
-            message = NOT_FOUND
-        ),
-        @ApiResponse(
-            code = 415,
-            message = UNSUPPORTED_MEDIA_TYPE
-        ),
-        @ApiResponse(
-            code = 500,
-            message = INTERNAL_SERVER_ERROR
-        )
-    })
+    @Operation(summary = "Evaluates business rules given the specified decision definition key.")
+    @ApiResponse(
+        responseCode = "200",
+        description = "A decision definition was found, evaluated and it's output returned.",
+        content = @Content(schema = @Schema(implementation = EvaluateDmnResponse.class))
+    )
+    @ApiResponse(
+        responseCode = "403",
+        description = FORBIDDEN
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = UNAUTHORIZED
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = NOT_FOUND
+    )
+    @ApiResponse(
+        responseCode = "415",
+        description = UNSUPPORTED_MEDIA_TYPE
+    )
+    @ApiResponse(
+        responseCode = "500",
+        description = INTERNAL_SERVER_ERROR
+    )
     public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
                                                            @PathVariable(name = "key") String key,
                                                            @PathVariable(name = "tenant-id") String tenantId) {
@@ -94,34 +93,32 @@ public class CreateTaskController {
     }
 
     @PostMapping(path = "/workflow/message")
-    @ApiOperation("Sends a message to the underlying business process engine.")
-    @ApiResponses({
-        @ApiResponse(
-            code = 204,
-            message = "The message was correlated to a business process",
-            response = Object.class
-        ),
-        @ApiResponse(
-            code = 400,
-            message = BAD_REQUEST
-        ),
-        @ApiResponse(
-            code = 403,
-            message = FORBIDDEN
-        ),
-        @ApiResponse(
-            code = 401,
-            message = UNAUTHORIZED
-        ),
-        @ApiResponse(
-            code = 415,
-            message = UNSUPPORTED_MEDIA_TYPE
-        ),
-        @ApiResponse(
-            code = 500,
-            message = INTERNAL_SERVER_ERROR
-        )
-    })
+    @Operation(summary = "Sends a message to the underlying business process engine.")
+    @ApiResponse(
+        responseCode = "204",
+        description = "The message was correlated to a business process",
+        content = @Content(schema = @Schema(implementation = Object.class))
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = BAD_REQUEST
+    )
+    @ApiResponse(
+        responseCode = "403",
+        description = FORBIDDEN
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = UNAUTHORIZED
+    )
+    @ApiResponse(
+        responseCode = "415",
+        description = UNSUPPORTED_MEDIA_TYPE
+    )
+    @ApiResponse(
+        responseCode = "500",
+        description = INTERNAL_SERVER_ERROR
+    )
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
 

@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Built-in feature which saves service's swagger specs in temporary directory.
  * Each travis run on master should automatically save and upload (if updated) documentation.
  */
-class SwaggerPublisherTest extends SpringBootIntegrationBaseTest {
+class OpenAPIPublisherTest extends SpringBootIntegrationBaseTest {
 
     @Autowired
     private MockMvc mvc;
@@ -25,7 +25,7 @@ class SwaggerPublisherTest extends SpringBootIntegrationBaseTest {
     @DisplayName("Generate swagger documentation")
     @Test
     void generateDocs() throws Exception {
-        byte[] specs = mvc.perform(get("/v2/api-docs"))
+        byte[] specs = mvc.perform(get("/v3/api-docs"))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse()

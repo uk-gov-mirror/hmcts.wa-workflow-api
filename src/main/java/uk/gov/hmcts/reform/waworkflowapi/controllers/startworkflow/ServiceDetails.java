@@ -1,13 +1,22 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 
-import io.swagger.annotations.ApiModelProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;
 
 public class ServiceDetails {
-    @ApiModelProperty(example = "IA", required = true, notes = "Service jurisdiction")
+    @Schema(
+        example = "IA",
+        required = true,
+        description = "Service jurisdiction"
+    )
     private final String jurisdiction;
-    @ApiModelProperty(example = "Asylum", required = true, notes = "Service case type")
+    @Schema(
+        example = "Asylum",
+        required = true,
+        description = "Service case type"
+    )
     private final String caseType;
 
     public ServiceDetails(String jurisdiction, String caseType) {

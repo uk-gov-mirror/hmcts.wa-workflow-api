@@ -2,22 +2,33 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
 public class CreateTaskRequest {
-    @ApiModelProperty
+    @Schema(
+        description = "Service details"
+    )
     private final ServiceDetails serviceDetails;
-    @ApiModelProperty(example = "abc1234567890", required = true, notes = "The case id in CCD")
+    @Schema(
+        example = "abc1234567890",
+        required = true,
+        description = "The case id in CCD"
+    )
     private final String caseId;
-    @ApiModelProperty(required = true)
+    @Schema(
+        description = "Transition",
+        required = true
+    )
     private final Transition transition;
     @JsonInclude(Include.NON_NULL)
-    @ApiModelProperty(
+    @Schema(
         example = "2020-09-05T14:47:01.250542+01:00",
-        notes = "Optional due date for the task that will be created")
+        required = false,
+        description = "Optional due date for the task that will be created"
+    )
     private final ZonedDateTime dueDate;
 
     public CreateTaskRequest(

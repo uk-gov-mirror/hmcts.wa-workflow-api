@@ -3,7 +3,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.24")
+    classpath("net.serenity-bdd:serenity-gradle-plugin:3.2.0")
   }
 }
 
@@ -13,13 +13,13 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-  id 'org.springframework.boot' version '2.4.12'
+  id 'org.springframework.boot' version '2.6.4'
   id 'org.owasp.dependencycheck' version '6.5.3'
   id 'com.github.ben-manes.versions' version '0.38.0'
   id 'org.sonarqube' version '3.2.0'
   id 'info.solidsoft.pitest' version '1.5.2'
-  id 'io.freefair.lombok' version '5.3.0'
-  id 'org.flywaydb.flyway' version '5.2.4'
+  id 'io.freefair.lombok' version '5.3.3.3'
+  id 'org.flywaydb.flyway' version '8.5.1'
   // If Pact version is changed, make sure serenity report works.
   id 'au.com.dius.pact' version '4.1.8'
 }
@@ -105,6 +105,10 @@ tasks.withType(Test) {
   testLogging {
     exceptionFormat = 'full'
   }
+}
+
+tasks.withType(Copy) {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 test {
@@ -251,6 +255,19 @@ dependencyManagement {
       entry 'logback-classic'
       entry 'logback-core'
     }
+
+    dependencySet(group: 'org.seleniumhq.selenium', version: '4.1.2'){
+      entry 'selenium-java'
+      entry 'selenium-remote-driver'
+      entry 'selenium-firefox-driver'
+      entry 'selenium-chrome-driver'
+      entry 'selenium-safari-driver'
+      entry 'selenium-edge-driver'
+      entry 'selenium-api'
+      entry 'selenium-support'
+    }
+
+      dependency group: 'org.springframework.security', name: 'spring-security-core', version: '5.6.2'
   }
 }
 
@@ -264,8 +281,8 @@ def versions = [
   junit           : '5.7.2',
   junitPlatform   : '1.7.2',
   reformLogging   : '5.1.9',
-  springfoxSwagger: '3.0.0',
-  serenity        : '2.2.12',
+  springDoc       : '1.6.6',
+  serenity        : '3.2.0',
   gradlePitest    : '1.5.1',
   pitest          : '1.5.2',
   sonarPitest     : '0.5',
@@ -293,12 +310,13 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
-  implementation('org.springframework.boot:spring-boot-starter-data-rest')
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: versions.springBoot
+  implementation group: 'org.springframework.security', name: 'spring-security-test', version: '5.6.2'
 
-  implementation group: 'io.springfox', name: 'springfox-boot-starter', version: versions.springfoxSwagger
-  implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: versions.springDoc
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.3'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.1'
 
   implementation group: 'org.zalando', name: 'logbook-spring-boot-starter', version: versions.logbook
 
@@ -306,7 +324,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '3.1.2'
 
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.1'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.13'
 
   implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
@@ -315,13 +333,13 @@ dependencies {
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.58'
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: '9.0.58'
 
-  compile group: 'org.hibernate', name: 'hibernate-core', version: '5.4.27.Final'
+  implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.6.5.Final'
 
   implementation 'org.camunda.bpm:camunda-external-task-client:7.15.0'
 
-  compile group: 'javax.xml', name: 'jaxb-api', version: '2.1'
+  implementation group: 'javax.xml', name: 'jaxb-api', version: '2.1'
 
-  compile group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
@@ -329,9 +347,9 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
-  testCompile group: 'pl.pojo', name: 'pojo-tester', version: '0.7.6'
-  testCompile group: 'com.google.guava', name: 'guava-testlib', version: '30.1-jre'
-  testCompile group: 'com.jparams', name: 'to-string-verifier', version: '1.4.8'
+  testImplementation group: 'pl.pojo', name: 'pojo-tester', version: '0.7.6'
+  testImplementation group: 'com.google.guava', name: 'guava-testlib', version: '30.1-jre'
+  testImplementation group: 'com.jparams', name: 'to-string-verifier', version: '1.4.8'
 
   integrationTestImplementation "org.junit.vintage:junit-vintage-engine:${versions.junit}"
 
@@ -339,27 +357,27 @@ dependencies {
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.15.2'
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.15.2'
 
-  testCompile group: 'org.pitest', name: 'pitest', version: versions.pitest
-  testCompile group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
-  testCompile group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
+  testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
+  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
+  testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
 
-  testCompile group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
-  testCompile group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
-  testCompile group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
-  testCompile group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-  testCompile "org.junit.vintage:junit-vintage-engine:${versions.junit}"
-  testCompile 'com.github.hmcts:fortify-client:1.2.1:all'
+  testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
+  testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
+  testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
+  testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
+  testImplementation "org.junit.vintage:junit-vintage-engine:${versions.junit}"
+  testImplementation 'com.github.hmcts:fortify-client:1.2.1:all'
 
   //Pact contract testing
-  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pactVersion
-  contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pactVersion
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pactVersion
+  contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pactVersion
 
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pactVersion
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pactVersion
-  contractTestCompile group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pactVersion
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5', version: versions.pactVersion
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pactVersion
+  contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pactVersion
 
-  contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.6.2")
-  contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.6.2")
+  contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
+  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.2")
   contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
 
   testUtilsImplementation sourceSets.main.runtimeClasspath
@@ -374,8 +392,8 @@ dependencies {
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation sourceSets.test.runtimeClasspath
 
-  contractTestCompile sourceSets.main.runtimeClasspath
-  contractTestCompile sourceSets.test.runtimeClasspath
+  contractTestImplementation sourceSets.main.runtimeClasspath
+  contractTestImplementation sourceSets.test.runtimeClasspath
 }
 
 

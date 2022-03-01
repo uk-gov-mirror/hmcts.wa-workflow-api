@@ -1,16 +1,28 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;
 
 public class Transition {
-    @ApiModelProperty(example = "caseCreated", required = true, notes = "The state the case was in before the event fired", position = 0)
+
+    @Schema(
+        example = "caseCreated",
+        required = true,
+        description = "The state the case was in before the event fired"
+    )
     private final String preState;
-    @ApiModelProperty(example = "submitCaseEvent", required = true, notes = "The event that triggered the transition", position = 1)
+    @Schema(
+        example = "submitCaseEvent",
+        required = true,
+        description = "The event that triggered the transition"
+    )
     private final String eventId;
-    @ApiModelProperty(
-        example = "caseSubmitted", required = true, notes = "The state the case was in after the event fired", position = 2)
+    @Schema(
+        example = "caseSubmitted",
+        required = true,
+        description = "The state the case was in after the event fired"
+    )
     private final String postState;
 
     public Transition(String preState, String eventId, String postState) {
@@ -41,8 +53,8 @@ public class Transition {
         }
         Transition that = (Transition) object;
         return Objects.equals(preState, that.preState)
-               && Objects.equals(eventId, that.eventId)
-               && Objects.equals(postState, that.postState);
+            && Objects.equals(eventId, that.eventId)
+            && Objects.equals(postState, that.postState);
     }
 
     @Override
@@ -53,9 +65,9 @@ public class Transition {
     @Override
     public String toString() {
         return "Transition{"
-               + "preState='" + preState + '\''
-               + ", eventId='" + eventId + '\''
-               + ", postState='" + postState + '\''
-               + '}';
+            + "preState='" + preState + '\''
+            + ", eventId='" + eventId + '\''
+            + ", postState='" + postState + '\''
+            + '}';
     }
 }
