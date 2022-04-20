@@ -35,6 +35,13 @@ allprojects {
   targetCompatibility = '11'
 }
 
+
+lombok {
+  config['config.stopBubbling'] = 'true'
+  config['lombok.addLombokGeneratedAnnotation'] = 'true'
+  config['lombok.anyConstructor.addConstructorProperties'] = 'true'
+}
+
 sourceSets {
   testUtils {
     java {
@@ -204,6 +211,7 @@ sonarqube {
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.exclusions", "src/main/java/uk/gov/hmcts/reform/waworkflowapi/config/**," +
+      "src/main/java/uk/gov/hmcts/reform/waworkflowapi/exceptions/**," +
       "src/testUtils/java/uk/gov/hmcts/reform/waworkflowapi/**"
   }
 }
@@ -319,6 +327,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.1'
 
   implementation group: 'org.zalando', name: 'logbook-spring-boot-starter', version: versions.logbook
+  implementation 'org.zalando:problem-spring-web-starter:0.26.2'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging

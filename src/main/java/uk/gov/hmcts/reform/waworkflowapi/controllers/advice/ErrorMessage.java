@@ -1,19 +1,22 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.advice;
 
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
-import java.sql.Timestamp;
 import java.util.Objects;
 
+@ToString
+@EqualsAndHashCode
 public class ErrorMessage {
 
-    private final Timestamp timestamp;
+    private final String timestamp;
     private final String error;
     private final int status;
     private final String message;
 
-    public ErrorMessage(Exception ex, HttpStatus error, Timestamp timestamp) {
+    public ErrorMessage(Exception ex, HttpStatus error, String timestamp) {
         Objects.requireNonNull(ex, "Exception must not be null");
         Objects.requireNonNull(error, "HttpStatus error must not be null");
         Objects.requireNonNull(timestamp, "Timestamp must not be null");
@@ -23,7 +26,7 @@ public class ErrorMessage {
         this.message = ex.getMessage();
     }
 
-    public Timestamp getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
@@ -37,15 +40,5 @@ public class ErrorMessage {
 
     public String getMessage() {
         return message;
-    }
-
-    @Override
-    public String toString() {
-        return "ErrorMessage{"
-               + "timestamp=" + timestamp
-               + ", error='" + error + '\''
-               + ", status=" + status
-               + ", message='" + message + '\''
-               + '}';
     }
 }
