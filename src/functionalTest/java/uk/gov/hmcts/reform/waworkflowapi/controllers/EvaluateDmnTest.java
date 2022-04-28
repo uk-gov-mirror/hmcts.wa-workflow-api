@@ -32,7 +32,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
     public void should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code() {
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID),
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID_IA),
             null,
             null,
             new Headers(new Header(SERVICE_AUTHORIZATION, "invalidtoken"))
@@ -52,7 +52,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             ));
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID),
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID_IA),
             null,
             body,
             authenticationHeaders
@@ -85,7 +85,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             ));
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID),
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID_IA),
             null,
             body,
             authenticationHeaders
@@ -111,13 +111,131 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             ));
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, "non-existent", TENANT_ID),
+            format(ENDPOINT_BEING_TESTED, "non-existent", TENANT_ID_IA),
             body,
             authenticationHeaders
         );
 
         result.then().assertThat()
             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+    }
+
+    @Test
+    public void should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code_for_wa() {
+
+        Response result = restApiActions.post(
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
+            null,
+            null,
+            new Headers(new Header(SERVICE_AUTHORIZATION, "invalidtoken"))
+        );
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @Test
+    public void should_evaluate_and_return_dmn_results_for_wa() {
+
+        EvaluateDmnRequest body = new EvaluateDmnRequest(
+            Map.of(
+                "eventId", DmnValue.dmnStringValue("submitCase"),
+                "postEventState", DmnValue.dmnStringValue("caseUnderReview")
+            ));
+
+        Response result = restApiActions.post(
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
+            null,
+            body,
+            authenticationHeaders
+        );
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .body("size()", equalTo(1))
+            .body("results[0].name.value", equalTo("Review Appeal Skeleton Argument"))
+            .body("results[0].workingDaysAllowed.value", equalTo(2))
+            .body("results[0].taskId.value", equalTo("reviewAppealSkeletonArgument"))
+            .body("results[0].processCategories.value", equalTo("caseProgression"));
+
+    }
+
+    @Test
+    public void should_evaluate_json_data_and_return_dmn_results_for_wa() {
+
+        Map<String, Object> appealMap = new HashMap<>();
+        appealMap.put("appealType", "");
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("Data", appealMap);
+
+        EvaluateDmnRequest body = new EvaluateDmnRequest(
+            Map.of(
+                "eventId", DmnValue.dmnStringValue("listCma"),
+                "postEventState", DmnValue.dmnStringValue("cmaListed"),
+                "additionalData", DmnValue.dmnMapValue(dataMap)
+            ));
+
+        Response result = restApiActions.post(
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
+            null,
+            body,
+            authenticationHeaders
+        );
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", equalTo(1))
+            .body("results[0].name.value", equalTo("Attend Cma"))
+            .body("results[0].workingDaysAllowed.value", equalTo(2))
+            .body("results[0].taskId.value", equalTo("attendCma"))
+            .body("results[0].processCategories.value", equalTo("caseProgression"));
+
+    }
+    
+
+    @Test
+    public void should_return_200_with_empty_list_when_event_id_does_not_exist() {
+
+        EvaluateDmnRequest body = new EvaluateDmnRequest(
+            Map.of(
+                "eventId", DmnValue.dmnStringValue("invalidEventId"),
+                "postEventState", DmnValue.dmnStringValue("appealSubmitted")
+            ));
+
+        Response result = restApiActions.post(
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
+            body,
+            authenticationHeaders
+        );
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", equalTo(1))
+            .body("results.size", equalTo(0));
+
+    }
+
+    @Test
+    public void should_return_200_with_empty_list_when_post_event_state_does_not_exist() {
+
+        EvaluateDmnRequest body = new EvaluateDmnRequest(
+            Map.of(
+                "eventId", DmnValue.dmnStringValue("listCma"),
+                "postEventState", DmnValue.dmnStringValue("invalidPostEventState")
+            ));
+
+        Response result = restApiActions.post(
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
+            body,
+            authenticationHeaders
+        );
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", equalTo(1))
+            .body("results.size", equalTo(0));
 
     }
 

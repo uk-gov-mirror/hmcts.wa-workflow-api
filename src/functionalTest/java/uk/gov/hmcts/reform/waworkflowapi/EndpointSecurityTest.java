@@ -68,7 +68,7 @@ public class EndpointSecurityTest extends SpringBootFunctionalBaseTest {
             .baseUri(testUrl)
             .when()
             .pathParam("key", WA_TASK_INITIATION_IA_ASYLUM)
-            .pathParam("tenant-id", TENANT_ID)
+            .pathParam("tenant-id", TENANT_ID_IA)
             .basePath("/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate")
             .when()
             .post()

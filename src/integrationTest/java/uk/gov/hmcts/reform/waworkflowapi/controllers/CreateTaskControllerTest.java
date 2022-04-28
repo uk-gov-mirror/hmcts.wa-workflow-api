@@ -48,6 +48,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
 
     public static final String WORKFLOW_MESSAGE_ENDPOINT = "/workflow/message";
     private static final String BEARER_SERVICE_TOKEN = "Bearer service token";
+    public static String ENDPOINT_BEING_TESTED =
+        "/workflow/decision-definition/key/{key}/tenant-id/{tenant-id}/evaluate";
 
     @Autowired
     private transient MockMvc mockMvc;
@@ -63,6 +65,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
     @BeforeEach
     void setUp() {
         when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
+        ENDPOINT_BEING_TESTED = ENDPOINT_BEING_TESTED.replace("{key}", "ia")
+            .replace("{tenant-id}", "asylum");
     }
 
     @DisplayName("Should evaluate a DMN and return a 200")
@@ -83,7 +87,35 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
         )).thenReturn(getEvalResponse());
 
         mockMvc.perform(
-            post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+            post(ENDPOINT_BEING_TESTED)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(asJsonString(evaluateDmnRequest))
+        ).andExpect(status().isOk()).andReturn();
+
+    }
+
+    @DisplayName("Should evaluate wa DMN and return 200")
+    @Test
+    void evaluate_dmn_for_wa() throws Exception {
+
+        ENDPOINT_BEING_TESTED = ENDPOINT_BEING_TESTED.replace("{key}", "wa")
+            .replace("{tenant-id}", "waCaseType");
+
+        EvaluateDmnRequest evaluateDmnRequest = new EvaluateDmnRequest(
+            Map.of("name", dmnStringValue("Process Application"),
+                "workingDaysAllowed", dmnIntegerValue(2),
+                "taskId", dmnStringValue("processApplication")
+            ));
+
+        when(camundaClient.evaluateDmn(
+            eq(BEARER_SERVICE_TOKEN),
+            anyString(),
+            anyString(),
+            eq(evaluateDmnRequest)
+        )).thenReturn(getEvalResponse());
+
+        mockMvc.perform(
+            post(ENDPOINT_BEING_TESTED)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(asJsonString(evaluateDmnRequest))
         ).andExpect(status().isOk()).andReturn();
@@ -115,7 +147,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             null));
 
         mockMvc.perform(
-                post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+                post(ENDPOINT_BEING_TESTED)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(asJsonString(evaluateDmnRequest))
             ).andExpect(status().isServiceUnavailable())
@@ -148,7 +180,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             null));
 
         mockMvc.perform(
-                post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+                post(ENDPOINT_BEING_TESTED)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(asJsonString(evaluateDmnRequest))
             ).andExpect(status().isBadGateway())
@@ -180,7 +212,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             null, null));
 
         mockMvc.perform(
-                post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+                post(ENDPOINT_BEING_TESTED)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(asJsonString(evaluateDmnRequest))
             ).andExpect(status().isInternalServerError())
@@ -214,7 +246,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             null));
 
         mockMvc.perform(
-                post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+                post(ENDPOINT_BEING_TESTED)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(asJsonString(evaluateDmnRequest))
             ).andExpect(status().isUnauthorized())
@@ -247,7 +279,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             null));
 
         mockMvc.perform(
-                post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+                post(ENDPOINT_BEING_TESTED)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(asJsonString(evaluateDmnRequest))
             ).andExpect(status().isForbidden())
@@ -265,9 +297,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "taskId", dmnStringValue("processApplication")
             ));
 
-        Request request = Request.create(Request.HttpMethod.GET, "url",
-            new HashMap<>(), null, new RequestTemplate());
-
         when(camundaClient.evaluateDmn(
             eq(BEARER_SERVICE_TOKEN),
             anyString(),
@@ -278,7 +307,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
         });
 
         mockMvc.perform(
-                post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+                post(ENDPOINT_BEING_TESTED)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(asJsonString(evaluateDmnRequest))
             ).andExpect(status().isUnsupportedMediaType())
@@ -296,9 +325,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "taskId", dmnStringValue("processApplication")
             ));
 
-        Request request = Request.create(Request.HttpMethod.GET, "url",
-            new HashMap<>(), null, new RequestTemplate());
-
         when(camundaClient.evaluateDmn(
             eq(BEARER_SERVICE_TOKEN),
             anyString(),
@@ -307,7 +333,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
         )).thenThrow(new BadRequestException("Bad Request"));
 
         mockMvc.perform(
-                post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+                post(ENDPOINT_BEING_TESTED)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(asJsonString(evaluateDmnRequest))
             ).andExpect(status().isBadRequest())
@@ -325,9 +351,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 "taskId", dmnStringValue("processApplication")
             ));
 
-        Request request = Request.create(Request.HttpMethod.GET, "invalidurl",
-            new HashMap<>(), null, new RequestTemplate());
-
         when(camundaClient.evaluateDmn(
             eq(BEARER_SERVICE_TOKEN),
             anyString(),
@@ -336,7 +359,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
         )).thenThrow(new ResourceNotFoundException("Resource Not Found"));
 
         mockMvc.perform(
-                post("/workflow/decision-definition/key/getTask_IA_asylum/tenant-id/ia/evaluate")
+                post(ENDPOINT_BEING_TESTED)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .content(asJsonString(evaluateDmnRequest))
             ).andExpect(status().isNotFound())
@@ -400,8 +423,40 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             .expectedSendMessageRequest(expectedSendMessageRequest1)
             .build();
 
+        sendMessageRequest1 = new SendMessageRequest(
+            "some other message",
+            Map.of(
+                "name", dmnStringValue("some name"),
+                "jurisdiction", dmnStringValue("wa"),
+                "caseType", dmnStringValue("waCaseType"),
+                "taskId", dmnStringValue("some taskId"),
+                "caseId", dmnStringValue("some caseId")
+            ),
+            null,
+            false
+        );
+
+        expectedSendMessageRequest1 = new SendMessageRequest(
+            "some other message",
+            Map.of(
+                "name", dmnStringValue("some name"),
+                "jurisdiction", dmnStringValue("wa"),
+                "caseType", dmnStringValue("waCaseType"),
+                "taskId", dmnStringValue("some taskId"),
+                "caseId", dmnStringValue("some caseId")
+            ),
+            null,
+            false
+        );
+
+        Scenario messageIsOtherThanCreateTaskThenDueTaskIsNotSet2 = Scenario.builder()
+            .sendMessageRequest(sendMessageRequest1)
+            .expectedSendMessageRequest(expectedSendMessageRequest1)
+            .build();
+
         return Stream.of(
-            messageIsOtherThanCreateTaskThenDueTaskIsNotSet
+            messageIsOtherThanCreateTaskThenDueTaskIsNotSet,
+            messageIsOtherThanCreateTaskThenDueTaskIsNotSet2
         );
     }
 
