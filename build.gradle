@@ -153,7 +153,7 @@ task tests {
 }
 
 task fortifyScan(type: JavaExec) {
-  main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+  mainClass = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
   classpath += sourceSets.test.runtimeClasspath
   jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
@@ -176,8 +176,8 @@ pmd {
 jacocoTestReport {
   executionData(test, integration)
   reports {
-    xml.enabled = true
-    csv.enabled = false
+    xml.required = true
+    csv.required = false
     xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
@@ -245,7 +245,7 @@ dependencyManagement {
   dependencies {
     dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.68'
     // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '30.1-jre') {
+    dependencySet(group: 'com.google.guava', version: '31.1-jre') {
       entry 'guava'
     }
 
@@ -348,7 +348,7 @@ dependencies {
 
   implementation group: 'javax.xml', name: 'jaxb-api', version: '2.1'
 
-  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.2.2'
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '5.8.1'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
