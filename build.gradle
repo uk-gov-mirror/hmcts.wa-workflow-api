@@ -327,7 +327,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.2'
 
   implementation group: 'org.zalando', name: 'logbook-spring-boot-starter', version: versions.logbook
-  implementation 'org.zalando:problem-spring-web-starter:0.26.2'
+  implementation 'org.zalando:problem-spring-web-starter:0.27.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
