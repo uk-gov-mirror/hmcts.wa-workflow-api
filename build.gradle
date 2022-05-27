@@ -363,8 +363,8 @@ dependencies {
   integrationTestImplementation "org.junit.vintage:junit-vintage-engine:${versions.junit}"
 
   testImplementation group: 'com.h2database', name: 'h2', version: '1.4.197'
-  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.1'
-  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.17.1'
+  testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.2'
+  testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.17.2'
 
   testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
   testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
