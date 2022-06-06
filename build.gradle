@@ -243,20 +243,12 @@ dependencyCheck {
 
 dependencyManagement {
   dependencies {
-    dependency group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.68'
     // CVE-2018-10237 - Unbounded memory allocation
     dependencySet(group: 'com.google.guava', version: '31.1-jre') {
       entry 'guava'
     }
 
     dependency group: 'commons-io', name: 'commons-io', version: '2.11.0'
-
-    //CVE-2021-27568
-    dependency group: 'net.minidev', name: 'json-smart', version: '2.4.8'
-    //CVE-2021-28170
-    dependency group: 'org.glassfish', name: 'jakarta.el', version: '4.0.1'
-    //CVE-2020-23171
-    dependency group: 'com.nimbusds', name: 'lang-tag', version: '1.6'
 
     //CVE-2021-42550
     dependencySet(group: 'ch.qos.logback', version: '1.2.10') {
@@ -274,8 +266,6 @@ dependencyManagement {
       entry 'selenium-api'
       entry 'selenium-support'
     }
-
-    dependency group: 'org.springframework.security', name: 'spring-security-core', version: '5.7.1'
   }
 }
 

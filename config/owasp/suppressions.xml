@@ -10,12 +10,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-     Suppressing as netty http version needs to be updated
-   ]]></notes>
-        <cve>CVE-2021-43797</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
    file name: spring-security-core-5.4.9.jar
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-core@.*$</packageUrl>
@@ -34,95 +28,16 @@
         <cve>CVE-2021-22112</cve>
     </suppress>
     <suppress>
-        <notes>Spring Cloud OpenFeign Client Endpoint Exposure</notes>
-        <cve>CVE-2021-22044</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: jackson-databind-2.13.1.jar
-   ]]> will solve version: '2.13.2.1'
-        </notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson\-databind@.*$</packageUrl>
-        <cve>CVE-2020-36518</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-hateoas-1.4.1.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.hateoas/spring\-hateoas@.*$</packageUrl>
-        <cve>CVE-2013-4152</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-hateoas-1.4.1.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.hateoas/spring\-hateoas@.*$</packageUrl>
-        <cve>CVE-2013-7315</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-hateoas-1.4.1.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.hateoas/spring\-hateoas@.*$</packageUrl>
-        <cve>CVE-2014-0054</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-plugin-core-2.0.0.RELEASE.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.plugin/spring\-plugin\-core@.*$</packageUrl>
-        <cve>CVE-2013-4152</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-plugin-core-2.0.0.RELEASE.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.plugin/spring\-plugin\-core@.*$</packageUrl>
-        <cve>CVE-2013-7315</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-plugin-core-2.0.0.RELEASE.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.plugin/spring\-plugin\-core@.*$</packageUrl>
-        <cve>CVE-2014-0054</cve>
-    </suppress>
-    <suppress>
         <notes>Doesn't apply to this project. Reference:
             https://docs.spring.io/spring-framework/docs/current/reference/html/integration.html#remoting-httpinvoker
         </notes>
         <cve>CVE-2016-1000027</cve>
     </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-hateoas-1.4.1.jar
-   ]]>
-            Doesn't apply since deployment is not a WAR
-        </notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.hateoas/spring\-hateoas@.*$</packageUrl>
-        <cve>CVE-2022-22965</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-plugin-core-2.0.0.RELEASE.jar
-   ]]>
-            Doesn't apply since deployment is not a WAR
-        </notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.plugin/spring\-plugin\-core@.*$</packageUrl>
-        <cve>CVE-2022-22965</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-hateoas-1.4.2.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.hateoas/spring\-hateoas@.*$</packageUrl>
-        <cve>CVE-2022-22968</cve>
-    </suppress>
-    <suppress until="2022-06-01">
-        <notes><![CDATA[
-   file name: spring-plugin-core-2.0.0.RELEASE.jar
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.plugin/spring\-plugin\-core@.*$</packageUrl>
-        <cve>CVE-2022-22968</cve>
+    <suppress>
+      <notes>This project doesn't use BCrypt / BCryptPasswordEncoder  class
+        https://nvd.nist.gov/vuln/detail/CVE-2022-22976
+        https://tanzu.vmware.com/security/cve-2022-22976
+      </notes>
+      <cve>CVE-2022-22976</cve>
     </suppress>
 </suppressions>
