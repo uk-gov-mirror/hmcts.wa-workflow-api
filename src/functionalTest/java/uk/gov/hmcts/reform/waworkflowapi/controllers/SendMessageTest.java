@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers;
 
 import io.restassured.http.Header;
 import io.restassured.http.Headers;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -24,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static java.util.Collections.emptyMap;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.waworkflowapi.config.ServiceTokenGeneratorConfiguration.SERVICE_AUTHORIZATION;
 
@@ -385,6 +387,87 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
     }
 
+    @Test
+    public void should_creates_a_judicial_task_with_role_assignment_property_for_wa() {
+
+        SpecificStandaloneRequest request = SpecificStandaloneRequest.builder()
+            .authenticationHeaders(authenticationHeaders)
+            .jurisdiction(TENANT_ID_WA)
+            .caseType("waCaseType")
+            .taskType("reviewSpecificAccessRequestJudiciary")
+            .taskName("Review Specific Access Request")
+            .roleCategory("JUDICIAL")
+            .caseId(caseId)
+            .additionalProperties(
+                Map.of(
+                    "roleAssignmentId", DmnValue.dmnStringValue("123456789")
+                )
+            )
+            .build();
+
+        Response response = createSpecifiedStandaloneTask(request);
+
+        assertionsForAdditionalProperties(response, request);
+    }
+
+    @Test
+    public void should_creates_a_judicial_task_with_additional_properties_wa() {
+
+        SpecificStandaloneRequest request = SpecificStandaloneRequest.builder()
+            .authenticationHeaders(authenticationHeaders)
+            .jurisdiction(TENANT_ID_WA)
+            .caseType("waCaseType")
+            .taskType("reviewSpecificAccessRequestLegalOps")
+            .taskName("Review Specific Access Request")
+            .roleCategory("JUDICIAL")
+            .caseId(caseId)
+            .additionalProperties(
+                Map.of(
+                    "roleAssignmentId", DmnValue.dmnStringValue("123456789"),
+                    "key1", DmnValue.dmnStringValue("value1"),
+                    "key2", DmnValue.dmnStringValue("value2"),
+                    "key3", DmnValue.dmnStringValue("value3"),
+                    "key4", DmnValue.dmnStringValue("value4"),
+                    "key5", DmnValue.dmnStringValue("value5"),
+                    "key7", DmnValue.dmnStringValue("value7")
+                )
+            )
+            .build();
+
+        Response response = createSpecifiedStandaloneTask(request);
+
+        assertionsForAdditionalProperties(response, request);
+    }
+
+    @Test
+    public void should_creates_a_task_with_additional_properties_when_property_count_more_then_dmn_property_count() {
+
+        SpecificStandaloneRequest request = SpecificStandaloneRequest.builder()
+            .authenticationHeaders(authenticationHeaders)
+            .jurisdiction(TENANT_ID_WA)
+            .caseType("waCaseType")
+            .taskType("reviewSpecificAccessRequestAdmin")
+            .taskName("Review Specific Access Request")
+            .roleCategory("JUDICIAL")
+            .caseId(caseId)
+            .additionalProperties(
+                Map.of(
+                    "roleAssignmentId", DmnValue.dmnStringValue("123456789"),
+                    "key1", DmnValue.dmnStringValue("value1"),
+                    "key2", DmnValue.dmnStringValue("value2"),
+                    "key3", DmnValue.dmnStringValue("value3"),
+                    "key4", DmnValue.dmnStringValue("value4"),
+                    "key5", DmnValue.dmnStringValue("value5"),
+                    "key7", DmnValue.dmnStringValue("value7")
+                )
+            )
+            .build();
+
+        Response response = createSpecifiedStandaloneTask(request);
+
+        assertionsForAdditionalProperties(response, request);
+    }
+
     private void assertions(Response response, SpecificStandaloneRequest specificStandaloneRequest) {
         response.then().assertThat()
             .statusCode(HttpStatus.NO_CONTENT.value());
@@ -415,6 +498,73 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             });
 
         String taskId = taskIdResponse.get();
+        cleanUpTask(taskId, REASON_COMPLETED);
+    }
+
+    private void assertionsForAdditionalProperties(Response response, SpecificStandaloneRequest specificStandaloneRequest) {
+        response.then().assertThat()
+            .statusCode(HttpStatus.NO_CONTENT.value());
+
+        AtomicReference<String> taskIdResponse = new AtomicReference<>();
+        await()
+            .ignoreException(AssertionError.class)
+            .pollInterval(2, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
+            .until(() -> {
+
+                Response result = camundaApiActions.get(
+                    "/task",
+                    new Headers(specificStandaloneRequest.getAuthenticationHeaders()),
+                    Map.of("processVariables", "caseId_eq_" + specificStandaloneRequest.getCaseId())
+                );
+
+                result.then().assertThat()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", is(1))
+                    .body("[0].name", is(specificStandaloneRequest.getTaskName()));
+
+                taskIdResponse.set(result.then().extract().path("[0].id"));
+
+                return true;
+            });
+
+
+        //Additional Property assertion
+        String taskId = taskIdResponse.get();
+        String processVariablesPath = String.format("/task/%s/variables/additionalProperties", taskId);
+
+        await()
+            .ignoreException(AssertionError.class)
+            .pollInterval(2, TimeUnit.SECONDS)
+            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
+            .until(() -> {
+
+                Response result = camundaApiActions.get(
+                    processVariablesPath,
+                    specificStandaloneRequest.getAuthenticationHeaders()
+                );
+
+                result.then().assertThat()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("type", is("Object"));
+
+                JsonPath jsonPath = result.then().extract().jsonPath();
+                Map<String, Object> expectedMap = specificStandaloneRequest.getAdditionalProperties();
+
+                AtomicReference<Map<String, String>> actualMap = new AtomicReference<>();
+                AtomicReference<DmnValue> dmnValue = new AtomicReference<>();
+
+                expectedMap.keySet().forEach((key) -> {
+                    System.out.println(key);
+                    actualMap.set(jsonPath.getMap(String.format("value.%s", key)));
+                    dmnValue.set(new DmnValue<>(actualMap.get().get("value"), actualMap.get().get("type")));
+                    assertEquals(expectedMap.get(key), dmnValue.get());
+                });
+
+                return true;
+            });
+
+
         cleanUpTask(taskId, REASON_COMPLETED);
     }
 

@@ -111,7 +111,8 @@ public abstract class SpringBootFunctionalBaseTest {
         String caseType,
         String idempotencyKey,
         String jurisdiction,
-        String roleCategory
+        String roleCategory,
+        Map<String, Object> additionalProperties
 
     ) {
         Map<String, DmnValue<?>> processVariables = new HashMap<>();
@@ -126,6 +127,7 @@ public abstract class SpringBootFunctionalBaseTest {
         String delayUntilTimer = ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         processVariables.put("delayUntil", DmnValue.dmnStringValue(delayUntilTimer));
         processVariables.put("roleCategory", DmnValue.dmnStringValue(roleCategory));
+        processVariables.put("additionalProperties", DmnValue.dmnMapValue(additionalProperties));
 
         return processVariables;
     }
@@ -141,7 +143,8 @@ public abstract class SpringBootFunctionalBaseTest {
             specificStandaloneRequest.getCaseType(),
             UUID.randomUUID().toString(),
             specificStandaloneRequest.getJurisdiction(),
-            specificStandaloneRequest.getRoleCategory()
+            specificStandaloneRequest.getRoleCategory(),
+            specificStandaloneRequest.getAdditionalProperties()
         );
 
         SendMessageRequest body = new SendMessageRequest(
