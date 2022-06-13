@@ -334,7 +334,7 @@ dependencies {
 
   implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.6.5.Final'
 
-  implementation 'org.camunda.bpm:camunda-external-task-client:7.17.0'
+  implementation group: 'org.camunda.bpm', name: 'camunda-external-task-client', version: '7.17.0'
 
   implementation group: 'javax.xml', name: 'jaxb-api', version: '2.1'
 
@@ -350,7 +350,7 @@ dependencies {
   testImplementation group: 'com.google.guava', name: 'guava-testlib', version: '31.1-jre'
   testImplementation group: 'com.jparams', name: 'to-string-verifier', version: '1.4.8'
 
-  integrationTestImplementation "org.junit.vintage:junit-vintage-engine:${versions.junit}"
+  integrationTestImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
 
   testImplementation group: 'com.h2database', name: 'h2', version: '2.1.212'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.17.2'
@@ -364,8 +364,10 @@ dependencies {
   testImplementation group: 'net.serenity-bdd', name: 'serenity-junit', version: versions.serenity
   testImplementation group: 'net.serenity-bdd', name: 'serenity-rest-assured', version: versions.serenity
   testImplementation group: 'net.serenity-bdd', name: 'serenity-spring', version: versions.serenity
-  testImplementation "org.junit.vintage:junit-vintage-engine:${versions.junit}"
-  testImplementation 'com.github.hmcts:fortify-client:1.2.1:all'
+
+  testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
+
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.1'
 
   //Pact contract testing
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pactVersion
@@ -375,8 +377,9 @@ dependencies {
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'spring', version: versions.pactVersion
   contractTestImplementation group: 'au.com.dius.pact.provider', name: 'junit5spring', version: versions.pactVersion
 
-  contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-  contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+  contractTestImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit)
+  contractTestRuntimeOnly(group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: versions.junit)
+  contractTestImplementation(group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: versions.junit)
 
   testUtilsImplementation sourceSets.main.runtimeClasspath
   testUtilsImplementation sourceSets.test.runtimeClasspath
