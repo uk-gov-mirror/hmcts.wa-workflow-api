@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.provider.service;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -39,7 +39,7 @@ public class WorkflowProviderTestConfiguration {
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
         return new Jackson2ObjectMapperBuilder()
             .serializationInclusion(JsonInclude.Include.NON_ABSENT)
-            .propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+            .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
             .modules(
                 new ParameterNamesModule(),
                 new JavaTimeModule(),
@@ -52,7 +52,7 @@ public class WorkflowProviderTestConfiguration {
     public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
         ObjectMapper objectMapper = builder.createXmlMapper(false).build();
         objectMapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true);
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         objectMapper.registerModule(new Jdk8Module());
         return objectMapper;
     }
