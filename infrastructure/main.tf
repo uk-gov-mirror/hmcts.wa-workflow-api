@@ -26,7 +26,8 @@ resource "azurerm_key_vault_secret" "s2s_secret_workflow_api" {
 
 module "wa_workflow_api_database" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.product}-${var.component}-postgres-db"
+  product            = "${var.product}"
+  name               = "${var.product}-${var.component}-postgres-db"
   location           = "${var.location}"
   env                = "${var.env}"
   database_name      = "${var.postgresql_database_name}"
