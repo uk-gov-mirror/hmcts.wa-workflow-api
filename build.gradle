@@ -366,7 +366,7 @@ dependencies {
 
   testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
 
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.1'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.2'
 
   //Pact contract testing
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pactVersion
