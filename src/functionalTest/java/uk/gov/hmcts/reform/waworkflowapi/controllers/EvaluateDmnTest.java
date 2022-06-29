@@ -79,8 +79,8 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
 
         EvaluateDmnRequest body = new EvaluateDmnRequest(
             Map.of(
-                "eventId", DmnValue.dmnStringValue("submitAppeal"),
-                "postEventState", DmnValue.dmnStringValue("appealSubmitted"),
+                "eventId", DmnValue.dmnStringValue("uploadHomeOfficeBundle"),
+                "postEventState", DmnValue.dmnStringValue("awaitingRespondentEvidence"),
                 "additionalData", DmnValue.dmnMapValue(dataMap)
             ));
 
@@ -91,13 +91,49 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             authenticationHeaders
         );
 
+        result.prettyPrint();
+
         result.then().assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("size()", equalTo(1))
-            .body("results[0].name.value", equalTo("Review the appeal"))
+            .body("results[0].name.value", equalTo("Review Respondent Evidence"))
             .body("results[0].workingDaysAllowed.value", equalTo(2))
-            .body("results[0].taskId.value", equalTo("reviewTheAppeal"))
+            .body("results[0].taskId.value", equalTo("reviewRespondentEvidence"))
             .body("results[0].processCategories.value", equalTo("caseProgression"));
+
+    }
+
+    @Test
+    public void should_evaluate_json_data_and_return_dmn_results_makeAnApplication() {
+
+        Map<String, Object> appealMap = new HashMap<>();
+        appealMap.put("lastModifiedApplication", Map.of("type", "Adjourn",
+                                                        "decision", ""));
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("Data", appealMap);
+
+        EvaluateDmnRequest body = new EvaluateDmnRequest(
+            Map.of(
+                "eventId", DmnValue.dmnStringValue("makeAnApplication"),
+                "additionalData", DmnValue.dmnMapValue(dataMap)
+            ));
+
+        Response result = restApiActions.post(
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID_IA),
+            null,
+            body,
+            authenticationHeaders
+        );
+
+        result.prettyPrint();
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("size()", equalTo(1))
+            .body("results[0].name.value", equalTo("Process Application"))
+            .body("results[0].workingDaysAllowed.value", equalTo(5))
+            .body("results[0].taskId.value", equalTo("processApplication"))
+            .body("results[0].processCategories.value", equalTo("application"));
 
     }
 
@@ -193,7 +229,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body("results[0].processCategories.value", equalTo("caseProgression"));
 
     }
-    
+
 
     @Test
     public void should_return_200_with_empty_list_when_event_id_does_not_exist() {
