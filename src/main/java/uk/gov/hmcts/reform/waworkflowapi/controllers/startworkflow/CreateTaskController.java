@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ import java.util.Map;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.noContent;
 
+@Slf4j
 @RestController
 @RequestMapping(
     consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE
@@ -82,11 +84,13 @@ public class CreateTaskController {
     public ResponseEntity<EvaluateDmnResponse> evaluateDmn(@RequestBody EvaluateDmnRequest evaluateDmnRequest,
                                                            @PathVariable(name = "key") String key,
                                                            @PathVariable(name = "tenant-id") String tenantId) {
+        log.info("evaluateDmn  evaluateDmnRequest={}, key={}, tenantId={}", evaluateDmnRequest,key,tenantId);
         List<Map<String, DmnValue<?>>> evaluateDmnResponse = evaluateDmnService.evaluateDmn(
             evaluateDmnRequest,
             key,
             tenantId
         );
+        log.info("evaluateDmnResponse= {}", evaluateDmnResponse);
         return ResponseEntity.ok()
             .body(new EvaluateDmnResponse(evaluateDmnResponse));
 
