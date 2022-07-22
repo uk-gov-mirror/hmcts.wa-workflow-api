@@ -153,7 +153,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
         );
 
         result.then().assertThat()
-            .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            .statusCode(HttpStatus.NOT_FOUND.value());
 
     }
 

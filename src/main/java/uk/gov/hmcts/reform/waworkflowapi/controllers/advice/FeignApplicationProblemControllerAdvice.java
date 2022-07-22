@@ -15,6 +15,7 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.zalando.problem.Status.BAD_GATEWAY;
 import static org.zalando.problem.Status.FORBIDDEN;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static org.zalando.problem.Status.NOT_FOUND;
 import static org.zalando.problem.Status.SERVICE_UNAVAILABLE;
 import static org.zalando.problem.Status.UNAUTHORIZED;
 
@@ -60,6 +61,13 @@ public class FeignApplicationProblemControllerAdvice implements ValidationAdvice
     public ResponseEntity<ThrowableProblem> handleFeignInternalServerErrorException(FeignException ex) {
         log.error(EXCEPTION_OCCURRED, ex.getMessage(), ex);
         Status statusType = INTERNAL_SERVER_ERROR; //500
+        return createDownStreamErrorResponse(statusType);
+    }
+
+    @ExceptionHandler(FeignException.NotFound.class)
+    public ResponseEntity<ThrowableProblem> handleFeignNotFoundException(FeignException ex) {
+        log.error(EXCEPTION_OCCURRED, ex.getMessage(), ex);
+        Status statusType = NOT_FOUND; //404
         return createDownStreamErrorResponse(statusType);
     }
 }

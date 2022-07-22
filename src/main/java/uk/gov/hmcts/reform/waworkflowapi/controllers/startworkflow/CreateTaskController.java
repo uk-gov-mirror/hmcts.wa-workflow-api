@@ -116,6 +116,10 @@ public class CreateTaskController {
         description = UNAUTHORIZED
     )
     @ApiResponse(
+        responseCode = "404",
+        description = NOT_FOUND
+    )
+    @ApiResponse(
         responseCode = "415",
         description = UNSUPPORTED_MEDIA_TYPE
     )

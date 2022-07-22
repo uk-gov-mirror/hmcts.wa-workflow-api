@@ -287,6 +287,39 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             .andReturn();
     }
 
+    @DisplayName("Should evaluate a DMN and return downstream not found error response")
+    @Test
+    void evaluateDmnAndReturnDownstreamNotFoundErrorResponse() throws Exception {
+
+        EvaluateDmnRequest evaluateDmnRequest = new EvaluateDmnRequest(
+            Map.of("name", dmnStringValue("Process Application"),
+                   "workingDaysAllowed", dmnIntegerValue(2),
+                   "taskId", dmnStringValue("processApplication")
+            ));
+
+        Request request = Request.create(Request.HttpMethod.GET, "url",
+                                         new HashMap<>(), null, new RequestTemplate());
+
+        when(camundaClient.evaluateDmn(
+            eq(BEARER_SERVICE_TOKEN),
+            anyString(),
+            anyString(),
+            eq(evaluateDmnRequest)
+        )).thenThrow(new FeignException.NotFound(
+            "not found",
+            request,
+            null,
+            null));
+
+        mockMvc.perform(
+                post(ENDPOINT_BEING_TESTED)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .content(asJsonString(evaluateDmnRequest))
+            ).andExpect(status().isNotFound())
+            .andExpect(content().contentType("application/problem+json"))
+            .andReturn();
+    }
+
     @DisplayName("Should evaluate a DMN and return unsupported mediatype error response")
     @Test
     void evaluateDmnAndThrowUnsupportedMediaTypeException() throws Exception {
