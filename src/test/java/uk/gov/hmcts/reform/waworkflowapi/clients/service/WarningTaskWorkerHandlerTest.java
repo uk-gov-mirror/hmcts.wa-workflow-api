@@ -34,7 +34,6 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.waworkflowapi.config.features.FeatureFlag.RELEASE_2_CFT_TASK_WARNING;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -76,7 +75,6 @@ class WarningTaskWorkerHandlerTest {
 
         @BeforeEach
         void setUp() {
-            when(launchDarklyFeatureFlagProvider.getBooleanValue(RELEASE_2_CFT_TASK_WARNING)).thenReturn(true);
             when(camundaClient.getProcessInstancesByVariables(
                 S2S_TOKEN,
                 "caseId_eq_" + CASE_ID,
@@ -374,133 +372,4 @@ class WarningTaskWorkerHandlerTest {
 
     }
 
-    @Nested
-    @DisplayName("when release 2 cft task warning disabled")
-    class FeatureFlagDisabled {
-
-        @BeforeEach
-        void setUp() {
-            when(launchDarklyFeatureFlagProvider.getBooleanValue(RELEASE_2_CFT_TASK_WARNING)).thenReturn(false);
-        }
-
-        @Test
-        void should_complete_warning_external_task_Service() {
-
-            String processVariablesWarningValues = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-            String warningsToBeAdded = "[{\"warningCode\":\"Code2\",\"warningText\":\"Text2\"}]";
-            Map<String, Object> processVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", processVariablesWarningValues,
-                "warningsToAdd", warningsToBeAdded
-            );
-
-            String expectedWarningValues = "[{\"warningCode\":\"Code2\",\"warningText\":\"Text2\"},"
-                + "{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-            Map<String, Object> expectedProcessVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", expectedWarningValues
-            );
-
-            when(externalTask.getAllVariables()).thenReturn(processVariables);
-
-            warningTaskWorkerHandler.completeWarningTaskService(externalTask, externalTaskService);
-
-            verify(externalTaskService).complete(externalTask, expectedProcessVariables);
-            verify(taskManagementServiceApi, never()).addTaskNote(any(), any(), any());
-
-        }
-
-        @Test
-        void should_complete_warning_external_task_Service_with_duplicate_warnings() {
-
-            String processVariablesWarningValues = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-            String warningsFromHandler = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"},"
-                + "{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-
-            Map<String, Object> processVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", processVariablesWarningValues,
-                "warningsToAdd", warningsFromHandler
-            );
-
-            String expectedWarningValues = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-            Map<String, Object> expectedProcessVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", expectedWarningValues
-            );
-
-            when(externalTask.getAllVariables()).thenReturn(processVariables);
-
-            warningTaskWorkerHandler.completeWarningTaskService(externalTask, externalTaskService);
-
-            verify(externalTaskService).complete(externalTask, expectedProcessVariables);
-            verify(taskManagementServiceApi, never()).addTaskNote(any(), any(), any());
-
-        }
-
-        @Test
-        void should_complete_warning_external_task_Service_without_warnings() {
-
-            String processVariablesWarningValues = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-            Map<String, Object> processVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", processVariablesWarningValues
-            );
-
-            String expectedWarningValues = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-            Map<String, Object> expectedProcessVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", expectedWarningValues
-            );
-
-            when(externalTask.getAllVariables()).thenReturn(processVariables);
-
-            warningTaskWorkerHandler.completeWarningTaskService(externalTask, externalTaskService);
-
-            verify(externalTaskService).complete(externalTask, expectedProcessVariables);
-            verify(taskManagementServiceApi, never()).addTaskNote(any(), any(), any());
-        }
-
-        @Test
-        void should_complete_warning_external_task_Service_without_warning_process_variable() {
-
-            Map<String, Object> processVariables = Map.of(
-                "hasWarnings", true
-            );
-
-            Map<String, Object> expectedProcessVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", "[]"
-            );
-
-            when(externalTask.getAllVariables()).thenReturn(processVariables);
-
-            warningTaskWorkerHandler.completeWarningTaskService(externalTask, externalTaskService);
-
-            verify(externalTaskService).complete(externalTask, expectedProcessVariables);
-            verify(taskManagementServiceApi, never()).addTaskNote(any(), any(), any());
-
-        }
-
-        @Test
-        void should_handle_json_parsing_exception() {
-
-            String processVariablesWarningValues = "[{\"warningCode\"\"Code1\",\"warningText\":\"Text1\"}]";
-            Map<String, Object> processVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", processVariablesWarningValues
-            );
-
-            when(externalTask.getAllVariables()).thenReturn(processVariables);
-            Map<String, Object> expectedProcessVariables = Map.of(
-                "hasWarnings", true,
-                "warningList", "[]"
-            );
-            warningTaskWorkerHandler.completeWarningTaskService(externalTask, externalTaskService);
-
-            verify(externalTaskService).complete(externalTask, expectedProcessVariables);
-            verify(taskManagementServiceApi, never()).addTaskNote(any(), any(), any());
-
-        }
-    }
 }

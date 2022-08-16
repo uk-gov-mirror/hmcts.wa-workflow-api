@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.reform.waworkflowapi.config.features.FeatureFlag.RELEASE_2_CFT_TASK_WARNING;
 
 @Slf4j
 @Component
@@ -69,12 +68,9 @@ public class WarningTaskWorkerHandler {
             updatedWarningValues
         ));
 
-        boolean isCftTaskWarningEnabled = launchDarklyFeatureFlagProvider.getBooleanValue(RELEASE_2_CFT_TASK_WARNING);
-        if (isCftTaskWarningEnabled) {
-            //Also update the warning in CFT Task DB
-            addWarningInCftTaskDb(externalTask.getId());
-            addWarningToDelayedProcesses(caseId, updatedWarningValues);
-        }
+        //Also update the warning in CFT Task DB
+        addWarningInCftTaskDb(externalTask.getId());
+        addWarningToDelayedProcesses(caseId, updatedWarningValues);
 
     }
 
