@@ -321,7 +321,6 @@ dependencies {
   implementation 'org.zalando:problem-spring-web-starter:0.27.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
-  implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.0.3'
 
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '8.5.12'
