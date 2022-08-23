@@ -36,7 +36,7 @@ public abstract class SpringBootFunctionalBaseTest {
     public static final String TENANT_ID_IA = "ia";
     public static final String WA_TASK_INITIATION_WA_ASYLUM = "wa-task-initiation-wa-wacasetype";
     public static final String TENANT_ID_WA = "wa";
-    public static final int FT_STANDARD_TIMEOUT_SECS = 30;
+    public static final int FT_STANDARD_TIMEOUT_SECS = 60;
 
     public static final String REASON_COMPLETED = "completed";
 
