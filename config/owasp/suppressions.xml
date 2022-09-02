@@ -54,4 +54,9 @@
       <notes>False positive log4j-api-2.17.2.jar and log4j-to-slf4j-2.17.2.jar</notes>
       <cve>CVE-2022-33915</cve>
     </suppress>
+    <suppress>
+      <notes>Suppressed due to unavailability of updated version of launchdarkly-java-server-sdk</notes>
+      <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+      <cve>CVE-2022-25857</cve>
+    </suppress>
 </suppressions>
