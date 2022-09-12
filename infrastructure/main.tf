@@ -1,5 +1,4 @@
 provider "azurerm" {
-  version = "~> 2.25"
   features {}
 }
 
@@ -26,15 +25,15 @@ resource "azurerm_key_vault_secret" "s2s_secret_workflow_api" {
 
 module "wa_workflow_api_database" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.product}"
+  product            = var.product
   name               = "${var.product}-${var.component}-postgres-db"
-  location           = "${var.location}"
-  env                = "${var.env}"
-  database_name      = "${var.postgresql_database_name}"
-  postgresql_user    = "${var.postgresql_user}"
+  location           = var.location
+  env                = var.env
+  database_name      = var.postgresql_database_name
+  postgresql_user    = var.postgresql_user
   postgresql_version = "11"
-  common_tags        = "${merge(var.common_tags, map("lastUpdated", "${timestamp()}"))}"
-  subscription       = "${var.subscription}"
+  common_tags        = merge(var.common_tags, tomap({"lastUpdated" = timestamp()}))
+  subscription       = var.subscription
 }
 
 
