@@ -27,4 +27,8 @@
       https://tanzu.vmware.com/security/cve-2022-22978</notes>
     <cve>CVE-2022-22978</cve>
   </suppress>
+  <suppress>
+    <notes>Suppressed, because no fixed release yet and affected feature UNWRAP_SINGLE_VALUE_ARRAYS is disabled by default and not used in the project</notes>
+    <cve>CVE-2022-42003</cve>
+  </suppress>
 </suppressions>
