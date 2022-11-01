@@ -74,7 +74,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "Process Application",
             "processApplication",
             caseId,
-            UUID.randomUUID().toString(), TENANT_ID_IA
+            UUID.randomUUID().toString(), TENANT_ID_WA
         );
 
         SendMessageRequest body = new SendMessageRequest(
@@ -132,8 +132,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
     public void should_creates_a_judicial_standalone_task_with_default_due_date() {
         SpecificStandaloneRequest request = SpecificStandaloneRequest.builder()
             .authenticationHeaders(authenticationHeaders)
-            .jurisdiction(TENANT_ID_IA)
-            .caseType("asylum")
+            .jurisdiction(TENANT_ID_WA)
+            .caseType("WaCaseType")
             .taskType("reviewSpecificAccessRequestJudiciary")
             .taskName("Review Specific Access Request")
             .roleCategory("JUDICIAL")
@@ -150,8 +150,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         SpecificStandaloneRequest request = SpecificStandaloneRequest.builder()
             .authenticationHeaders(authenticationHeaders)
-            .jurisdiction(TENANT_ID_IA)
-            .caseType("asylum")
+            .jurisdiction(TENANT_ID_WA)
+            .caseType("WaCaseType")
             .taskType("reviewSpecificAccessRequestLegalOps")
             .taskName("Review Specific Access Request")
             .roleCategory("LEGAL_OPERATIONS")
@@ -169,8 +169,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         SpecificStandaloneRequest request = SpecificStandaloneRequest.builder()
             .authenticationHeaders(authenticationHeaders)
-            .jurisdiction(TENANT_ID_IA)
-            .caseType("asylum")
+            .jurisdiction(TENANT_ID_WA)
+            .caseType("WaCaseType")
             .taskType("reviewSpecificAccessRequestAdmin")
             .taskName("Review Specific Access Request")
             .roleCategory("ADMINISTRATOR")
@@ -245,7 +245,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "reviewTheAppeal",
             caseId,
             UUID.randomUUID().toString(),
-            TENANT_ID_IA
+            TENANT_ID_WA
         );
 
         SendMessageRequest body = new SendMessageRequest(
@@ -367,7 +367,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
             "Process Application", "processApplication",
             caseId,
             UUID.randomUUID().toString(),
-            TENANT_ID_IA
+            TENANT_ID_WA
         );
         SendMessageRequest body = new SendMessageRequest(
             "invalidMessageName",

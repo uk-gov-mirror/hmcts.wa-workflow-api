@@ -65,8 +65,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
     @BeforeEach
     void setUp() {
         when(authTokenGenerator.generate()).thenReturn(BEARER_SERVICE_TOKEN);
-        ENDPOINT_BEING_TESTED = ENDPOINT_BEING_TESTED.replace("{key}", "ia")
-            .replace("{tenant-id}", "asylum");
+        ENDPOINT_BEING_TESTED = ENDPOINT_BEING_TESTED.replace("{key}", "WA")
+            .replace("{tenant-id}", "WaCaseType");
     }
 
     @DisplayName("Should evaluate a DMN and return a 200")
@@ -429,8 +429,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             "some other message",
             Map.of(
                 "name", dmnStringValue("some name"),
-                "jurisdiction", dmnStringValue("ia"),
-                "caseType", dmnStringValue("asylum"),
+                "jurisdiction", dmnStringValue("WA"),
+                "caseType", dmnStringValue("WaCaseType"),
                 "taskId", dmnStringValue("some taskId"),
                 "caseId", dmnStringValue("some caseId")
             ),
@@ -442,8 +442,8 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             "some other message",
             Map.of(
                 "name", dmnStringValue("some name"),
-                "jurisdiction", dmnStringValue("ia"),
-                "caseType", dmnStringValue("asylum"),
+                "jurisdiction", dmnStringValue("WA"),
+                "caseType", dmnStringValue("WaCaseType"),
                 "taskId", dmnStringValue("some taskId"),
                 "caseId", dmnStringValue("some caseId")
             ),

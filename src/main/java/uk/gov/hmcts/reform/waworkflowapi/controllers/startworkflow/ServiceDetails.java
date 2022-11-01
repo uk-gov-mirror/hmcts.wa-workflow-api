@@ -7,13 +7,13 @@ import java.util.Objects;
 
 public class ServiceDetails {
     @Schema(
-        example = "IA",
+        example = "WA",
         required = true,
         description = "Service jurisdiction"
     )
     private final String jurisdiction;
     @Schema(
-        example = "Asylum",
+        example = "WaCaseType",
         required = true,
         description = "Service case type"
     )

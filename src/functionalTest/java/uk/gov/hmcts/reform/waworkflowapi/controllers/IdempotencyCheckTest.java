@@ -52,7 +52,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         idempotencyKey = UUID.randomUUID().toString();
         authenticationHeaders = authorizationHeadersProvider.getAuthorizationHeaders();
 
-        processVariables = createProcessVariables(idempotencyKey, "ia");
+        processVariables = createProcessVariables(idempotencyKey, "WA");
     }
 
     @Test
@@ -60,7 +60,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
         sendMessage(processVariables);
         final String taskId = assertTaskIsCreated(caseId);
-        assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "ia");
+        assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "WA");
         cleanUpTask(taskId, REASON_COMPLETED);  //We do the cleaning here to avoid clashing with other tasks
 
         processVariables = createProcessVariables(idempotencyKey, "wa");
@@ -78,7 +78,7 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
         sendMessage(processVariables);
         final String taskId = assertTaskIsCreated(caseId);
-        assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "ia");
+        assertNewIdempotentKeyIsAddedToDb(idempotencyKey, "WA");
 
         sendMessage(processVariables); //We send another message for the same idempotencyKey
         List<String> processIds = getProcessIdsForGivenIdempotencyKey(idempotencyKey);

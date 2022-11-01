@@ -32,7 +32,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
     public void should_not_allow_requests_without_valid_service_authorisation_and_return_401_response_code() {
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID_IA),
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
             null,
             null,
             new Headers(new Header(SERVICE_AUTHORIZATION, "invalidtoken"))
@@ -52,7 +52,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             ));
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID_IA),
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
             null,
             body,
             authenticationHeaders
@@ -85,7 +85,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             ));
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID_IA),
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
             null,
             body,
             authenticationHeaders
@@ -119,7 +119,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             ));
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_IA_ASYLUM, TENANT_ID_IA),
+            format(ENDPOINT_BEING_TESTED, WA_TASK_INITIATION_WA_ASYLUM, TENANT_ID_WA),
             null,
             body,
             authenticationHeaders
@@ -130,10 +130,10 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
         result.then().assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("size()", equalTo(1))
-            .body("results[0].name.value", equalTo("Process Application"))
-            .body("results[0].workingDaysAllowed.value", equalTo(5))
-            .body("results[0].taskId.value", equalTo("processApplication"))
-            .body("results[0].processCategories.value", equalTo("application"));
+            .body("results[0].name.value", equalTo("processDummyApplication"))
+            .body("results[0].workingDaysAllowed.value", equalTo(2))
+            .body("results[0].taskId.value", equalTo("processDummyApplication"))
+            .body("results[0].processCategories.value", equalTo("caseProgression,followUpOverdue"));
 
     }
 
@@ -147,7 +147,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             ));
 
         Response result = restApiActions.post(
-            format(ENDPOINT_BEING_TESTED, "non-existent", TENANT_ID_IA),
+            format(ENDPOINT_BEING_TESTED, "non-existent", TENANT_ID_WA),
             body,
             authenticationHeaders
         );

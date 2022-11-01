@@ -73,7 +73,7 @@ class IdempotencyKeysRepositoryTest {
     void setUp() {
         randomIdempotentId = new IdempotentId(
             UUID.randomUUID().toString(),
-            "ia"
+            "WA"
         );
 
         idempotencyKeysWithRandomId = new IdempotencyKeys(
