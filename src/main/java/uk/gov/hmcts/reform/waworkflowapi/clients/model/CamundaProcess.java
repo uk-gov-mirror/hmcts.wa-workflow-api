@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -20,13 +21,13 @@ public class CamundaProcess {
     private final String tenantId;
 
     @JsonCreator
-    public CamundaProcess(String id,
-                          String definitionId,
-                          String businessKey,
-                          String caseInstanceId,
-                          Boolean suspended,
-                          Boolean ended,
-                          String tenantId) {
+    public CamundaProcess(@JsonProperty("id")String id,
+                          @JsonProperty("definitionId")String definitionId,
+                          @JsonProperty("businessKey")String businessKey,
+                          @JsonProperty("caseInstanceId")String caseInstanceId,
+                          @JsonProperty("suspended")Boolean suspended,
+                          @JsonProperty("ended")Boolean ended,
+                          @JsonProperty("tenantId")String tenantId) {
         this.id = id;
         this.definitionId = definitionId;
         this.businessKey = businessKey;

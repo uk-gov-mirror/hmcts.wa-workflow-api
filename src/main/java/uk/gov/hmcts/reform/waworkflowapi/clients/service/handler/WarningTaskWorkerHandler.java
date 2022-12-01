@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.client.task.ExternalTask;
 import org.camunda.bpm.client.task.ExternalTaskService;
@@ -10,6 +12,7 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.TaskManagementServiceApi;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.AddProcessVariableRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaProcess;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaProcessVariables;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaTask;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.Warning;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.WarningValues;
@@ -18,13 +21,13 @@ import uk.gov.hmcts.reform.waworkflowapi.config.LaunchDarklyFeatureFlagProvider;
 import uk.gov.hmcts.reform.waworkflowapi.domain.taskconfiguration.request.NoteResource;
 import uk.gov.hmcts.reform.waworkflowapi.domain.taskconfiguration.request.NotesRequest;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.Collections.singletonList;
 
 @Slf4j
 @Component
@@ -67,9 +70,9 @@ public class WarningTaskWorkerHandler {
             WARNING_LIST,
             updatedWarningValues
         ));
-
         //Also update the warning in CFT Task DB
-        addWarningInCftTaskDb(externalTask.getId());
+        String taskName = (String) variables.get("name");
+        addWarningInCftTaskDb(caseId, updatedWarningValues, taskName);
         addWarningToDelayedProcesses(caseId, updatedWarningValues);
 
     }
@@ -88,32 +91,40 @@ public class WarningTaskWorkerHandler {
 
         String warning = (String) processVariables.getProcessVariablesMap().get(WARNING_LIST).getValue();
 
-        try {
-            WarningValues values = mapWarningAttributes(new WarningValues(warningToAdd), new WarningValues(warning));
-            warning = values.getValuesAsJson();
+        LocalDateTime delayDate = LocalDateTime.parse((String) processVariables.getProcessVariablesMap().get("delayUntil").getValue());
 
-        } catch (JsonProcessingException exp) {
-            log.error("Exception occurred while parsing json: {}", exp.getMessage(), exp);
+        if (delayDate.isAfter(LocalDateTime.now())) {
+            try {
+                WarningValues values = mapWarningAttributes(new WarningValues(warningToAdd), new WarningValues(warning));
+                warning = values.getValuesAsJson();
+
+            } catch (JsonProcessingException exp) {
+                log.error("Exception occurred while parsing json: {}", exp.getMessage(), exp);
+            }
+
+            Map<String, DmnValue<String>> warningList = Map.of(WARNING_LIST, DmnValue.dmnStringValue(warning));
+            AddProcessVariableRequest modificationRequest = new AddProcessVariableRequest(warningList);
+            camundaClient.updateProcessVariables(
+                serviceToken,
+                process.getId(),
+                modificationRequest
+            );
+
         }
-
-        Map<String, DmnValue<String>> warningList = Map.of(WARNING_LIST, DmnValue.dmnStringValue(warning));
-        AddProcessVariableRequest modificationRequest = new AddProcessVariableRequest(warningList);
-
-        camundaClient.updateProcessVariables(
-            serviceToken,
-            process.getId(),
-            modificationRequest
-        );
     }
 
-    private void addWarningInCftTaskDb(String taskId) {
-        NotesRequest notesRequest = new NotesRequest(
-            singletonList(
-                new NoteResource(null, "WARNING", null, null)
-            )
-        );
+    private void addWarningInCftTaskDb(String caseId, String updatedWarningValues, String taskName) {
 
-        taskManagementServiceApi.addTaskNote(authTokenGenerator.generate(), taskId, notesRequest);
+        NotesRequest notesRequest = prepareNoteRequest(updatedWarningValues);
+        try {
+            getTasks(caseId).forEach(task -> {
+                if (task.getName().equals(taskName)) {
+                    taskManagementServiceApi.addTaskNote(authTokenGenerator.generate(), task.getId(), notesRequest);
+                }
+            });
+        } catch (Exception e) {
+            log.error("Exception occurred while contacting taskManagement Api : {}", e.getMessage());
+        }
     }
 
     private String mapWarningValues(Map<?, ?> variables) throws JsonProcessingException {
@@ -155,6 +166,40 @@ public class WarningTaskWorkerHandler {
             "caseId_eq_" + caseId,
             List.of("processStartTimer")
         );
+    }
+
+    public List<CamundaTask> getTasks(String caseId) {
+
+        return camundaClient.searchByCaseId(
+            authTokenGenerator.generate(),
+            Map.of(
+                "processVariables", List.of(Map.of(
+                    "name", "caseId",
+                    "operator", "eq",
+                    "value", caseId
+                ))
+            )
+        );
+    }
+
+    private NotesRequest prepareNoteRequest(String warningValues) {
+        List<Warning> warnings = new ArrayList<>();
+        try {
+            warnings = new ObjectMapper().reader()
+                .forType(new TypeReference<List<Warning>>() {
+                }).readValue(warningValues);
+        } catch (JsonProcessingException e) {
+            log.info("Couldn't map json");
+        }
+
+        return new NotesRequest(warnings
+                                    .stream()
+                                    .map(warning ->
+                                             new NoteResource(warning.getWarningCode(),
+                                                              "WARNING",
+                                                              "some-user",
+                                                              warning.getWarningText()))
+                                    .collect(Collectors.toList()));
     }
 
 }

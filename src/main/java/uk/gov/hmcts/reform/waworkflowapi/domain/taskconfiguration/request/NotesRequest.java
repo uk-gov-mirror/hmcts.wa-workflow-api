@@ -11,10 +11,11 @@ import java.util.List;
 @ToString
 public class NotesRequest {
 
+    @JsonProperty("notes")
     private final List<NoteResource> noteResource;
 
     @JsonCreator
-    public NotesRequest(@JsonProperty("notes") List<NoteResource> noteResource) {
+    public NotesRequest(List<NoteResource> noteResource) {
         this.noteResource = noteResource;
     }
 

@@ -5,12 +5,14 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.AddProcessVariableRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaProcess;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaProcessVariables;
+import uk.gov.hmcts.reform.waworkflowapi.clients.model.CamundaTask;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
@@ -77,5 +79,14 @@ public interface CamundaClient {
         @PathVariable("key") String key,
         AddProcessVariableRequest addProcessVariableRequest
     );
+
+    @PostMapping(value = "/task",
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    @ResponseBody
+    List<CamundaTask> searchByCaseId(
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
+        @RequestBody Map<String, Object> body);
 }
 

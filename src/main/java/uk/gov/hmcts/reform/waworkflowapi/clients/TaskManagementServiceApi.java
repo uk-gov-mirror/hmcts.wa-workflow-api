@@ -22,7 +22,7 @@ public interface TaskManagementServiceApi {
         value = "/task/{task-id}/notes",
         consumes = APPLICATION_JSON_VALUE
     )
-    void addTaskNote(@RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthToken,
+    void addTaskNote(@RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
                              @PathVariable("task-id") String taskId,
                              @RequestBody NotesRequest body);
 }
