@@ -249,7 +249,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
         result.then().assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("size()", equalTo(1))
-            .body("results.size", equalTo(0));
+            .body("results.size()", equalTo(0));
 
     }
 
@@ -271,8 +271,6 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
         result.then().assertThat()
             .statusCode(HttpStatus.OK.value())
             .body("size()", equalTo(1))
-            .body("results.size", equalTo(0));
-
+            .body("results.size()", equalTo(0));
     }
-
 }
