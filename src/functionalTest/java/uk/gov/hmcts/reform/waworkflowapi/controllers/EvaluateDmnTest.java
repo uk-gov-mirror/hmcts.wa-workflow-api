@@ -107,8 +107,9 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
     public void should_evaluate_json_data_and_return_dmn_results_makeAnApplication() {
 
         Map<String, Object> appealMap = new HashMap<>();
-        appealMap.put("lastModifiedApplication", Map.of("type", "Adjourn",
-                                                        "decision", ""));
+        appealMap.put("lastModifiedApplication", Map.of(
+            "type", "Adjourn",
+            "decision", ""));
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("Data", appealMap);
 
@@ -273,4 +274,34 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body("size()", equalTo(1))
             .body("results.size()", equalTo(0));
     }
+
+    @Test
+    public void should_evaluate_and_return_dmn_results_without_space() {
+
+        String taskAttributes = "{\"taskType\":\"reviewAppealSkeletonArgument\"}";
+
+        EvaluateDmnRequest body = new EvaluateDmnRequest(
+            Map.of(
+                "taskAttributes", DmnValue.jsonValue(taskAttributes)
+            ));
+
+        Response result = restApiActions.post(
+            format(ENDPOINT_BEING_TESTED, WA_TASK_PERMISSIONS_WA_ASYLUM, TENANT_ID_WA),
+            null,
+            body,
+            authenticationHeaders
+        );
+
+        result.then().assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .and()
+            .body("size()", equalTo(1))
+            .body("results.size()", equalTo(2))
+            .body("results[0].name.value", equalTo("task-supervisor"))
+            .body("results[0].value.value", equalTo("Read,Manage,Cancel,Assign,Unassign,Complete"))
+            .body("results[1].name.value", equalTo("ctsc"))
+            .body("results[1].value.value", equalTo("Read,Own,Cancel"));
+
+    }
+
 }

@@ -97,7 +97,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
             .ignoreException(AssertionError.class)
-            .pollInterval(1, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
@@ -110,6 +110,9 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                         "processVariables", "caseId_eq_" + caseId
                     ));
 
+
+                log.info("transition_creates_a_task_with_default_due_date body:{}",
+                    result.then().extract().body().asString());
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -241,8 +244,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         Map<String, DmnValue<?>> processVariables = mockProcessVariables(
             dueDate,
-            "Review the appeal",
-            "reviewTheAppeal",
+            "Process Application",
+            "processApplication",
             caseId,
             UUID.randomUUID().toString(),
             TENANT_ID_WA
@@ -267,7 +270,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
             .ignoreException(AssertionError.class)
-            .pollInterval(1, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
@@ -279,11 +282,12 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     Map.of("processVariables", "caseId_eq_" + caseId)
                 );
 
+                log.info("transition_creates_a_task_with_due_date body:{}", result.then().extract().body().asString());
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
                     .contentType(APPLICATION_JSON_VALUE)
                     .body("size()", is(1))
-                    .body("[0].name", is("Review the appeal"));
+                    .body("[0].name", is("Process Application"));
 
                 taskIdResponse.set(
                     result.then()
@@ -329,7 +333,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
             .ignoreException(AssertionError.class)
-            .pollInterval(1, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
@@ -340,6 +344,9 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     // so we will search using processVariables
                     Map.of("processVariables", "caseId_eq_" + caseId)
                 );
+
+                log.info("transition_creates_a_task_with_due_date_for_wa body:{}",
+                    result.then().extract().body().asString());
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -475,7 +482,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
             .ignoreException(AssertionError.class)
-            .pollInterval(1, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
@@ -486,6 +493,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     // so we will search using processVariables
                     Map.of("processVariables", "caseId_eq_" + specificStandaloneRequest.getCaseId())
                 );
+
+                log.info("assertions body:{}", result.then().extract().body().asString());
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -508,7 +517,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
             .ignoreException(AssertionError.class)
-            .pollInterval(2, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
@@ -517,6 +526,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     new Headers(specificStandaloneRequest.getAuthenticationHeaders()),
                     Map.of("processVariables", "caseId_eq_" + specificStandaloneRequest.getCaseId())
                 );
+
+                log.info("assertionsForAdditionalProperties task body:{}", result.then().extract().body().asString());
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -535,7 +546,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         await()
             .ignoreException(AssertionError.class)
-            .pollInterval(2, TimeUnit.SECONDS)
+            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
@@ -543,6 +554,9 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     processVariablesPath,
                     specificStandaloneRequest.getAuthenticationHeaders()
                 );
+
+                log.info("assertionsForAdditionalProperties processVariables body:{}",
+                    result.then().extract().body().asString());
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())

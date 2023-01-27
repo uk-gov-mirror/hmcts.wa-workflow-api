@@ -7,10 +7,14 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
+@SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class TaskClientService {
     private final CamundaClient camundaClient;
     private final AuthTokenGenerator authTokenGenerator;
@@ -30,13 +34,39 @@ public class TaskClientService {
     }
 
     public List<Map<String, DmnValue<?>>> evaluate(EvaluateDmnRequest evaluateDmnRequest, String key, String tenantId) {
-        return camundaClient.evaluateDmn(
+        List<Map<String, DmnValue<?>>> dmnResponse = camundaClient.evaluateDmn(
             authTokenGenerator.generate(),
             key,
             tenantId,
             evaluateDmnRequest
         );
+
+        return dmnResponse.stream().map(this::removeSpaces).collect(Collectors.toList());
     }
 
+    private Map<String, DmnValue<?>> removeSpaces(Map<String, DmnValue<?>> dmnResponse) {
+
+        HashMap<String, DmnValue<?>> response = new HashMap<>(dmnResponse);
+
+        for (Map.Entry<String, DmnValue<?>> entry : response.entrySet()) {
+            String value = entry.getValue().getValue().toString();
+            if (value.contains(",") && value.contains(" ")) {
+                String[] valueArray = ((String) entry.getValue().getValue()).split(",");
+
+                List<String> trimmedValues = Arrays.stream(valueArray)
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+
+                response.put(
+                    entry.getKey(),
+                    DmnValue.dmnStringValue(
+                        String.join(",", trimmedValues)
+                    )
+                );
+            }
+
+        }
+        return response;
+    }
 
 }

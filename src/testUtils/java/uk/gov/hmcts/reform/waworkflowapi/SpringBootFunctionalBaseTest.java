@@ -33,9 +33,10 @@ import static org.hamcrest.CoreMatchers.is;
 @ActiveProfiles("functional")
 public abstract class SpringBootFunctionalBaseTest {
     public static final String WA_TASK_INITIATION_WA_ASYLUM = "wa-task-initiation-wa-wacasetype";
+    public static final String WA_TASK_PERMISSIONS_WA_ASYLUM = "wa-task-permissions-wa-wacasetype";
     public static final String TENANT_ID_WA = "wa";
     public static final int FT_STANDARD_TIMEOUT_SECS = 60;
-
+    public static final int POLL_INTERVAL = 5;
     public static final String REASON_COMPLETED = "completed";
 
     private static final String ENDPOINT_COMPLETE_TASK = "task/{task-id}/complete";
@@ -53,6 +54,7 @@ public abstract class SpringBootFunctionalBaseTest {
 
     @Before
     public void setUpGivens() {
+        log.info("camundaUrl:{}  - testUrl:{}", camundaUrl, testUrl);
         restApiActions = new RestApiActions(testUrl, LOWER_CAMEL_CASE).setUp();
         //Convention should be snake case will be fixed in another PR
         //restApiActions = new RestApiActions(testUrl, SNAKE_CASE).setUp();
@@ -152,11 +154,16 @@ public abstract class SpringBootFunctionalBaseTest {
             false
         );
 
-        return restApiActions.post(
+        Response response = restApiActions.post(
             "/workflow/message",
             body,
             specificStandaloneRequest.getAuthenticationHeaders()
         );
+
+        log.info("createSpecifiedStandaloneTask statusCode: {}", response.then().extract().statusCode());
+        log.info("createSpecifiedStandaloneTask response: {}", response.then().extract().body().asString());
+
+        return response;
 
     }
 }
