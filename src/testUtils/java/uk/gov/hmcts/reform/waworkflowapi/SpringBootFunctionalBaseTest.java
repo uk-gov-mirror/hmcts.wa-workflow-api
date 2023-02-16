@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.waworkflowapi.services.AuthorizationHeadersProvider;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -39,6 +40,7 @@ public abstract class SpringBootFunctionalBaseTest {
     public static final int POLL_INTERVAL = 5;
     public static final String REASON_COMPLETED = "completed";
 
+    private static final String ENDPOINT_PROCESS_INSTANCE = "process-instance/delete";
     private static final String ENDPOINT_COMPLETE_TASK = "task/{task-id}/complete";
     private static final String ENDPOINT_HISTORY_TASK = "history/task";
     protected RestApiActions restApiActions;
@@ -59,6 +61,25 @@ public abstract class SpringBootFunctionalBaseTest {
         //Convention should be snake case will be fixed in another PR
         //restApiActions = new RestApiActions(testUrl, SNAKE_CASE).setUp();
         camundaApiActions = new RestApiActions(camundaUrl, LOWER_CAMEL_CASE).setUp();
+    }
+
+    public void cleanUpProcess(String processId) {
+        log.info("Cleaning process {}", processId);
+        Header authorizationHeaders = authorizationHeadersProvider.getAuthorizationHeaders();
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("deleteReason", "FT");
+        body.put("processInstanceIds", List.of(processId));
+
+        Response deleteResult = camundaApiActions.post(
+            ENDPOINT_PROCESS_INSTANCE,
+            null,
+            body,
+            new Headers(authorizationHeaders)
+        );
+
+        deleteResult.then().assertThat()
+            .statusCode(HttpStatus.OK.value());
     }
 
     public void cleanUpTask(String taskId, String reason) {
@@ -82,6 +103,7 @@ public abstract class SpringBootFunctionalBaseTest {
 
     public Map<String, DmnValue<?>> mockProcessVariables(
         String dueDate,
+        String delayUntil,
         String name,
         String taskId,
         String caseId,
@@ -96,9 +118,7 @@ public abstract class SpringBootFunctionalBaseTest {
         processVariables.put("taskId", DmnValue.dmnStringValue(taskId));
         processVariables.put("caseId", DmnValue.dmnStringValue(caseId));
         processVariables.put("idempotencyKey", DmnValue.dmnStringValue(idempotencyKey));
-
-        String delayUntilTimer = ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        processVariables.put("delayUntil", DmnValue.dmnStringValue(delayUntilTimer));
+        processVariables.put("delayUntil", DmnValue.dmnStringValue(delayUntil));
 
         return processVariables;
     }

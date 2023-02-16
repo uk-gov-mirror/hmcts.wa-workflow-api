@@ -133,8 +133,10 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     private Map<String, DmnValue<?>> createProcessVariables(String idempotentKey, String jurisdiction) {
         String dueDate = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        String delayUntil = ZonedDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         return mockProcessVariables(
             dueDate,
+            delayUntil,
             "Process Application",
             "processApplication",
             caseId,
