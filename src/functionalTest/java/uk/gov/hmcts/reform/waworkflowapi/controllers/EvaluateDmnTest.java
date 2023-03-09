@@ -227,6 +227,7 @@ public class EvaluateDmnTest extends SpringBootFunctionalBaseTest {
             .body("results[0].name.value", equalTo("Attend Cma"))
             .body("results[0].workingDaysAllowed.value", equalTo(2))
             .body("results[0].taskId.value", equalTo("attendCma"))
+            .body("results[0].taskType.value", equalTo("attendCma"))
             .body("results[0].processCategories.value", equalTo("caseProgression"));
 
     }
