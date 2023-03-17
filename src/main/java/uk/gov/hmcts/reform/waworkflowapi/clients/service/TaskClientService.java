@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 @SuppressWarnings("PMD.DataflowAnomalyAnalysis")
 public class TaskClientService {
     private final CamundaClient camundaClient;

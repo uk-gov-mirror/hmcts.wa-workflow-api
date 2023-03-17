@@ -53,6 +53,11 @@ public class WarningTaskWorkerHandler {
 
     public void completeWarningTaskService(ExternalTask externalTask, ExternalTaskService externalTaskService) {
         Map<?, ?> variables = externalTask.getAllVariables();
+        if (variables == null) {
+            log.warn("completeWarningTaskService can NOT continue to process due to externalTask is null. "
+                     + "externalTask:{}", externalTask);
+            return;
+        }
         String caseId = (String) variables.get("caseId");
         log.info("Set processVariables for same processInstance ids with caseId {}", caseId);
 
@@ -78,18 +83,41 @@ public class WarningTaskWorkerHandler {
     }
 
     private void addWarningToDelayedProcesses(String caseId, String updatedWarningValues) {
-        List<CamundaProcess> processes = getProcesses(caseId);
-        processes.forEach(process -> updateDelayedProcessWarnings(process, updatedWarningValues));
+        List<CamundaProcess> camundaProcessList = getProcesses(caseId);
+        if (camundaProcessList == null) {
+            log.warn("addWarningToDelayedProcesses can NOT continue to process due to camundaProcessList is null. "
+                     + "caseId:{} updatedWarningValues:{}", caseId, updatedWarningValues);
+            return;
+        }
+
+        camundaProcessList.forEach(process -> {
+            if (process == null) {
+                log.warn("addWarningToDelayedProcesses can NOT continue to process due to camundaProcess is null. "
+                         + "caseId:{} updatedWarningValues:{}", caseId, updatedWarningValues);
+            } else {
+                updateDelayedProcessWarnings(caseId, process, updatedWarningValues);
+            }
+        });
     }
 
-    private void updateDelayedProcessWarnings(CamundaProcess process, String warningToAdd) {
+    private void updateDelayedProcessWarnings(String caseId, CamundaProcess process, String warningToAdd) {
         String serviceToken = authTokenGenerator.generate();
         CamundaProcessVariables processVariables = camundaClient.getProcessInstanceVariables(
             serviceToken,
             process.getId()
         );
 
-        String warning = (String) processVariables.getProcessVariablesMap().get(WARNING_LIST).getValue();
+        if (processVariables == null || processVariables.getProcessVariablesMap() == null) {
+            log.warn("updateDelayedProcessWarnings processVariables not found. "
+                     + "caseId:{} warningToAdd:{} tenantId:{} processId:{}",
+                caseId, warningToAdd, process.getTenantId(), process.getId());
+            return;
+        }
+
+        String warning = "[]";
+        if (processVariables.getProcessVariablesMap().get(WARNING_LIST) != null) {
+            warning = (String) processVariables.getProcessVariablesMap().get(WARNING_LIST).getValue();
+        }
 
         LocalDateTime delayDate = LocalDateTime.parse((String) processVariables.getProcessVariablesMap().get("delayUntil").getValue());
 
