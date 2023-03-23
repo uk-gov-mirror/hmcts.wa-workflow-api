@@ -66,10 +66,9 @@
     <cve>CVE-2023-24998</cve>
   </suppress>
   <suppress>
-    <notes><![CDATA[
-   file name: snakeyaml-1.32.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+    <notes>
+      com.launchdarkly:launchdarkly-java-server-sdk:5.10.2 is directly used by spring-boot-starter-json 2.7.7, spring boot 3 needed
+    </notes>
     <cve>CVE-2022-1471</cve>
   </suppress>
 </suppressions>
