@@ -52,6 +52,7 @@ public class WarningTaskWorkerHandler {
     }
 
     public void completeWarningTaskService(ExternalTask externalTask, ExternalTaskService externalTaskService) {
+        log.info("completeWarningTaskService received externalTask:{}", externalTask);
         Map<?, ?> variables = externalTask.getAllVariables();
         if (variables == null) {
             log.warn("completeWarningTaskService can NOT continue to process due to externalTask is null. "
@@ -112,6 +113,10 @@ public class WarningTaskWorkerHandler {
                      + "caseId:{} warningToAdd:{} tenantId:{} processId:{}",
                 caseId, warningToAdd, process.getTenantId(), process.getId());
             return;
+        } else {
+            log.info("updateDelayedProcessWarnings "
+                     + "caseId:{} warningToAdd:{} tenantId:{} processId:{} processVariables:{}",
+                caseId, warningToAdd, process.getTenantId(), process.getId(), processVariables);
         }
 
         String warning = "[]";
@@ -119,7 +124,13 @@ public class WarningTaskWorkerHandler {
             warning = (String) processVariables.getProcessVariablesMap().get(WARNING_LIST).getValue();
         }
 
-        LocalDateTime delayDate = LocalDateTime.parse((String) processVariables.getProcessVariablesMap().get("delayUntil").getValue());
+        LocalDateTime delayDate;
+        try {
+            delayDate = LocalDateTime.parse((String) processVariables.getProcessVariablesMap().get("delayUntil").getValue());
+        } catch (Exception e) {
+            log.warn(String.format("updateDelayedProcessWarnings delayUntil is null. processId:%s ", process.getId()), e);
+            return;
+        }
 
         if (delayDate.isAfter(LocalDateTime.now())) {
             try {
@@ -151,7 +162,10 @@ public class WarningTaskWorkerHandler {
                 }
             });
         } catch (Exception e) {
-            log.error("Exception occurred while contacting taskManagement Api : {}", e.getMessage());
+            String message = String.format("Exception occurred while contacting taskManagement Api. "
+                                           + "caseId:%s updatedWarningValues:%s taskName:%s notesRequest:%s",
+                caseId, updatedWarningValues, taskName, notesRequest);
+            log.error(message, e);
         }
     }
 

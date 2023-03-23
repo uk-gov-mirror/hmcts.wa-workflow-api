@@ -130,6 +130,7 @@ public class CreateTaskController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
 
+        log.info("Message request received. sendMessageRequest:{} ", sendMessageRequest);
         sendMessageService.createMessage(sendMessageRequest);
         return noContent().build();
     }
