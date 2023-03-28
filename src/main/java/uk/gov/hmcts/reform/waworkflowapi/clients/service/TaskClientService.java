@@ -51,22 +51,26 @@ public class TaskClientService {
         HashMap<String, DmnValue<?>> response = new HashMap<>(dmnResponse);
 
         for (Map.Entry<String, DmnValue<?>> entry : response.entrySet()) {
-            String value = entry.getValue().getValue().toString();
-            if (value.contains(",") && value.contains(" ")) {
-                String[] valueArray = ((String) entry.getValue().getValue()).split(",");
+            log.info("Camunda response entry : {}", entry);
+            if (entry.getValue().getType() != null && entry.getValue().getType().equals("String")) {
+                String value = entry.getValue().getValue().toString();
+                if (value.contains(",") && value.contains(" ")) {
+                    String[] valueArray = ((String) entry.getValue().getValue()).split(",");
 
-                List<String> trimmedValues = Arrays.stream(valueArray)
-                    .map(String::trim)
-                    .collect(Collectors.toList());
+                    List<String> trimmedValues = Arrays.stream(valueArray)
+                        .map(String::trim)
+                        .collect(Collectors.toList());
 
-                response.put(
-                    entry.getKey(),
-                    DmnValue.dmnStringValue(
-                        String.join(",", trimmedValues)
-                    )
-                );
+                    response.put(
+                        entry.getKey(),
+                        DmnValue.dmnStringValue(
+                            String.join(",", trimmedValues)
+                        )
+                    );
+                }
+            } else {
+                response.put(entry.getKey(), entry.getValue());
             }
-
         }
         return response;
     }

@@ -27,6 +27,8 @@ wa-task-management-api:
 govUkHolidays:
   url: https://www.gov.uk/
 
+springdoc:
+  writer-with-order-by-keys: true
 spring:
   config:
     import: "optional:configtree:/mnt/secrets/wa/"
