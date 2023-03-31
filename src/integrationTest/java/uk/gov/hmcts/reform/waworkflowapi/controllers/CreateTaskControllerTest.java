@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootIntegrationBaseTest;
@@ -34,6 +35,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -418,6 +420,55 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
         assertThat(actualSendMessageRequest).isEqualTo(scenario.expectedSendMessageRequest);
     }
 
+    @ParameterizedTest
+    @MethodSource("errorScenarioStream")
+    void send_message_and_handle_error(ErrorScenario errorScenario) throws Exception {
+        SendMessageRequest sendMessageRequest = new SendMessageRequest(
+                "some other message",
+                Map.of(
+                        "name", dmnStringValue("some name"),
+                        "jurisdiction", dmnStringValue("WA")
+                ),
+                null,
+                false
+        );
+
+        doThrow(errorScenario.exception)
+                .when(camundaClient).sendMessage(eq(BEARER_SERVICE_TOKEN), eq(sendMessageRequest));
+
+        mockMvc.perform(
+                post(WORKFLOW_MESSAGE_ENDPOINT)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(asJsonString(sendMessageRequest))
+        ).andExpect(errorScenario.resultMatcher)
+                .andExpect(content().contentType("application/problem+json"))
+                .andReturn();
+
+    }
+
+    private static Stream<ErrorScenario> errorScenarioStream() {
+        Request request = Request.create(Request.HttpMethod.POST, "url",
+                new HashMap<>(), null, new RequestTemplate());
+        return Stream.of(
+                ErrorScenario.builder()
+                        .exception(new FeignException.InternalServerError("Internal Server Error", request, null, null))
+                        .resultMatcher(status().isInternalServerError())
+                        .build(),
+                ErrorScenario.builder()
+                        .exception(new FeignException.BadGateway("Internal Server Error", request, null, null))
+                        .resultMatcher(status().isBadGateway())
+                        .build(),
+                ErrorScenario.builder()
+                        .exception(new FeignException.ServiceUnavailable("Internal Server Error", request, null, null))
+                        .resultMatcher(status().isServiceUnavailable())
+                        .build(),
+                ErrorScenario.builder()
+                        .exception(new FeignException.GatewayTimeout("Internal Server Error", request, null, null))
+                        .resultMatcher(status().isInternalServerError())
+                        .build()
+        );
+    }
+
     private static Stream<Scenario> scenarioProvider() {
 
         /*
@@ -491,6 +542,12 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
             messageIsOtherThanCreateTaskThenDueTaskIsNotSet,
             messageIsOtherThanCreateTaskThenDueTaskIsNotSet2
         );
+    }
+
+    @Builder
+    private static class ErrorScenario {
+        private final FeignException exception;
+        private final ResultMatcher resultMatcher;
     }
 
     @Builder
