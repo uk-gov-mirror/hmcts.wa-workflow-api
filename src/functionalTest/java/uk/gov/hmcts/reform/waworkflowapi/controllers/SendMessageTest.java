@@ -542,6 +542,11 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                 );
 
                 // Check process state. It should be at processStartTimer sate waiting for delayUntil time to lapse
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 Response activityResult = camundaApiActions.get(
                     "/process-instance/{id}/activity-instances",
                     processIdResponse.get(),
@@ -551,7 +556,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                 List<ActivityInstance> activityInstance = mapper.convertValue(
                     activityResult.then()
                         .extract().path("childActivityInstances"),
-                    new TypeReference<List<ActivityInstance>>(){});
+                    new TypeReference<List<ActivityInstance>>() {
+                    });
                 assertEquals("processStartTimer", activityInstance.get(0).getActivityId());
                 assertEquals("intermediateTimer", activityInstance.get(0).getActivityType());
 

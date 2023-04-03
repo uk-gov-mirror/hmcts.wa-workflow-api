@@ -108,7 +108,8 @@ public class WarningTaskWorkerHandler {
             process.getId()
         );
 
-        if (processVariables == null || processVariables.getProcessVariablesMap() == null) {
+        if (processVariables == null || processVariables.getProcessVariablesMap() == null
+            || processVariables.getProcessVariablesMap().isEmpty()) {
             log.warn("updateDelayedProcessWarnings processVariables not found. "
                      + "caseId:{} warningToAdd:{} tenantId:{} processId:{}",
                 caseId, warningToAdd, process.getTenantId(), process.getId());
@@ -205,8 +206,7 @@ public class WarningTaskWorkerHandler {
     private List<CamundaProcess> getProcesses(String caseId) {
         return camundaClient.getProcessInstancesByVariables(
             authTokenGenerator.generate(),
-            "caseId_eq_" + caseId,
-            List.of("processStartTimer")
+            "caseId_eq_" + caseId
         );
     }
 

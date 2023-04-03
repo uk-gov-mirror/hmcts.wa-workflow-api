@@ -49,15 +49,14 @@ public interface CamundaClient {
         EvaluateDmnRequest evaluateDmnRequest
     );
 
-    @PostMapping(value = "/process-instance",
+    @GetMapping(value = "/process-instance",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
     @ResponseBody
     List<CamundaProcess> getProcessInstancesByVariables(
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
-        @RequestParam("variables") String variables,
-        @RequestParam("activityIdIn") List<String> activityId
+        @RequestParam("variables") String variables
     );
 
     @GetMapping(value = "/process-instance/{key}/variables",
