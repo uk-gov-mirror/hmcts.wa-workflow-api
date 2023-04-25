@@ -91,7 +91,7 @@ class WarningTaskWorkerHandlerTest {
             ))
                 .thenReturn(List.of(CamundaProcess.builder().id(PROCESS_INSTANCE_ID).build()));
 
-            when(externalTask.getId()).thenReturn(TASK_ID);
+            lenient().when(externalTask.getId()).thenReturn(TASK_ID);
         }
 
         @Test
@@ -684,7 +684,7 @@ class WarningTaskWorkerHandlerTest {
             when(warningTaskWorkerHandler.getTasks(CASE_ID)).thenReturn(camundaTasks);
 
             lenient().doThrow(new RuntimeException("404 Not Found"))
-                .when(taskManagementServiceApi).addTaskNote(anyString(), any(), any(NotesRequest.class));
+                .when(taskManagementServiceApi).addTaskNote(anyString(), anyString(), any(NotesRequest.class));
 
             warningTaskWorkerHandler.completeWarningTaskService(externalTask, externalTaskService);
 
@@ -788,7 +788,7 @@ class WarningTaskWorkerHandlerTest {
 
             String expectedWarningValues = "[{\"warningCode\":\"Code2\",\"warningText\":\"Text2\"},"
                                            + "{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-            
+
             Map<String, Object> expectedProcessVariables = Map.of(
                 "hasWarnings", true,
                 "warningList", expectedWarningValues
