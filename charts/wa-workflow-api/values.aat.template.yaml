@@ -5,7 +5,7 @@ java:
   environment:
     RESTART_APP: 1
     ENABLE_SWAGGER: true
-    CAMUNDA_URL: "https://workflow-api-camunda-staging-aat.aat.platform.hmcts.net/engine-rest"
+    CAMUNDA_URL: "https://wa-workflow-camunda-staging.aat.platform.hmcts.net/engine-rest"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     POSTGRES_PORT: 5432
     POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
