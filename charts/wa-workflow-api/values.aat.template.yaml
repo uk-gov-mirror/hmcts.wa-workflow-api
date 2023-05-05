@@ -11,7 +11,7 @@ java:
     POSTGRES_HOST: "{{ .Release.Name }}-postgresql"
     POSTGRES_USERNAME: hmcts
     POSTGRES_PASSWORD: hmcts
-    POSTGRES_CONNECTION_OPTIONS: "?sslmode=require"
+    POSTGRES_CONNECTION_OPTIONS: ""
     WA_TASK_MANAGEMENT_API_URL: "http://wa-task-management-api-aat.service.core-compute-aat.internal"
     ENVIRONMENT: "{{ .Values.global.environment }}"
   keyVaults:
