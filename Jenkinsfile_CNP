@@ -85,8 +85,8 @@ withPipeline(type, product, component) {
 
   before('smoketest:aat') {
     env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.CAMUNDA_BASE_URL = "https://workflow-api-camunda-staging-aat.aat.platform.hmcts.net"
-    env.CAMUNDA_URL = "https://workflow-api-camunda-staging-aat.aat.platform.hmcts.net/engine-rest"
+    env.CAMUNDA_BASE_URL = "https://wa-workflow-camunda-staging.aat.platform.hmcts.net"
+    env.CAMUNDA_URL = "https://wa-workflow-camunda-staging.aat.platform.hmcts.net/engine-rest"
     env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     sh """
       ./bin/pull-latest-dmn-files.sh ${dmnBranch}
