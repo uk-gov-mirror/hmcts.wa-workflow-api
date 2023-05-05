@@ -40,9 +40,9 @@ wa:
       enabled: false
     servicebus:
       enabled: false
-    camunda-bpm:
-      java:
-        ingressHost: workflow-api-camunda-staging-aat.aat.platform.hmcts.net
-    postgresql:
-      ingressHost: workflow-api-postgres-staging-aat.aat.platform.hmcts.net
+  camunda-bpm:
+    java:
+      ingressHost: workflow-api-camunda-staging-aat.aat.platform.hmcts.net
+  postgresql:
+    ingressHost: workflow-api-postgres-staging-aat.aat.platform.hmcts.net
 
