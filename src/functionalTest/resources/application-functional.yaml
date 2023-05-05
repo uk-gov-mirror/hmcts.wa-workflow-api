@@ -1,3 +1,19 @@
 targets:
   instance: ${TEST_URL:http://localhost:8099}
   camunda: ${CAMUNDA_URL:http://camunda-bpm/engine-rest}
+
+environment: local
+
+spring:
+  flyway:
+    enabled: false
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:wa_workflow_api
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+      default_schema: wa_workflow_api

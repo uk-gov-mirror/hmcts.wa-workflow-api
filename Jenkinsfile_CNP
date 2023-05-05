@@ -6,12 +6,11 @@ import uk.gov.hmcts.contino.AppPipelineDsl
 def type = "java"
 def product = "wa"
 def component = "workflow-api"
-
+def dmnBranch = "master"
+def bpmnBranch = "master"
 
 def secrets = [
   'wa-${env}' : [
-    secret('workflow-api-POSTGRES-PASS', 'POSTGRES_PASSWORD'),
-    secret('workflow-api-POSTGRES-USER', 'POSTGRES_USERNAME'),
     secret('ld-secret', 'LAUNCH_DARKLY_SDK_KEY'),
   ],
   's2s-${env}': [
@@ -35,8 +34,6 @@ withPipeline(type, product, component) {
 
   env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
   env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-  env.CAMUNDA_URL = "http://camunda-api-aat.service.core-compute-aat.internal/engine-rest"
-  env.POSTGRES_HOST = "wa-workflow-api-postgres-db-aat.postgres.database.azure.com"
   env.PACT_BROKER_FULL_URL = "https://pact-broker.platform.hmcts.net"
   env.PACT_BROKER_URL = "pact-broker.platform.hmcts.net"
   env.PACT_BROKER_PORT = "443"
@@ -67,6 +64,30 @@ withPipeline(type, product, component) {
   onPR() {
     enableCleanupOfHelmReleaseOnSuccess()
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER, AppPipelineDsl.PactRoles.PROVIDER])
+    env.CAMUNDA_URL = "https://camunda-wa-workflow-api-pr-${CHANGE_ID}.preview.platform.hmcts.net/engine-rest"
+  }
+
+  afterSuccess('akschartsinstall') {
+    onPR {
+      env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+      env.CAMUNDA_BASE_URL = "https://camunda-wa-workflow-api-pr-${CHANGE_ID}.preview.platform.hmcts.net"
+      env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+      sh """
+      ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+      ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+    """
+    }
+  }
+
+  before('smoketest:aat') {
+    env.IDAM_API_URL = "https://idam-api.aat.platform.hmcts.net"
+    env.CAMUNDA_BASE_URL = "https://workflow-api-camunda-staging-aat.aat.platform.hmcts.net"
+    env.CAMUNDA_URL = "https://workflow-api-camunda-staging-aat.aat.platform.hmcts.net/engine-rest"
+    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
+    sh """
+      ./bin/pull-latest-dmn-files.sh ${dmnBranch}
+      ./bin/pull-latest-camunda-wa-files.sh ${bpmnBranch}
+    """
   }
 
   // Sync environment specific branches with master branch

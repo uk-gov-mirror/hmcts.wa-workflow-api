@@ -39,6 +39,15 @@ public class IdempotencyTaskService {
         );
     }
 
+    public Optional<IdempotencyKeys> findByIdempotencyKeyAndTenantId(String idempotencyKey, String jurisdiction) {
+
+        return idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
+            idempotencyKey,
+            jurisdiction
+        );
+
+    }
+
     private void handleIdempotentIdIsNotPresentInDb(ExternalTask externalTask,
                                                     ExternalTaskService externalTaskService,
                                                     IdempotentId idempotentId) {

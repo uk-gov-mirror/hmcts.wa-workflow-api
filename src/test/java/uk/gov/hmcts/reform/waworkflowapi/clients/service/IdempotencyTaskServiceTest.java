@@ -110,4 +110,37 @@ class IdempotencyTaskServiceTest {
         verify(externalTaskService).complete(externalTask, singletonMap("isDuplicate", false));
     }
 
+    @Test
+    void handleFindByIdempotencyKeyAndTenantId() {
+        Optional<IdempotentId> idempotentId = Optional.of(new IdempotentId(
+            "some idempotencyKey",
+            "some tenant id"
+        ));
+
+        LocalDateTime date = LocalDateTime.now();
+        Optional<IdempotencyKeys> idempotencyKeys = Optional.of(new IdempotencyKeys(
+            "some idempotencyKey",
+            "some tenant id",
+            "process id",
+            date,
+            date
+        ));
+
+        when(idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
+            idempotentId.get().getIdempotencyKey(),
+            idempotentId.get().getTenantId()
+        )).thenReturn(idempotencyKeys);
+
+
+        idempotencyTaskService.findByIdempotencyKeyAndTenantId(
+            idempotencyKeys.get().getIdempotencyKey(),
+            idempotencyKeys.get().getTenantId()
+        );
+
+        verify(idempotencyKeysRepository).findByIdempotencyKeyAndTenantId(
+            idempotencyKeys.get().getIdempotencyKey(),
+            idempotencyKeys.get().getTenantId());
+
+    }
+
 }

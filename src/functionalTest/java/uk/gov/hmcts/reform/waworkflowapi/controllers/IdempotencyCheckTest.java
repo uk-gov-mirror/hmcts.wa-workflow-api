@@ -4,7 +4,6 @@ import io.restassured.http.Header;
 import io.restassured.http.Headers;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.core.ConditionTimeoutException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +11,13 @@ import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.waworkflowapi.SpringBootFunctionalBaseTest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotencyKeys;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotentId;
-import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyKeysRepository;
 import uk.gov.hmcts.reform.waworkflowapi.services.AuthorizationHeadersProvider;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,8 +33,6 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
-    @Autowired
-    private IdempotencyKeysRepository idempotencyKeysRepository;
 
     private String caseId;
     private String idempotencyKey;
@@ -145,55 +139,9 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         );
     }
 
-    /*
-     * Because of more than one idempotencyCheck worker (Preview and AAT environments)
-     * then we have to look for  the idempotentId in both DBs, AAT and Preview.
-     */
     private void assertNewIdempotentKeyIsAddedToDb(String idempotencyKey, String jurisdiction) {
-        boolean idempotencyKeysInAatDb = findIdempotencyKeysInAatDb(idempotencyKey, jurisdiction);
-        if (!idempotencyKeysInAatDb) {
-            findIdempotencyKeysInPreviewDb(idempotencyKey, jurisdiction);
-        }
-    }
-
-    private boolean findIdempotencyKeysInAatDb(String idempotencyKey, String jurisdiction) {
-        log.info("Asserting idempotentId({}) was added to AAT DB...",
-            new IdempotentId(idempotencyKey, jurisdiction));
-        AtomicReference<Boolean> result = new AtomicReference<>(false);
-        try {
-            await()
-                .ignoreException(AssertionError.class)
-                .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
-                .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
-                .until(() -> {
-
-                    Optional<IdempotencyKeys> actual = idempotencyKeysRepository.findByIdempotencyKeyAndTenantId(
-                        idempotencyKey,
-                        jurisdiction
-                    );
-
-                    if (actual.isPresent()) {
-                        log.info("idempotentId[{}] found in AAT DB.", actual.get());
-                        result.set(true);
-                    } else {
-                        log.info(
-                            "idempotentId[{}] NOT found in AAT DB.",
-                            new IdempotentId(idempotencyKey, jurisdiction));
-                    }
-                    log.info("findIdempotencyKeysInAatDb result:{}", result.get());
-                    return result.get();
-                });
-        } catch (ConditionTimeoutException e) {
-            log.info("findIdempotencyKeysInAatDb ConditionTimeoutException:{}", e.getMessage());
-        }
-
-        log.info("findIdempotencyKeysInAatDb after result:{}", result.get());
-        return result.get();
-    }
-
-    private void findIdempotencyKeysInPreviewDb(String idempotencyKey, String jurisdiction) {
         log.info(
-            "Asserting idempotentId({}) was added to Preview DB...",
+            "Asserting idempotentId({}) was added to DB...",
             new IdempotentId(idempotencyKey, jurisdiction)
         );
         await()
@@ -202,29 +150,17 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
             .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
             .until(() -> {
 
-                log.info("findIdempotencyKeysInPreviewDb idempotencyKey:{} jurisdiction:{}",
+                log.info("assertNewIdempotentKeyIsAddedToDb idempotencyKey:{} jurisdiction:{}",
                     idempotencyKey, jurisdiction);
-                Response result = restApiActions.get(
-                    "/testing/idempotencyKeys/search/findByIdempotencyKeyAndTenantId",
-                    new Headers(authenticationHeaders),
-                    Map.of(
-                        "idempotencyKey", idempotencyKey,
-                        "tenantId", jurisdiction
-                    )
-                );
 
-                log.info("findIdempotencyKeysInPreviewDb result body:{}",
-                    result.then().extract().body().asString());
+                String idempotencyEndPoint = String.format("/workflow/idempotency/%s/%s", idempotencyKey, jurisdiction);
+                Response result = restApiActions.get(idempotencyEndPoint, authenticationHeaders);
 
-                result.then().assertThat()
-                    .statusCode(HttpStatus.OK.value())
-                    .contentType(APPLICATION_JSON_VALUE)
-                    .body("idempotencyKey", is(idempotencyKey))
-                    .body("tenantId", is(jurisdiction));
+                log.info("assertNewIdempotentKeyIsAddedToDb result body:{}", result.getBody());
 
-                return true;
+                return HttpStatus.OK.value() == result.getStatusCode();
             });
-        log.info("findIdempotencyKeysInPreviewDb idempotentId[{}] found in Preview DB.",
+        log.info("assertNewIdempotentKeyIsAddedToDb idempotentId[{}] found in DB.",
             new IdempotentId(idempotencyKey, jurisdiction));
     }
 

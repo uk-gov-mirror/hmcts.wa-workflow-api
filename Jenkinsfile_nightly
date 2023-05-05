@@ -19,8 +19,6 @@ def component = "workflow-api"
 
 def secrets = [
   'wa-${env}' : [
-    secret('workflow-api-POSTGRES-PASS', 'POSTGRES_PASSWORD'),
-    secret('workflow-api-POSTGRES-USER', 'POSTGRES_USERNAME'),
     secret('ld-secret', 'LAUNCH_DARKLY_SDK_KEY'),
   ],
   's2s-${env}': [
@@ -43,7 +41,6 @@ withNightlyPipeline(type, product, component) {
   env.IDAM_URL = "https://idam-api.aat.platform.hmcts.net"
   env.S2S_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
   env.CAMUNDA_URL = "http://camunda-api-aat.service.core-compute-aat.internal/engine-rest"
-  env.POSTGRES_HOST = "wa-workflow-api-postgres-db-aat.postgres.database.azure.com"
   env.WA_TASK_MANAGEMENT_API_URL = "http://wa-task-management-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
 
   enableSecurityScan()

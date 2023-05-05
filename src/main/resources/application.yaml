@@ -100,3 +100,4 @@ feign:
 logbook:
   include: /workflow/**
 
+environment: ${ENVIRONMENT:local}

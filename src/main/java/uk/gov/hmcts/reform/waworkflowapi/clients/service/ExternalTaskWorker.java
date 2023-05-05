@@ -4,6 +4,7 @@ import org.camunda.bpm.client.ExternalTaskClient;
 import org.camunda.bpm.client.backoff.ExponentialBackoffStrategy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.service.handler.WarningTaskWork
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.IdempotencyTaskWorkerHandler;
 import uk.gov.hmcts.reform.waworkflowapi.config.ServiceAuthProviderInterceptor;
 
+@Profile("!functional")
 @Component
 @SuppressWarnings({"PMD.UseUnderscoresInNumericLiterals"})
 public class ExternalTaskWorker {

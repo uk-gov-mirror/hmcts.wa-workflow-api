@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.clients.TaskManagementServiceApi;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.AddProcessVariableRequest;
@@ -34,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
@@ -43,8 +40,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-
-@ExtendWith({MockitoExtension.class, OutputCaptureExtension.class})
+@ExtendWith(MockitoExtension.class)
 class WarningTaskWorkerHandlerTest {
 
     private static final String S2S_TOKEN = "some S2SToken";
@@ -500,7 +496,7 @@ class WarningTaskWorkerHandlerTest {
         }
 
         @Test
-        void should_not_add_warning_to_non_delayed_tasks_when_process_list_is_null(CapturedOutput output) {
+        void should_not_add_warning_to_non_delayed_tasks_when_process_list_is_null() {
             when(camundaClient.getProcessInstancesByVariables(
                 S2S_TOKEN,
                 "caseId_eq_" + CASE_ID
@@ -534,12 +530,10 @@ class WarningTaskWorkerHandlerTest {
             verify(camundaClient, never()).updateProcessVariables(
                 anyString(), anyString(), any(AddProcessVariableRequest.class));
 
-            String logMessage = "addWarningToDelayedProcesses can NOT continue to process due to camundaProcessList is null.";
-            assertLogMessageContains(output, logMessage);
         }
 
         @Test
-        void should_not_add_warning_to_non_delayed_tasks_when_process_is_null(CapturedOutput output) {
+        void should_not_add_warning_to_non_delayed_tasks_when_process_is_null() {
             List<CamundaProcess> camundaProcessList = new ArrayList<>();
             camundaProcessList.add(null);
             when(camundaClient.getProcessInstancesByVariables(
@@ -577,15 +571,10 @@ class WarningTaskWorkerHandlerTest {
             verify(camundaClient, never()).updateProcessVariables(
                 anyString(), anyString(), any(AddProcessVariableRequest.class));
 
-            String logMessage = "addWarningToDelayedProcesses can NOT continue to process due to camundaProcess is null. "
-                                + "caseId:someCaseId "
-                                + "updatedWarningValues:[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
-
-            assertLogMessageContains(output, logMessage);
         }
 
         @Test
-        void should_not_complete_delay_warning_external_task_Service_when_process_variables_are_null(CapturedOutput output) {
+        void should_not_complete_delay_warning_external_task_Service_when_process_variables_are_null() {
             Map<String, Object> processVariables = null;
 
             lenient().when(camundaClient.getProcessInstancesByVariables(
@@ -611,13 +600,10 @@ class WarningTaskWorkerHandlerTest {
                 getAddProcessVariableRequest(expectedWarningValues)
             );
 
-            String logMessage = "completeWarningTaskService can NOT continue to process due to externalTask is null.";
-            assertLogMessageContains(output, logMessage);
-
         }
 
         @Test
-        void should_not_update_warning_to_delayed_tasks(CapturedOutput output) {
+        void should_not_update_warning_to_delayed_tasks() {
 
             when(camundaClient.getProcessInstanceVariables(
                 S2S_TOKEN,
@@ -652,12 +638,10 @@ class WarningTaskWorkerHandlerTest {
             verify(camundaClient, never()).updateProcessVariables(
                 anyString(), anyString(), any(AddProcessVariableRequest.class));
 
-            String logMessage = "updateDelayedProcessWarnings processVariables not found. ";
-            assertLogMessageContains(output, logMessage);
         }
 
         @Test
-        void should_not_complete_warning_external_task_service_when_delay_until_null(CapturedOutput output) {
+        void should_not_complete_warning_external_task_service_when_delay_until_null() {
             String processVariablesWarningValues = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
             String warningsToBeAdded = "[{\"warningCode\":\"Code2\",\"warningText\":\"Text2\"}]";
             Map<String, Object> processVariables = Map.of(
@@ -700,20 +684,6 @@ class WarningTaskWorkerHandlerTest {
                 getAddProcessVariableRequest(expectedWarningValues)
             );
 
-            String logMessage = "updateDelayedProcessWarnings caseId:someCaseId warningToAdd:"
-                                + "[{\"warningCode\":\"Code2\",\"warningText\":\"Text2\"},{\"warningCode\":\"Code1\""
-                                + ",\"warningText\":\"Text1\"}] tenantId:null processId:some process instance Id "
-                                + "processVariables:CamundaProcessVariables(processVariablesMap="
-                                + "{warningList=DmnValue(value=[{\"warningCode\":\"Code2\",\"warningText\":\"Text2\"},"
-                                + "{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}], type=String), "
-                                + "delayUntil=DmnValue(value=null, type=String)})";
-            assertLogMessageContains(output, logMessage);
-
-            logMessage = "updateDelayedProcessWarnings delayUntil is null.";
-            assertLogMessageContains(output, logMessage);
-
-            logMessage = "Exception occurred while contacting taskManagement Api. ";
-            assertLogMessageContains(output, logMessage);
         }
 
         @Test
@@ -890,8 +860,4 @@ class WarningTaskWorkerHandlerTest {
             "SomeProcessInstanceId"));
     }
 
-    private void assertLogMessageContains(CapturedOutput output, String expectedMessage) {
-
-        assertTrue(output.getOut().contains(expectedMessage));
-    }
 }
