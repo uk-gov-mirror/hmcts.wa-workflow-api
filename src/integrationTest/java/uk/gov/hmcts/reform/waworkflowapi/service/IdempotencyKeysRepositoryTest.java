@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.service;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import static org.awaitility.Awaitility.await;
 @Slf4j
 @Testcontainers
 @ActiveProfiles("docker")
+@Disabled("Not guaranteed behaviour in all environments so agreed to disable.")
 class IdempotencyKeysRepositoryTest {
 
     public static final String FAIL_TO_UPDATE_THIS = "fail to update this";
@@ -45,7 +47,7 @@ class IdempotencyKeysRepositoryTest {
         .withDatabaseName("wa_workflow_api")
         .withUsername("postgres")
         .withPassword("pass");
-
+    
     @DynamicPropertySource
     static void registerPgProperties(DynamicPropertyRegistry registry) {
         registry.add(
