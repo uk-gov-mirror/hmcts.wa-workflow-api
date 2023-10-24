@@ -108,32 +108,32 @@ resource "azurerm_key_vault_secret" "POSTGRES_DATABASE" {
 }
 
 // Secrets for Postgres Flex Server DB
-resource "azurerm_key_vault_secret" "POSTGRES-USER-FLEX" {
-  name         = "${var.component}-POSTGRES-FLEX-USER"
+resource "azurerm_key_vault_secret" "POSTGRES-USER-V15" {
+  name         = "${var.component}-POSTGRES-USER-V15"
   value        = module.wa_workflow_api_database_flex.username
   key_vault_id = data.azurerm_key_vault.wa_key_vault.id
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES-PASS-FLEX" {
-  name         = "${var.component}-POSTGRES-PASS-FLEX"
+resource "azurerm_key_vault_secret" "POSTGRES-PASS-V15" {
+  name         = "${var.component}-POSTGRES-PASS-V15"
   value        = module.wa_workflow_api_database_flex.password
   key_vault_id = data.azurerm_key_vault.wa_key_vault.id
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES_HOST-FLEX" {
-  name         = "${var.component}-POSTGRES-FLEX-HOST-FLEX"
+resource "azurerm_key_vault_secret" "POSTGRES_HOST-V15" {
+  name         = "${var.component}-POSTGRES-HOST-V15"
   value        = module.wa_workflow_api_database_flex.fqdn
   key_vault_id = data.azurerm_key_vault.wa_key_vault.id
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES_PORT-FLEX" {
-  name         = "${var.component}-POSTGRES-PORT-FLEX"
+resource "azurerm_key_vault_secret" "POSTGRES_PORT-V15" {
+  name         = "${var.component}-POSTGRES-PORT-V15"
   value        = "5432"
   key_vault_id = data.azurerm_key_vault.wa_key_vault.id
 }
 
-resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-FLEX" {
-  name         = "${var.component}-POSTGRES-DATABASE-FLEX"
+resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V15" {
+  name         = "${var.component}-POSTGRES-DATABASE-V15"
   value        = "${var.postgresql_database_name}"
   key_vault_id = data.azurerm_key_vault.wa_key_vault.id
 }
