@@ -54,6 +54,9 @@ spring:
     enabled: true
     baselineOnMigrate: true
     schemas: ${POSTGRES_NAME:wa_workflow_api}
+    placeholders:
+      dbReaderUserName: ${DB_READER_USERNAME:postgres}
+
 security:
   anonymousPaths:
     - "/"
