@@ -238,6 +238,11 @@ dependencyManagement {
       entry 'guava'
     }
 
+    dependencySet(group: 'ch.qos.logback', version: '1.2.13') {
+      entry 'logback-classic'
+      entry 'logback-core'
+    }
+
     dependency group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
     dependencySet( group: 'org.springframework.security', version: '5.7.10'){
