@@ -4,7 +4,7 @@ plugins {
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.1.0'
+  id 'io.spring.dependency-management' version '1.1.4'
   id 'org.springframework.boot' version '2.7.18'
   id 'org.owasp.dependencycheck' version '9.0.4'
   id 'com.github.ben-manes.versions' version '0.42.0'
@@ -245,7 +245,7 @@ dependencyManagement {
 
     dependency group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
-    dependencySet( group: 'org.springframework.security', version: '5.7.10'){
+    dependencySet( group: 'org.springframework.security', version: '5.8.9'){
       entry 'spring-boot-starter-security'
       entry 'spring-security-core'
       entry 'spring-security-acl'
