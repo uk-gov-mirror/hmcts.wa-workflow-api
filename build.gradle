@@ -328,7 +328,7 @@ dependencies {
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
-  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '12.3'
+  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.2.1'
   implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.16.3'
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
