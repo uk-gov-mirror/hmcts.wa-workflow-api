@@ -291,7 +291,7 @@ def versions = [
   pactVersion   : '4.1.7',
   testcontainers: '1.19.5',
   log4j         : '2.19.0',
-  tomcat        : '9.0.83'
+  tomcat        : '9.0.85'
 ]
 
 ext.libraries = [
