@@ -1,20 +1,95 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "schedule": "after 7am and before 11am every weekday",
-  "extends": ["local>hmcts/.github:renovate-config"],
-  "labels": ["dependencies"],
+  "extends": [
+    "local>hmcts/.github:renovate-config"
+  ],
+  "labels": [
+    "dependencies"
+  ],
   "helmv3": {
     "bumpVersion": "patch"
   },
   "regexManagers": [
     {
-      "fileMatch": ["^Dockerfile$"],
+      "fileMatch": [
+        "^Dockerfile$"
+      ],
       "matchStrings": [
         "datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION=(?<currentValue>.*)\\s"
       ]
     }
   ],
-  "platformAutomerge": true,
-  "automerge": false,
-  "automergeType": "pr"
+  "automergeType": "pr",
+  "automergeSchedule": "after 8:30am and before 10:30am Monday to thursday",
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "automerge": true
+    },
+    {
+      "matchDatasources": [
+        "terraform-module",
+        "terraform-provider"
+      ],
+      "prPriority": 10,
+      "automerge": false,
+      "groupName": "Terraform"
+    },
+    {
+      "matchPackagePrefixes": [
+        "org.springframework",
+        "io.spring"
+      ],
+      "prPriority": 80,
+      "automerge": false,
+      "groupName": "Spring All"
+    },
+    {
+      "matchPackagePatterns": [
+        "serenity",
+        "pitest",
+        "pact"
+      ],
+      "prPriority": 20,
+      "automerge": false,
+      "groupName": "QA & Nightly Checks"
+    },
+    {
+      "matchPackagePatterns": [
+        "hmcts:java-logging",
+        "log4j",
+        "slf4j",
+        "logback"
+      ],
+      "prPriority": 30,
+      "groupName": "Logging"
+    },
+    {
+      "matchPackagePatterns": [
+        "dependencycheck",
+        "sonarqube",
+        "checkstyle",
+        "jacoco"
+      ],
+      "prPriority": 20,
+      "groupName": "Automated Checks"
+    },
+    {
+      "matchPackagePatterns": [
+        "assertj",
+        "junit",
+        "jupiter",
+        "powermock",
+        "mockito",
+        "h2database",
+        "testcontainers"
+      ],
+      "prPriority": 20,
+      "groupName": "Testing"
+    }
+  ]
 }
