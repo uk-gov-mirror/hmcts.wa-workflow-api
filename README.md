@@ -103,6 +103,13 @@ and then using it to publish your tests:
 ./gradlew pactPublish
 ```
 
+### PR Management
+
+We use renovate to maintain dependencies via the renovate.json file.
+See the renovate documentation: https://docs.renovatebot.com/configuration-options/
+Renovate schedule syntax using Later can be validated here: https://codepen.io/rationaltiger24/full/ZExQEgK
+
+We use stalebot to clear old PRs away using the github action.  Docs: https://github.com/actions/stale
 
 ## License
 
