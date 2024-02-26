@@ -290,7 +290,7 @@ def versions = [
   logbook       : '2.16.0',
   pactVersion   : '4.1.7',
   testcontainers: '1.19.5',
-  log4j         : '2.22.1',
+  log4j         : '2.23.0',
   tomcat        : '9.0.86'
 ]
 
