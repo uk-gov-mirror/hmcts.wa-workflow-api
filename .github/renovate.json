@@ -52,7 +52,7 @@
       ],
       "prPriority": 80,
       "automerge": false,
-      "groupName": "Spring Upgrade (Non Major)",
+      "groupName": "Spring Upgrade - Non Major",
       "automergeSchedule": "after 8am and before 11am every Tuesday"
     },
     {
@@ -67,7 +67,7 @@
       ],
       "prPriority": 20,
       "automerge": false,
-      "groupName": "QA & Nightly Checks (Non Major)",
+      "groupName": "QA & Nightly Checks - Non Major",
       "automergeSchedule": "after 8am and before 11am every first day of month"
     },
     {
@@ -91,7 +91,7 @@
         "patch"
       ],
       "prPriority": 20,
-      "groupName": "Automated Checks (Non Major)",
+      "groupName": "Automated Checks - Non Major",
       "automergeSchedule": "after 8am and before 11am every first day of month"
     },
     {
@@ -107,7 +107,7 @@
         "patch"
       ],
       "prPriority": 20,
-      "groupName": "Testing Dependencies (Non Major)",
+      "groupName": "Testing Dependencies - Non Major",
       "automergeSchedule": "after 8am and before 11am every Monday"
     }
   ]
