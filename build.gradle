@@ -6,7 +6,7 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.1.4'
   id 'org.springframework.boot' version '2.7.18'
-  id 'org.owasp.dependencycheck' version '9.0.9'
+  id 'org.owasp.dependencycheck' version '9.2.0'
   id 'com.github.ben-manes.versions' version '0.51.0'
   id 'org.sonarqube' version '4.4.1.3373'
   id 'info.solidsoft.pitest' version '1.15.0'
@@ -150,7 +150,7 @@ task fortifyScan(type: JavaExec) {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.14.0'
+  toolVersion = '10.16.0'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
