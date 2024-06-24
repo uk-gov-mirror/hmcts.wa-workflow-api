@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency;
 
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.QueryHint;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.CrudRepository;
@@ -12,8 +14,6 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.Idempotenc
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.idempotencykey.IdempotentId;
 
 import java.util.Optional;
-import javax.persistence.LockModeType;
-import javax.persistence.QueryHint;
 
 @Repository
 @RepositoryRestResource(collectionResourceRel = "idempotencyKeys", path = "idempotencyKeys")

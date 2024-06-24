@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,8 +15,6 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.service.idempotency.Idempotency
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 

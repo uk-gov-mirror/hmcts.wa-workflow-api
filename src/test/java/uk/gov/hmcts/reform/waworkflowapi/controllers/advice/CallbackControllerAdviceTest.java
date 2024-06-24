@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.advice;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,6 @@ import uk.gov.hmcts.reform.waworkflowapi.services.SystemDateProvider;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.servlet.http.HttpServletRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
