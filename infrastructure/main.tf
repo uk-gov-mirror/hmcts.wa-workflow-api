@@ -40,13 +40,13 @@ module "wa_workflow_api_database_flex" {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  source          = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
-  product         = var.product
-  component       = var.component
-  name            = "${var.product}-${var.component}-postgres-db-flex"
-  location        = var.location
-  business_area   = "cft"
-  env             = var.env
+  source        = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
+  product       = var.product
+  component     = var.component
+  name          = "${var.product}-${var.component}-postgres-db-flex"
+  location      = var.location
+  business_area = "cft"
+  env           = var.env
   pgsql_databases = [
     {
       name : var.postgresql_database_name
@@ -94,6 +94,6 @@ resource "azurerm_key_vault_secret" "POSTGRES_PORT-V15" {
 
 resource "azurerm_key_vault_secret" "POSTGRES_DATABASE-V15" {
   name         = "${var.component}-POSTGRES-DATABASE-V15"
-  value        = "${var.postgresql_database_name}"
+  value        = var.postgresql_database_name
   key_vault_id = data.azurerm_key_vault.wa_key_vault.id
 }
