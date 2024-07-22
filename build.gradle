@@ -289,7 +289,7 @@ def versions = [
   camunda       : '7.14.0',
   logbook       : '2.16.0',
   pactVersion   : '4.1.7',
-  testcontainers: '1.19.8',
+  testcontainers: '1.20.0',
   log4j         : '2.23.1',
   tomcat        : '10.1.26'
 ]
@@ -360,7 +360,7 @@ dependencies {
 
   integrationTestImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
 
-  testImplementation group: 'com.h2database', name: 'h2', version: '2.2.224'
+  testImplementation group: 'com.h2database', name: 'h2', version: '2.3.230'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testcontainers
 
