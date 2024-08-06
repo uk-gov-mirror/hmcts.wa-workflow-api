@@ -45,12 +45,11 @@ public class SecurityConfiguration {
 
         http
             .addFilterBefore(serviceAuthFilter, AbstractPreAuthenticatedProcessingFilter.class)
-            .sessionManagement().sessionCreationPolicy(STATELESS)
-            .and()
-            .httpBasic().disable()
-            .formLogin().disable()
-            .logout().disable()
-            .csrf().disable();
+            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS))
+            .httpBasic(httpBasic -> httpBasic.disable())
+            .formLogin(formLogin -> formLogin.disable())
+            .logout(logout -> logout.disable())
+            .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
