@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.waworkflowapi.config;
 
-import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +13,9 @@ import uk.gov.hmcts.reform.waworkflowapi.config.features.FeatureFlag;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.waworkflowapi.config.features.FeatureFlag.TEST_KEY;
 
@@ -25,14 +28,14 @@ class LaunchDarklyFeatureFlagProviderTest {
     @InjectMocks
     private LaunchDarklyFeatureFlagProvider launchDarklyFeatureFlagProvider;
 
-    private LDUser expectedLdUser;
+    private LDContext expectedLdContext;
 
     @BeforeEach
     void setup() {
 
-        expectedLdUser = new LDUser.Builder("wa-workflow-api")
-            .firstName("Work Allocation")
-            .lastName("Workflow Api")
+        expectedLdContext = LDContext.builder("wa-workflow-api")
+            .set("firstName", "Work Allocation")
+            .set("lastName", "Workflow Api")
             .build();
     }
 
@@ -46,7 +49,7 @@ class LaunchDarklyFeatureFlagProviderTest {
         boolean boolVariationReturn,
         boolean expectedFlagValue
     ) {
-        when(ldClient.boolVariation(TEST_KEY.getKey(), expectedLdUser, defaultValue))
+        when(ldClient.boolVariation(anyString(), any(LDContext.class), anyBoolean()))
             .thenReturn(boolVariationReturn);
 
         assertThat(launchDarklyFeatureFlagProvider.getBooleanValue(TEST_KEY))

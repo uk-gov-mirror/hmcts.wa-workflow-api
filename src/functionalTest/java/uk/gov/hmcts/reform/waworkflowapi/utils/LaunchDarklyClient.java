@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.utils;
 
 
-import com.launchdarkly.sdk.LDUser;
+import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,9 +18,9 @@ public class LaunchDarklyClient {
 
     public boolean getKey(String key) {
 
-        LDUser ldUser = new LDUser.Builder("wa-workflow-api")
+        LDContext ldContext = LDContext.builder("wa-workflow-api")
             .build();
 
-        return ldClient.boolVariation(key, ldUser, false);
+        return ldClient.boolVariation(key, ldContext, false);
     }
 }
