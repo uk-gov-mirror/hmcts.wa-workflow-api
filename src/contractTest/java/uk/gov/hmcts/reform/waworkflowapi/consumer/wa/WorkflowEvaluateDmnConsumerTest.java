@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.consumer.wa;
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
+import au.com.dius.pact.core.model.PactSpecVersion;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +30,7 @@ public class WorkflowEvaluateDmnConsumerTest extends SpringBootContractBaseTest 
     private static final String WA_EVALUATE_DMN_URL = "/workflow/decision-definition/key/someKey/tenant-id/someTenant/evaluate";
 
     @Test
-    @PactTestFor(pactMethod = "evaluateDmn200")
+    @PactTestFor(pactMethod = "evaluateDmn200", pactVersion = PactSpecVersion.V3)
     void evaluateDmn200Test(MockServer mockServer) throws JsonProcessingException {
         String actualResponseBody = SerenityRest
             .given()

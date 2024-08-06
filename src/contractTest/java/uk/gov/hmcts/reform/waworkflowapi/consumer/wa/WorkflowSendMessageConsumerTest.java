@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.consumer.wa;
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
+import au.com.dius.pact.core.model.PactSpecVersion;
 import au.com.dius.pact.core.model.RequestResponsePact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,7 +28,7 @@ public class WorkflowSendMessageConsumerTest extends SpringBootContractBaseTest 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    @PactTestFor(pactMethod = "executeSendMessage204")
+    @PactTestFor(pactMethod = "executeSendMessage204", pactVersion = PactSpecVersion.V3)
     void sendMessage204Test(MockServer mockServer)  {
         SerenityRest
             .given()
