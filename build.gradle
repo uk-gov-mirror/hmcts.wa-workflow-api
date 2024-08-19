@@ -280,8 +280,8 @@ repositories {
 }
 
 def versions = [
-  junit         : '5.10.3',
-  junitPlatform : '1.10.3',
+  junit         : '5.11.0',
+  junitPlatform : '1.11.0',
   reformLogging : '6.1.5',
   springDoc     : '1.7.0',
   serenity      : '3.9.8',
@@ -363,7 +363,7 @@ dependencies {
 
   integrationTestImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
 
-  testImplementation group: 'com.h2database', name: 'h2', version: '2.3.230'
+  testImplementation group: 'com.h2database', name: 'h2', version: '2.3.232'
   testImplementation group: 'org.testcontainers', name: 'postgresql', version: versions.testcontainers
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testcontainers
 
