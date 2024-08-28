@@ -31,6 +31,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
 
+    private static final String ENDPOINT_COMPLETE_TASK = "task/{task-id}/complete";
+
+    private static final String ENDPOINT_HISTORY_TASK = "history/task";
+
     @Autowired
     private AuthorizationHeadersProvider authorizationHeadersProvider;
 
@@ -69,6 +73,17 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
         List<String> processIds = getProcessIdsForGivenIdempotencyKey(idempotencyKey);
         assertNumberOfDuplicatedProcesses(processIds, 0);
 
+    }
+
+    @Test
+    public void completeATask() {
+
+        sendMessage(processVariables);
+        //final String taskId = assertTaskIsCreated(caseId);
+        final String taskId = "7129258e-6547-11ef-926f-424c97e6e528";
+        String tenantId1 = "wa";
+        assertNewIdempotentKeyIsAddedToDb(idempotencyKey, tenantId1);
+        cleanUpTask1(taskId, REASON_COMPLETED);  //We do the cleaning here to avoid clashing with other tasks
     }
 
     @Test
@@ -245,6 +260,30 @@ public class IdempotencyCheckTest extends SpringBootFunctionalBaseTest {
                 return true;
             });
         return response.get();
+    }
+
+    private void cleanUpTask1(String taskId, String reason) {
+        log.info("Cleaning task {}", taskId);
+        Header authorizationHeaders = authorizationHeadersProvider.getAuthorizationHeaders();
+        final Response postComplete = camundaApiActions.post(
+            ENDPOINT_COMPLETE_TASK, taskId,
+            new Headers(authorizationHeaders)
+        );
+        log.info("postCompleteResponse {}", postComplete);
+
+       log.info("status {}", postComplete.getStatusCode());
+
+        log.info("postCompleteResponse PRINT!!! {}", postComplete.prettyPrint());
+        Response result = camundaApiActions.get(
+            ENDPOINT_HISTORY_TASK,
+            new Headers(authorizationHeaders),
+            Map.of("taskId", taskId)
+        );
+
+        result.prettyPrint();
+        result.then().assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("[0].deleteReason", is(reason));
     }
 
 }
