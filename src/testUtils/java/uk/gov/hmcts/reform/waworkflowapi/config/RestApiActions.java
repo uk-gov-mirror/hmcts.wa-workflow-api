@@ -204,6 +204,7 @@ public class RestApiActions {
                                      String contentType,
                                      String accept,
                                      Headers headers) {
+        final Map<String, Integer> body = emptyMap();
         if (resourceId != null) {
             log.info("Calling POST {} with resource id: {}", path, resourceId);
 
@@ -211,6 +212,7 @@ public class RestApiActions {
                 .contentType(contentType)
                 .accept(accept)
                 .headers(headers)
+                .body(body)
                 .when()
                 .post(path, resourceId);
         } else {
@@ -219,6 +221,7 @@ public class RestApiActions {
                 .contentType(contentType)
                 .accept(accept)
                 .headers(headers)
+                .body(body)
                 .when()
                 .post(path);
         }
