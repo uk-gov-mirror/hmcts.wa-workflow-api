@@ -236,7 +236,7 @@ dependencyCheck {
 dependencyManagement {
   dependencies {
     // CVE-2018-10237 - Unbounded memory allocation
-    dependencySet(group: 'com.google.guava', version: '33.2.1-jre') {
+    dependencySet(group: 'com.google.guava', version: '33.3.1-jre') {
       entry 'guava'
     }
 
@@ -360,7 +360,7 @@ dependencies {
   }
 
   testImplementation group: 'com.obsidiandynamics.pojotester', name: 'core', version: '0.9.0'
-  testImplementation group: 'com.google.guava', name: 'guava-testlib', version: '33.2.1-jre'
+  testImplementation group: 'com.google.guava', name: 'guava-testlib', version: '33.3.1-jre'
   testImplementation group: 'com.jparams', name: 'to-string-verifier', version: '1.4.8'
 
   integrationTestImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
