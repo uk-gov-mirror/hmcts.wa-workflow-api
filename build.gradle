@@ -240,7 +240,7 @@ dependencyManagement {
       entry 'guava'
     }
 
-    dependencySet(group: 'ch.qos.logback', version: '1.5.9') {
+    dependencySet(group: 'ch.qos.logback', version: '1.5.10') {
       entry 'logback-classic'
       entry 'logback-core'
     }
