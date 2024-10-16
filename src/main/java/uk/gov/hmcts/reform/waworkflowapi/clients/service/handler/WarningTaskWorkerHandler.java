@@ -36,6 +36,7 @@ public class WarningTaskWorkerHandler {
 
     public static final String WARNING_LIST = "warningList";
     public static final String WARNINGS_TO_ADD = "warningsToAdd";
+    public static final String KEY_CASE_ID = "caseId";
     final TaskManagementServiceApi taskManagementServiceApi;
     final AuthTokenGenerator authTokenGenerator;
     final LaunchDarklyFeatureFlagProvider launchDarklyFeatureFlagProvider;
@@ -59,7 +60,7 @@ public class WarningTaskWorkerHandler {
                      + "externalTask:{}", externalTask);
             return;
         }
-        String caseId = (String) variables.get("caseId");
+        String caseId = (String) variables.get(KEY_CASE_ID);
         log.info("Set processVariables for same processInstance ids with caseId {}", caseId);
 
         String updatedWarningValues = "[]";
@@ -179,7 +180,7 @@ public class WarningTaskWorkerHandler {
             processVariableWarningValues
         );
 
-        String caseId = (String) variables.get("caseId");
+        String caseId = (String) variables.get(KEY_CASE_ID);
         log.info("caseId {} and its warning values : {}", caseId, combinedWarningValues.getValuesAsJson());
 
         return combinedWarningValues.getValuesAsJson();
@@ -216,7 +217,7 @@ public class WarningTaskWorkerHandler {
             authTokenGenerator.generate(),
             Map.of(
                 "processVariables", List.of(Map.of(
-                    "name", "caseId",
+                    "name", KEY_CASE_ID,
                     "operator", "eq",
                     "value", caseId
                 ))
