@@ -13,8 +13,8 @@ plugins {
   id 'org.flywaydb.flyway' version '10.22.0'
   id 'io.freefair.lombok' version '8.11'
   // If Pact version is changed, make sure serenity report works.
-  id 'net.serenity-bdd.serenity-gradle-plugin' version '4.1.14'
-  id 'au.com.dius.pact' version '4.6.14'
+  id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.16'
+  id 'au.com.dius.pact' version '4.6.16'
 }
 
 group = 'uk.gov.hmcts.reform'
@@ -284,13 +284,13 @@ def versions = [
   junitPlatform : '1.11.4',
   reformLogging : '6.1.7',
   springDoc     : '1.7.0',
-  serenity      : '4.2.0',
+  serenity      : '4.2.16',
   gradlePitest  : '1.15.0',
-  pitest        : '1.16.3',
+  pitest        : '1.18.1',
   sonarPitest   : '0.5',
   camunda       : '7.14.0',
   logbook       : '3.10.0',
-  pactVersion   : '4.6.14',
+  pactVersion   : '4.6.16',
   testcontainers: '1.20.4',
   log4j         : '2.24.2',
   tomcat        : '10.1.33'
