@@ -1,6 +1,10 @@
 # wa-workflow-api
 
-[![Build Status](https://travis-ci.org/hmcts/wa-workflow-api.svg?branch=master)](https://travis-ci.org/hmcts/wa-workflow-api)
+[![GitHub branch status](https://img.shields.io/github/checks-status/hmcts/wa-workflow-api/master?label=Build%20Status)](https://github.com/hmcts/wa-workflow-api)
+
+[![License: MIT](https://img.shields.io/github/license/hmcts/wwa-workflow-api)](https://opensource.org/licenses/MIT)
+
+Last reviewed on: **18/04/2025**
 
 #### What does this app do?
 
@@ -42,11 +46,11 @@ To build the project execute the following command:
 - Prerequisite:
     - Check if all services are running in minikube, if not follow the README in
     https://github.com/hmcts/wa-kube-environment
-    - Check if minikube IP is set as environment variable.
+    - Check if Idam simulator is set as environment variable.
         ```
         echo $OPEN_ID_IDAM_URL
         ```
-        You should see the ip and port as output, eg: http://192.168.64.14:30196.
+        You should see http://sidam-simulator/ as output.
         If you do not see, then from your wa-kube-enviroment map environment variables
         ```
         source .env
@@ -69,7 +73,7 @@ To build the project execute the following command:
 
 - To run all functional tests or single test you can run as Junit, make sure the env is set
     ```
-        OPEN_ID_IDAM_URL=http://'minikubeIP:port'
+        OPEN_ID_IDAM_URL=http://sidam-simulator/'
     ```
   Note: Make sure the BPMN and DMN are deployed onto Camunda locally.
 
@@ -79,7 +83,7 @@ To build the project execute the following command:
     ```
    or
        ```
-           ./gradlew tests
+        ./gradlew tests
        ```
 
 ### Running contract or pact tests:
@@ -110,8 +114,4 @@ See the renovate documentation: https://docs.renovatebot.com/configuration-optio
 Renovate schedule syntax using Later can be validated here: https://codepen.io/rationaltiger24/full/ZExQEgK
 
 We use stalebot to clear old PRs away using the github action.  Docs: https://github.com/actions/stale
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
