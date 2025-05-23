@@ -276,13 +276,15 @@ dependencyManagement {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url 'https://jitpack.io' }
+  maven {
+    url 'https://pkgs.dev.azure.com/hmcts/Artifacts/_packaging/hmcts-lib/maven/v1'
+  }
 }
 
 def versions = [
   junit         : '5.11.4',
   junitPlatform : '1.11.4',
-  reformLogging : '6.1.7',
+  reformLogging : '6.1.9',
   springDoc     : '1.7.0',
   serenity      : '4.2.0',
   gradlePitest  : '1.15.0',
@@ -329,7 +331,7 @@ dependencies {
   implementation 'org.zalando:problem-spring-web-starter:0.27.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.2.0'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.2'
   implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.5'
 
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
@@ -380,7 +382,7 @@ dependencies {
 
   testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: versions.junit
 
-  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.7', classifier: 'all'
+  testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.4.9', classifier: 'all'
 
   //Pact contract testing
   contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pactVersion
