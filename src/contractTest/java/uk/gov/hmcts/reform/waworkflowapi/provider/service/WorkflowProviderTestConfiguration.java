@@ -8,10 +8,10 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.CamundaClient;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.TaskClientService;
@@ -19,10 +19,10 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.service.TaskClientService;
 @TestConfiguration
 public class WorkflowProviderTestConfiguration {
 
-    @MockBean
+    @MockitoBean
     private CamundaClient camundaClient;
 
-    @MockBean
+    @MockitoBean
     AuthTokenGenerator authTokenGenerator;
 
     @Bean
