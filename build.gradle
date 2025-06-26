@@ -348,7 +348,7 @@ dependencies {
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: versions.tomcat
   implementation group: 'org.apache.tomcat.embed', name: 'tomcat-embed-websocket', version: versions.tomcat
 
-  implementation group: 'org.hibernate', name: 'hibernate-core', version: '6.6.3.Final'
+  implementation group: 'org.hibernate', name: 'hibernate-core', version: '6.6.18.Final'
 
   implementation group: 'org.camunda.bpm', name: 'camunda-external-task-client', version: '7.22.0'
 
