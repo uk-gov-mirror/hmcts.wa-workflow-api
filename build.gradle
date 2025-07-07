@@ -283,8 +283,8 @@ repositories {
 }
 
 def versions = [
-  junit         : '5.13.2',
-  junitPlatform : '1.13.2',
+  junit         : '5.13.3',
+  junitPlatform : '1.13.3',
   reformLogging : '6.1.9',
   springDoc     : '1.7.0',
   serenity      : '4.2.34',
@@ -294,7 +294,7 @@ def versions = [
   camunda       : '7.14.0',
   logbook       : '3.10.0',
   pactVersion   : '4.6.17',
-  testcontainers: '1.21.2',
+  testcontainers: '1.21.3',
   log4j         : '2.25.0',
   tomcat        : '10.1.42'
 ]
