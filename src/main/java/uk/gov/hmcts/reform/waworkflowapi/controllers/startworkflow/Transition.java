@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 import java.util.Objects;
 
@@ -8,19 +9,19 @@ public class Transition {
 
     @Schema(
         example = "caseCreated",
-        required = true,
+        requiredMode = RequiredMode.REQUIRED,
         description = "The state the case was in before the event fired"
     )
     private final String preState;
     @Schema(
         example = "submitCaseEvent",
-        required = true,
+        requiredMode = RequiredMode.REQUIRED,
         description = "The event that triggered the transition"
     )
     private final String eventId;
     @Schema(
         example = "caseSubmitted",
-        required = true,
+        requiredMode = RequiredMode.REQUIRED,
         description = "The state the case was in after the event fired"
     )
     private final String postState;

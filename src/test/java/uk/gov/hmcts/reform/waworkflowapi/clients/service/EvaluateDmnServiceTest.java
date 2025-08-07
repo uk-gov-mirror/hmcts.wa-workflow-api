@@ -32,7 +32,7 @@ class EvaluateDmnServiceTest {
         when(taskClientService.evaluate(evaluateDmnRequest,"test", "id")).thenReturn(mockResponse());
         List<Map<String,DmnValue<?>>> evaluateDmn = evaluateDmnService.evaluateDmn(evaluateDmnRequest,"test", "id");
 
-        assertEquals(evaluateDmn.get(0).get("test").getValue(), "TestResponse");
+        assertEquals("TestResponse", evaluateDmn.getFirst().get("test").getValue());
         verify(taskClientService).evaluate(evaluateDmnRequest, "test", "id");
     }
 

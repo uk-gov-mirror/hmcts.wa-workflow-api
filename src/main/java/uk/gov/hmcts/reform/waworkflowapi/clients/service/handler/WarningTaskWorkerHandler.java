@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -199,7 +198,7 @@ public class WarningTaskWorkerHandler {
                 warningsToAdd.getValues().stream(),
                 processVariableWarningTextValues.getValues().stream()
             )
-            .distinct().collect(Collectors.toList());
+            .distinct().toList();
         return new WarningValues(warningTextValues);
 
     }
@@ -242,7 +241,7 @@ public class WarningTaskWorkerHandler {
                                                               "WARNING",
                                                               "some-user",
                                                               warning.getWarningText()))
-                                    .collect(Collectors.toList()));
+                                    .toList());
     }
 
 }

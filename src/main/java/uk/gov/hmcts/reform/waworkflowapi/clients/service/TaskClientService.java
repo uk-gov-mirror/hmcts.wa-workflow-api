@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -43,7 +42,9 @@ public class TaskClientService {
             evaluateDmnRequest
         );
 
-        return dmnResponse.stream().map(this::removeSpaces).collect(Collectors.toList());
+        return dmnResponse.stream()
+            .map(this::removeSpaces)
+            .toList();
     }
 
     private Map<String, DmnValue<?>> removeSpaces(Map<String, DmnValue<?>> dmnResponse) {
@@ -59,7 +60,7 @@ public class TaskClientService {
 
                     List<String> trimmedValues = Arrays.stream(valueArray)
                         .map(String::trim)
-                        .collect(Collectors.toList());
+                        .toList();
 
                     response.put(
                         entry.getKey(),

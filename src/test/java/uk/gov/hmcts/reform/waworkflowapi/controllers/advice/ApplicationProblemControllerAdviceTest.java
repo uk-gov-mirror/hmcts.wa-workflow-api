@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -100,8 +101,10 @@ class ApplicationProblemControllerAdviceTest {
 
     @Test
     void should_handle_http_message_not_readable_exception() {
+        HttpInputMessage mockHttpInputMessage = mock(HttpInputMessage.class);
+
         HttpMessageNotReadableException httpMessageNotReadableException =
-            new HttpMessageNotReadableException("someMessage");
+            new HttpMessageNotReadableException("someMessage", null, mockHttpInputMessage);
 
         ResponseEntity<Problem> response = applicationProblemControllerAdvice
             .handleMessageNotReadable(httpMessageNotReadableException);

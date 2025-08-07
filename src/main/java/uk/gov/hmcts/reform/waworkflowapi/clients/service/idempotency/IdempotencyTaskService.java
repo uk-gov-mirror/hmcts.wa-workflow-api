@@ -34,7 +34,7 @@ public class IdempotencyTaskService {
         );
 
         idempotentRow.ifPresentOrElse(
-            (row) -> handleIdempotentIdIsPresentInDb(externalTask, externalTaskService, row),
+            row -> handleIdempotentIdIsPresentInDb(externalTask, externalTaskService, row),
             () -> handleIdempotentIdIsNotPresentInDb(externalTask, externalTaskService, idempotentId)
         );
     }

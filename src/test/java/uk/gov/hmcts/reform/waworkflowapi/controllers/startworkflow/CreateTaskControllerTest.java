@@ -13,9 +13,7 @@ import uk.gov.hmcts.reform.waworkflowapi.clients.model.EvaluateDmnResponse;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.EvaluateDmnService;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.SendMessageService;
-import uk.gov.hmcts.reform.waworkflowapi.common.TaskToCreate;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +28,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CreateTaskControllerTest {
-
-    private static final String CREATE_TASK_MESSAGE = "createTaskMessage";
 
     @Mock
     private EvaluateDmnService evaluateDmnService;
@@ -75,22 +71,6 @@ class CreateTaskControllerTest {
 
     @Test
     void sendMessage_with_create_task_message() {
-        final ZonedDateTime zonedDateTime = ZonedDateTime.parse("2020-12-15T23:02:32.334031Z");
-        final TaskToCreate taskToCreate = new TaskToCreate("some taskId",
-                2, "test", zonedDateTime.toString());
-        final DmnValue<String> dueDate =
-            DmnValue.dmnStringValue(ZonedDateTime.parse("2020-12-15T23:02:32.334031Z").toString());
-        final DmnValue<String> taskId = DmnValue.dmnStringValue("some taskId");
-        final DmnValue<Integer> workingDaysAllowed = DmnValue.dmnIntegerValue(2);
-        final DmnValue<String> name = DmnValue.dmnStringValue("test");
-
-        Map<String, DmnValue<?>> map = new HashMap<>(Map.of("dueDate", dueDate,
-                                                            "taskId", taskId,
-                                                            "workingDaysAllowed", workingDaysAllowed,
-                                                            "name", name
-        ));
-
-
         ResponseEntity<Void> response = createTaskController.sendMessage(sendMessageRequest);
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());

@@ -96,16 +96,16 @@ class IdempotencyTaskServiceTest {
         verify(idempotencyKeysRepository).save(captor.capture());
 
         IdempotencyKeys actualIdempotentKeys = captor.getValue();
-        assertThat(actualIdempotentKeys).isEqualToComparingOnlyGivenFields(
-            new IdempotencyKeys(
+        assertThat(actualIdempotentKeys)
+            .usingRecursiveComparison()
+            .comparingOnlyFields("idempotencyKey", "tenantId", "processId")
+            .isEqualTo(new IdempotencyKeys(
                 idempotentId.getIdempotencyKey(),
                 idempotentId.getTenantId(),
                 "some process id",
                 null,
                 null
-            ),
-            "idempotencyKey", "tenantId", "processId"
-        );
+            ));
 
         verify(externalTaskService).complete(externalTask, singletonMap("isDuplicate", false));
     }

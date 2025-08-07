@@ -24,7 +24,7 @@ class WarningValuesTest {
     }
 
     @Test
-    void deserializeTest() throws JsonProcessingException {
+    void deserializeTest() {
 
         String values = "[{\"warningCode\":\"Code1\", \"warningText\":\"Text1\"}, "
                         + "{\"warningCode\":\"Code2\", \"warningText\":\"Text2\"}]";

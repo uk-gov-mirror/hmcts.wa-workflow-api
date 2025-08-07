@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.Transition;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static pl.pojo.tester.api.assertion.Assertions.assertPojoMethodsForAll;
@@ -98,7 +97,7 @@ class PojoTest {
                 //Yeah I know!
                 List<Object> reallyDifferentObjects = differentObjects.stream()
                     .filter(differentObject -> !differentObject.equals(newInstance))
-                    .collect(toList());
+                    .toList();
                 for (Object reallyDifferentObject : reallyDifferentObjects) {
                     assertThat(
                         "Check instance does not equal another instance that is different \n" + newInstance + "\n" + reallyDifferentObject,

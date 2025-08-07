@@ -25,7 +25,6 @@ import java.util.List;
 import javax.validation.ConstraintViolationException;
 
 import static java.util.Comparator.comparing;
-import static java.util.stream.Collectors.toList;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
@@ -91,7 +90,7 @@ public class ApplicationProblemControllerAdvice implements ValidationAdviceTrait
         List<Violation> violations = streamViolations.stream()
             // sorting to make tests deterministic
             .sorted(comparing(Violation::getField).thenComparing(Violation::getMessage))
-            .collect(toList());
+            .toList();
 
         return ResponseEntity.status(status.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_PROBLEM_JSON_VALUE)
@@ -113,7 +112,7 @@ public class ApplicationProblemControllerAdvice implements ValidationAdviceTrait
 
         final List<Violation> violations = ex.getConstraintViolations().stream()
             .map(this::createViolation)
-            .collect(toList());
+            .toList();
 
         return ResponseEntity.status(status.getStatusCode())
             .header(CONTENT_TYPE, APPLICATION_PROBLEM_JSON_VALUE)

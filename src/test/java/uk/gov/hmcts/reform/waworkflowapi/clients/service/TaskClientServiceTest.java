@@ -66,7 +66,7 @@ class TaskClientServiceTest {
         )).thenReturn(mockResponse());
 
         List<Map<String, DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test", "id");
-        assertEquals(task.get(0).get("test").getValue(), "TestValue");
+        assertEquals("TestValue", task.getFirst().get("test").getValue());
     }
 
     @Test
@@ -81,7 +81,7 @@ class TaskClientServiceTest {
 
         List<Map<String, DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test", "id");
 
-        assertEquals(task, new ArrayList<>());
+        assertEquals(new ArrayList<>(), task);
     }
 
     @Test
@@ -98,7 +98,7 @@ class TaskClientServiceTest {
 
         List<Map<String, DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test", "id");
 
-        assertEquals(task, new ArrayList<>());
+        assertEquals(new ArrayList<>(), task);
     }
 
     @Test
@@ -113,11 +113,11 @@ class TaskClientServiceTest {
 
 
         List<Map<String, DmnValue<?>>> task = underTest.evaluate(evaluateDmnRequest, "test", "id");
-        assertEquals(task.get(0).get("key1").getValue(), "value1,value2");
-        assertEquals(task.get(0).get("key2").getValue(), "value3");
-        assertEquals(task.get(0).get("key3").getValue(), "value4,value5");
-        assertEquals(task.get(0).get("key4").getValue(), 4);
-        assertEquals(task.get(0).get("key5").getValue(), Map.of("key", "value"));
-        assertEquals(task.get(0).get("delayUntil").getValue(), DELAY_UNTIL);
+        assertEquals("value1,value2", task.getFirst().get("key1").getValue());
+        assertEquals("value3", task.getFirst().get("key2").getValue());
+        assertEquals("value4,value5", task.getFirst().get("key3").getValue());
+        assertEquals(4, task.getFirst().get("key4").getValue());
+        assertEquals(Map.of("key", "value"), task.getFirst().get("key5").getValue());
+        assertEquals(DELAY_UNTIL, task.getFirst().get("delayUntil").getValue());
     }
 }

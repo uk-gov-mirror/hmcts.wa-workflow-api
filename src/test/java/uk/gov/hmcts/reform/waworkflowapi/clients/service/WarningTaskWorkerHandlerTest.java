@@ -444,7 +444,7 @@ class WarningTaskWorkerHandlerTest {
 
             when(externalTask.getAllVariables()).thenReturn(processVariables);
 
-            String expectedWarningValues = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";;
+            String expectedWarningValues = "[{\"warningCode\":\"Code1\",\"warningText\":\"Text1\"}]";
             Map<String, Object> expectedProcessVariables = Map.of(
                 "hasWarnings", true,
                 "warningList", expectedWarningValues

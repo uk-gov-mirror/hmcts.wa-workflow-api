@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.waworkflowapi.config;
 
 import com.launchdarkly.sdk.LDContext;
 import com.launchdarkly.sdk.server.interfaces.LDClientInterface;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -27,17 +26,6 @@ class LaunchDarklyFeatureFlagProviderTest {
 
     @InjectMocks
     private LaunchDarklyFeatureFlagProvider launchDarklyFeatureFlagProvider;
-
-    private LDContext expectedLdContext;
-
-    @BeforeEach
-    void setup() {
-
-        expectedLdContext = LDContext.builder("wa-workflow-api")
-            .set("firstName", "Work Allocation")
-            .set("lastName", "Workflow Api")
-            .build();
-    }
 
     @ParameterizedTest
     @CsvSource({

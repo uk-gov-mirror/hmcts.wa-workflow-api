@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.waworkflowapi.clients.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -11,9 +12,11 @@ import java.util.Map;
 @ToString
 public class EvaluateDmnResponse {
 
+
+
     @Schema(
         example = "List[HashMap<String,DmnValue> }]",
-        required = true,
+        requiredMode = RequiredMode.REQUIRED,
         description = "Service jurisdiction"
     )
     private List<Map<String, DmnValue<?>>> results;

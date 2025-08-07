@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -14,19 +15,19 @@ public class CreateTaskRequest {
     private final ServiceDetails serviceDetails;
     @Schema(
         example = "abc1234567890",
-        required = true,
+        requiredMode = RequiredMode.REQUIRED,
         description = "The case id in CCD"
     )
     private final String caseId;
     @Schema(
         description = "Transition",
-        required = true
+        requiredMode = RequiredMode.REQUIRED
     )
     private final Transition transition;
     @JsonInclude(Include.NON_NULL)
     @Schema(
         example = "2020-09-05T14:47:01.250542+01:00",
-        required = false,
+        requiredMode = RequiredMode.NOT_REQUIRED,
         description = "Optional due date for the task that will be created"
     )
     private final ZonedDateTime dueDate;

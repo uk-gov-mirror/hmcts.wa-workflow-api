@@ -43,8 +43,7 @@ public interface ApplicationProblemControllerAdviceBase {
      */
     default String extractErrors(HttpMessageNotReadableException exception) {
         Throwable cause = exception.getCause();
-        if (cause instanceof JsonParseException) {
-            JsonParseException jpe = (JsonParseException) cause;
+        if (cause instanceof JsonParseException jpe) {
             return jpe.getOriginalMessage();
         }
         return processInputException(cause).orElseGet(() -> "Invalid request message");
