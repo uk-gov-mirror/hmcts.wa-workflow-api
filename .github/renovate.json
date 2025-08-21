@@ -30,9 +30,10 @@
         "terraform-provider"
       ],
       "prPriority": 10,
-      "automerge": false,
+      "automerge": true,
       "groupName": "Terraform Upgrades",
-      "automergeSchedule": "after 8am and before 11am every fifth of Month"
+      "schedule": ["* 8-11 5 * *"],
+      "automergeSchedule": ["* 8-15 5 * *"]
     },
     {
       "matchPackagePrefixes": [
@@ -40,13 +41,27 @@
         "io.spring"
       ],
       "matchUpdateTypes": [
-        "minor",
         "patch"
+      ],
+      "prPriority": 80,
+      "automerge": true,
+      "groupName": "Spring Upgrade - Non Major",
+      "schedule": ["* 8-11 * * 2"],
+      "automergeSchedule": ["* 8-15 * * 2"]
+    },
+    {
+      "matchPackagePrefixes": [
+        "org.springframework",
+        "io.spring"
+      ],
+      "matchUpdateTypes": [
+        "minor"
       ],
       "prPriority": 80,
       "automerge": false,
       "groupName": "Spring Upgrade - Non Major",
-      "automergeSchedule": "after 8am and before 11am every Tuesday"
+      "automergeSchedule": "after 8am and before 11am every Tuesday",
+      "schedule": ["* 8-11 * * 2"]
     },
     {
       "matchPackagePatterns": [
@@ -61,7 +76,8 @@
       "prPriority": 20,
       "automerge": false,
       "groupName": "QA & Nightly Checks - Non Major",
-      "automergeSchedule": "after 8am and before 11am every first day of month"
+      "schedule": ["* 8-11 1 * *"],
+      "automergeSchedule": ["* 8-11 1 * *"]
     },
     {
       "matchPackagePatterns": [
@@ -70,7 +86,10 @@
         "slf4j"
       ],
       "prPriority": 30,
-      "groupName": "Logging Dependencies"
+      "automerge": true,
+      "groupName": "Logging Dependencies",
+      "schedule": ["* 8-11 2 * *"],
+      "automergeSchedule": ["* 8-11 2 * *"]
     },
     {
       "matchPackagePatterns": [
@@ -80,12 +99,29 @@
         "jacoco"
       ],
       "matchUpdateTypes": [
-        "minor",
+        "minor"
+      ],
+      "prPriority": 20,
+      "automerge": false,
+      "groupName": "Automated Checks - Non Major",
+      "schedule": ["* 8-11 1 * *"],
+      "automergeSchedule": ["* 8-11 1 * *"]
+    },
+    {
+      "matchPackagePatterns": [
+        "dependencycheck",
+        "sonarqube",
+        "checkstyle",
+        "jacoco"
+      ],
+      "matchUpdateTypes": [
         "patch"
       ],
       "prPriority": 20,
+      "automerge": true,
       "groupName": "Automated Checks - Non Major",
-      "automergeSchedule": "after 8am and before 11am every first day of month"
+      "schedule": ["* 8-11 1 * *"],
+      "automergeSchedule": ["* 8-11 1 * *"]
     },
     {
       "matchPackagePrefixes": [
@@ -100,8 +136,10 @@
         "patch"
       ],
       "prPriority": 20,
+      "automerge": true,
       "groupName": "Testing Dependencies - Non Major",
-      "automergeSchedule": "after 8am and before 11am every Monday"
+      "schedule": ["* 8-11 * * 1"],
+      "automergeSchedule": ["* 8-15 * * 1"]
     }
   ]
 }
