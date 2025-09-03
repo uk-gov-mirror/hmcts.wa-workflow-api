@@ -9,12 +9,16 @@ plugins {
   id 'org.owasp.dependencycheck' version '12.1.3'
   id 'com.github.ben-manes.versions' version '0.52.0'
   id 'org.sonarqube' version '6.2.0.5505'
-  id 'info.solidsoft.pitest' version '1.15.0'
+  id 'info.solidsoft.pitest' version '1.19.0-rc.1'
   id 'org.flywaydb.flyway' version '10.22.0'
   id 'io.freefair.lombok' version '8.14.2'
   // If Pact version is changed, make sure serenity report works.
   id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.33'
   id 'au.com.dius.pact' version '4.6.17'
+}
+
+application {
+  mainClass = 'uk.gov.hmcts.reform.waworkflowapi.Application'
 }
 
 group = 'uk.gov.hmcts.reform'
@@ -78,18 +82,6 @@ sourceSets {
   }
 }
 
-idea {
-  module {
-    sourceDirs += project.sourceSets.testUtils.java.srcDirs
-    resourceDirs += project.sourceSets.testUtils.resources.srcDirs
-    testSourceDirs += project.sourceSets.integrationTest.java.srcDirs
-    testResourceDirs += project.sourceSets.integrationTest.resources.srcDirs
-    testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
-    testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
-    testSourceDirs += project.sourceSets.smokeTest.java.srcDirs
-    testResourceDirs += project.sourceSets.smokeTest.resources.srcDirs
-  }
-}
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
@@ -159,10 +151,18 @@ checkstyle {
 pmd {
   toolVersion = "7.16.0"
   sourceSets = [sourceSets.main]
-  reportsDir = layout.buildDirectory.dir("reports/pmd").get().asFile
   // https://github.com/pmd/pmd/issues/876
   ruleSets = []
   ruleSetFiles = files("config/pmd/ruleset.xml")
+}
+
+tasks.withType(Pmd).configureEach {
+  reports {
+    xml.required = true
+    html.required = true
+    xml.outputLocation = layout.buildDirectory.file("reports/pmd/pmd.xml").get().asFile
+    html.outputLocation = layout.buildDirectory.file("reports/pmd/pmd.html").get().asFile
+  }
 }
 
 jacocoTestReport {
@@ -170,7 +170,7 @@ jacocoTestReport {
   reports {
     xml.required = true
     csv.required = false
-    xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
+    xml.outputLocation = layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile
   }
 }
 
@@ -465,7 +465,6 @@ runProviderPactVerification.dependsOn contract
 
 runProviderPactVerification.finalizedBy pactVerify
 
-mainClassName = 'uk.gov.hmcts.reform.waworkflowapi.Application'
 
 bootJar {
   getArchiveFileName().set(provider {
