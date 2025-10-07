@@ -292,7 +292,7 @@ def versions = [
   pitest        : '1.19.5',
   sonarPitest   : '0.5',
   camunda       : '7.14.0',
-  logbook       : '3.12.2',
+  logbook       : '3.12.3',
   pactVersion   : '4.6.17',
   testcontainers: '1.21.3',
   log4j         : '2.25.1',
