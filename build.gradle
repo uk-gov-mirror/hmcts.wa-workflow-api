@@ -149,7 +149,7 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = "7.16.0"
+  toolVersion = "7.18.0"
   sourceSets = [sourceSets.main]
   // https://github.com/pmd/pmd/issues/876
   ruleSets = []
