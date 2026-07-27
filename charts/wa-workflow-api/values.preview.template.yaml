@@ -48,7 +48,7 @@ wa:
   enabled: true
   wa:
     taskManagement:
-      enabled: false
+      enabled: true
     taskMonitor:
       enabled: false
     eventHandler:
