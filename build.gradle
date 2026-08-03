@@ -9,7 +9,7 @@ plugins {
   id 'org.owasp.dependencycheck' version '12.1.6'
   id 'com.github.ben-manes.versions' version '0.54.0'
   id 'org.sonarqube' version '7.3.1.8318'
-  id 'info.solidsoft.pitest' version '1.19.0-rc.2'
+  id 'info.solidsoft.pitest' version '1.19.0'
   id 'org.flywaydb.flyway' version '12.11.0'
   id 'io.freefair.lombok' version '9.5.0'
   // If Pact version is changed, make sure serenity report works.
@@ -175,8 +175,9 @@ jacocoTestReport {
 }
 
 pitest {
-  junit5PluginVersion = '1.2.1'
-  pitestVersion = '1.19.5'
+  junit5PluginVersion = '1.2.3'
+  pitestVersion = '1.25.7'
+  testSourceSets = [sourceSets.test]
   targetClasses = ['uk.gov.hmcts.reform.waworkflowapi.*']
   excludedClasses = [
     'uk.gov.hmcts.reform.waworkflowapi.config.*',
@@ -288,7 +289,6 @@ def versions = [
   reformLogging : '8.0.0',
   springDoc     : '1.7.0',
   serenity      : '4.3.4',
-  gradlePitest  : '1.15.0',
   pitest        : '1.22.0',
   sonarPitest   : '0.5',
   camunda       : '7.14.0',
@@ -373,7 +373,6 @@ dependencies {
   testImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: versions.testcontainers
 
   testImplementation group: 'org.pitest', name: 'pitest', version: versions.pitest
-  testImplementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
   testImplementation group: 'org.codehaus.sonar-plugins', name: 'sonar-pitest-plugin', version: versions.sonarPitest
 
   testImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
