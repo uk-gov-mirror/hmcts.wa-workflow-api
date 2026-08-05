@@ -10,10 +10,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.model.SendMessageRequest;
+import uk.gov.hmcts.reform.waworkflowapi.config.AwaitilityIntegrationTestConfig;
 import uk.gov.hmcts.reform.waworkflowapi.config.RestApiActions;
 import uk.gov.hmcts.reform.waworkflowapi.entities.SpecificStandaloneRequest;
 import uk.gov.hmcts.reform.waworkflowapi.services.AuthorizationHeadersProvider;
@@ -32,12 +34,11 @@ import static org.hamcrest.CoreMatchers.is;
 @RunWith(SpringIntegrationSerenityRunner.class)
 @SpringBootTest
 @ActiveProfiles("functional")
+@Import(AwaitilityIntegrationTestConfig.class)
 public abstract class SpringBootFunctionalBaseTest {
     public static final String WA_TASK_INITIATION_WA_ASYLUM = "wa-task-initiation-wa-wacasetype";
     public static final String WA_TASK_PERMISSIONS_WA_ASYLUM = "wa-task-permissions-wa-wacasetype";
     public static final String TENANT_ID_WA = "wa";
-    public static final int FT_STANDARD_TIMEOUT_SECS = 120;
-    public static final int POLL_INTERVAL = 1;
     public static final String REASON_COMPLETED = "completed";
 
     private static final String ENDPOINT_PROCESS_INSTANCE = "process-instance/delete";

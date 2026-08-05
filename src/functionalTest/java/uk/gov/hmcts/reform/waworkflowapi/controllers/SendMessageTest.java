@@ -23,7 +23,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Collections.emptyMap;
@@ -101,10 +100,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
-            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
-            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
-            .until(() -> {
+            .untilAsserted(() -> {
 
                 Response result = camundaApiActions.get(
                     "/task",
@@ -113,11 +109,14 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     // so we will search using processVariables
                     Map.of(
                         "processVariables", "caseId_eq_" + caseId
-                    ));
+                    )
+                );
 
 
-                log.info("transition_creates_a_task_with_default_due_date body:{}",
-                    result.then().extract().body().asString());
+                log.info(
+                    "transition_creates_a_task_with_default_due_date body:{}",
+                    result.then().extract().body().asString()
+                );
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -128,8 +127,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     result.then()
                         .extract().path("[0].id")
                 );
-
-                return true;
             });
 
         String taskId = taskIdResponse.get();
@@ -276,10 +273,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
-            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
-            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
-            .until(() -> {
+            .untilAsserted(() -> {
 
                 Response result = camundaApiActions.get(
                     "/task",
@@ -301,8 +295,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                         .extract()
                         .path("[0].id")
                 );
-
-                return true;
             });
 
         String taskId = taskIdResponse.get();
@@ -341,10 +333,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
-            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
-            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
-            .until(() -> {
+            .untilAsserted(() -> {
 
                 Response result = camundaApiActions.get(
                     "/task",
@@ -354,8 +343,10 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     Map.of("processVariables", "caseId_eq_" + caseId)
                 );
 
-                log.info("transition_creates_a_task_with_due_date_for_wa body:{}",
-                    result.then().extract().body().asString());
+                log.info(
+                    "transition_creates_a_task_with_due_date_for_wa body:{}",
+                    result.then().extract().body().asString()
+                );
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -368,8 +359,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                         .extract()
                         .path("[0].id")
                 );
-
-                return true;
             });
 
         String taskId = taskIdResponse.get();
@@ -517,10 +506,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> processIdResponse = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
-            .pollInterval(1, TimeUnit.SECONDS)
-            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
-            .until(() -> {
+            .untilAsserted(() -> {
 
                 // Check process is created
                 Response processResult = camundaApiActions.get(
@@ -528,7 +514,8 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     new Headers(authenticationHeaders),
                     Map.of(
                         "variables", "caseId_eq_" + caseId
-                    ));
+                    )
+                );
 
                 processResult.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -550,14 +537,16 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                 Response activityResult = camundaApiActions.get(
                     "/process-instance/{id}/activity-instances",
                     processIdResponse.get(),
-                    new Headers(authenticationHeaders));
+                    new Headers(authenticationHeaders)
+                );
 
                 ObjectMapper mapper = new ObjectMapper();
                 List<ActivityInstance> activityInstance = mapper.convertValue(
                     activityResult.then()
                         .extract().path("childActivityInstances"),
                     new TypeReference<List<ActivityInstance>>() {
-                    });
+                    }
+                );
                 assertEquals("processStartTimer", activityInstance.get(0).getActivityId());
                 assertEquals("intermediateTimer", activityInstance.get(0).getActivityType());
 
@@ -567,14 +556,13 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     new Headers(authenticationHeaders),
                     Map.of(
                         "processVariables", "caseId_eq_" + caseId
-                    ));
+                    )
+                );
 
 
                 taskResult.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", is(0));
-
-                return true;
             });
 
         String processId = processIdResponse.get();
@@ -587,10 +575,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
-            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
-            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
-            .until(() -> {
+            .untilAsserted(() -> {
 
                 Response result = camundaApiActions.get(
                     "/task",
@@ -608,8 +593,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     .body("[0].name", is(specificStandaloneRequest.getTaskName()));
 
                 taskIdResponse.set(result.then().extract().path("[0].id"));
-
-                return true;
             });
 
         String taskId = taskIdResponse.get();
@@ -622,10 +605,7 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
 
         AtomicReference<String> taskIdResponse = new AtomicReference<>();
         await()
-            .ignoreException(AssertionError.class)
-            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
-            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
-            .until(() -> {
+            .untilAsserted(() -> {
 
                 Response result = camundaApiActions.get(
                     "/task",
@@ -641,8 +621,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     .body("[0].name", is(specificStandaloneRequest.getTaskName()));
 
                 taskIdResponse.set(result.then().extract().path("[0].id"));
-
-                return true;
             });
 
 
@@ -651,18 +629,17 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
         String processVariablesPath = String.format("/task/%s/variables/additionalProperties", taskId);
 
         await()
-            .ignoreException(AssertionError.class)
-            .pollInterval(POLL_INTERVAL, TimeUnit.SECONDS)
-            .atMost(FT_STANDARD_TIMEOUT_SECS, TimeUnit.SECONDS)
-            .until(() -> {
+            .untilAsserted(() -> {
 
                 Response result = camundaApiActions.get(
                     processVariablesPath,
                     specificStandaloneRequest.getAuthenticationHeaders()
                 );
 
-                log.info("assertionsForAdditionalProperties processVariables body:{}",
-                    result.then().extract().body().asString());
+                log.info(
+                    "assertionsForAdditionalProperties processVariables body:{}",
+                    result.then().extract().body().asString()
+                );
 
                 result.then().assertThat()
                     .statusCode(HttpStatus.OK.value())
@@ -680,8 +657,6 @@ public class SendMessageTest extends SpringBootFunctionalBaseTest {
                     dmnValue.set(new DmnValue<>(actualMap.get().get("value"), actualMap.get().get("type")));
                     assertEquals(expectedMap.get(key), dmnValue.get());
                 });
-
-                return true;
             });
 
 
