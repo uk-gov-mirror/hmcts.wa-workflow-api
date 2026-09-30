@@ -7,7 +7,7 @@ import au.com.dius.pact.provider.junitsupport.Provider;
 import au.com.dius.pact.provider.junitsupport.State;
 import au.com.dius.pact.provider.junitsupport.loader.PactBroker;
 import au.com.dius.pact.provider.junitsupport.loader.VersionSelector;
-import au.com.dius.pact.provider.spring.junit5.MockMvcTestTarget;
+import au.com.dius.pact.provider.spring.spring7.Spring7MockMvcTestTarget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,7 +60,7 @@ public class WorkflowEvaluateDmnProviderTest {
 
     @BeforeEach
     void beforeCreate(PactVerificationContext context) {
-        MockMvcTestTarget testTarget = new MockMvcTestTarget();
+        Spring7MockMvcTestTarget testTarget = new Spring7MockMvcTestTarget();
         testTarget.setControllers(new CreateTaskController(
             evaluateDmnService,
             sendMessageService

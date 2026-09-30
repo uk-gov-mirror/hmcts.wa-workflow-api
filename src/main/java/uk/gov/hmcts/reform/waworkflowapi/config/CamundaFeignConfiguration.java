@@ -9,10 +9,12 @@ import feign.codec.Encoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@SuppressWarnings("PMD.DataflowAnomalyAnalysis")
-@Configuration
+/**
+ * Feign client configuration referenced only via {@code @FeignClient(configuration = ...)}.
+ * Not annotated as Spring {@code @Configuration} to avoid becoming a parent context for all Feign clients.
+ * Uses Jackson 2 ObjectMapper while Feign jackson codec remains on Jackson 2.
+ */
 public class CamundaFeignConfiguration {
 
     @Bean

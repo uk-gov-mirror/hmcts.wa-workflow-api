@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.waworkflowapi.controllers.advice;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
+import tools.jackson.core.exc.StreamReadException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.exc.MismatchedInputException;
 import uk.gov.hmcts.reform.waworkflowapi.exceptions.enums.ErrorMessages;
 
 import java.net.URI;
@@ -43,8 +43,8 @@ public interface ApplicationProblemControllerAdviceBase {
      */
     default String extractErrors(HttpMessageNotReadableException exception) {
         Throwable cause = exception.getCause();
-        if (cause instanceof JsonParseException jpe) {
-            return jpe.getOriginalMessage();
+        if (cause instanceof StreamReadException sre) {
+            return sre.getOriginalMessage();
         }
         return processInputException(cause).orElseGet(() -> "Invalid request message");
     }
@@ -52,8 +52,8 @@ public interface ApplicationProblemControllerAdviceBase {
     default Optional<String> processInputException(Throwable cause) {
         if (cause instanceof MismatchedInputException) {
             return processMisMatchedInputException(cause);
-        } else if (cause instanceof JsonMappingException) {
-            return processJsonMappingException(cause);
+        } else if (cause instanceof DatabindException) {
+            return processDatabindException(cause);
         }
         return Optional.empty();
     }
@@ -62,23 +62,23 @@ public interface ApplicationProblemControllerAdviceBase {
         MismatchedInputException mie = (MismatchedInputException) cause;
         if (mie.getPath() != null && !mie.getPath().isEmpty()) {
             String fieldName = mie.getPath().stream()
-                .map(ref -> ref.getFieldName() == null ? "[0]" : ref.getFieldName())
+                .map(ref -> ref.getPropertyName() == null ? "[0]" : ref.getPropertyName())
                 .collect(Collectors.joining("."));
             return Optional.of("Invalid request field: " + fieldName);
         }
         return Optional.empty();
     }
 
-    default Optional<String> processJsonMappingException(Throwable cause) {
-        JsonMappingException jme = (JsonMappingException) cause;
-        if (jme.getPath() != null && !jme.getPath().isEmpty()) {
-            String fieldName = jme.getPath().stream()
-                .map(ref -> ref.getFieldName() == null ? "[0]" : ref.getFieldName())
+    default Optional<String> processDatabindException(Throwable cause) {
+        DatabindException dbe = (DatabindException) cause;
+        if (dbe.getPath() != null && !dbe.getPath().isEmpty()) {
+            String fieldName = dbe.getPath().stream()
+                .map(ref -> ref.getPropertyName() == null ? "[0]" : ref.getPropertyName())
                 .collect(Collectors.joining("."));
             return Optional.of("Invalid request field: "
                                + fieldName
                                + ": "
-                               + jme.getOriginalMessage());
+                               + dbe.getOriginalMessage());
         }
         return Optional.empty();
     }

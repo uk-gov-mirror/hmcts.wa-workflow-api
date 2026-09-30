@@ -2,11 +2,10 @@ server:
   port: 8099
 
 management:
-  health:
-    probes:
-      enabled: true
   endpoint:
     health:
+      probes:
+        enabled: true
       show-details: "always"
   endpoints:
     web:
@@ -29,6 +28,9 @@ govUkHolidays:
 
 springdoc:
   writer-with-order-by-keys: true
+  # springdoc 3.0.3 Data REST enhancement NPEs on Boot 4 (Schema.getProperties() null).
+  # Keep main MVC OpenAPI; re-enable when springdoc fixes Data REST + Boot 4.
+  enable-data-rest: false
 spring:
   config:
     import: "optional:configtree:/mnt/secrets/wa/"
@@ -43,6 +45,9 @@ spring:
     name: WA workflow api
   main:
     allow-bean-definition-overriding: true
+  # Jackson 3 is the Boot 4 default for MVC. Feign clients keep Jackson 2 mappers
+  # (CamundaFeignConfiguration, FeignClientSnakeCaseConfiguration) via spring-boot-jackson2.
+  # Removal condition: port Feign encoders/decoders and WarningValues to Jackson 3.
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_NAME:wa_workflow_api}${POSTGRES_CONNECTION_OPTIONS:}
@@ -101,6 +106,8 @@ feign:
         loggerLevel: basic
 
 logbook:
-  include: /workflow/**
+  predicate:
+    include:
+      - path: /workflow/**
 
 environment: ${ENVIRONMENT:local}

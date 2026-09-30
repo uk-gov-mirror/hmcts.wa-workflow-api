@@ -9,9 +9,12 @@ import feign.codec.Encoder;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+/**
+ * Feign client configuration referenced only via {@code @FeignClient(configuration = ...)}.
+ * Not annotated as Spring {@code @Configuration} to avoid becoming a parent context for all Feign clients.
+ * Uses Jackson 2 ObjectMapper with snake_case for task-management API.
+ */
 public class FeignClientSnakeCaseConfiguration {
     @Bean
     public Decoder feignDecoder() {

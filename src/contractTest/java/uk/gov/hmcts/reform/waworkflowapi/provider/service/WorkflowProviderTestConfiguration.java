@@ -10,7 +10,6 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.CamundaClient;
@@ -34,26 +33,20 @@ public class WorkflowProviderTestConfiguration {
         );
     }
 
+    /**
+     * Jackson 2 ObjectMapper for provider MockMvc verification while Feign/clients remain on Jackson 2.
+     * Prefer Jackson 3 once provider and Feign paths are fully ported.
+     */
     @Bean
     @Primary
-    public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder() {
-        return new Jackson2ObjectMapperBuilder()
-            .serializationInclusion(JsonInclude.Include.NON_ABSENT)
-            .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
-            .modules(
-                new ParameterNamesModule(),
-                new JavaTimeModule(),
-                new Jdk8Module()
-            );
-    }
-
-    @Bean
-    @Primary
-    public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-        ObjectMapper objectMapper = builder.createXmlMapper(false).build();
-        objectMapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true);
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
         objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        objectMapper.registerModule(new ParameterNamesModule());
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
+        objectMapper.configure(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_USING_DEFAULT_VALUE, true);
         return objectMapper;
     }
 }

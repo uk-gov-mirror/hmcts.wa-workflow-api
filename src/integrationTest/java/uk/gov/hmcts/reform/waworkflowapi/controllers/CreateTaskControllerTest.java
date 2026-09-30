@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -59,10 +58,6 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
     private AuthTokenGenerator authTokenGenerator;
     @MockitoBean
     private CamundaClient camundaClient;
-
-    @Captor
-    private ArgumentCaptor<SendMessageRequest> captor;
-
 
     @BeforeEach
     void setUp() {
@@ -411,6 +406,7 @@ class CreateTaskControllerTest extends SpringBootIntegrationBaseTest {
                 .content(asJsonString(scenario.sendMessageRequest))
         ).andExpect(status().isNoContent()).andReturn();
 
+        ArgumentCaptor<SendMessageRequest> captor = ArgumentCaptor.forClass(SendMessageRequest.class);
         verify(camundaClient).sendMessage(
             eq(BEARER_SERVICE_TOKEN),
             captor.capture()
