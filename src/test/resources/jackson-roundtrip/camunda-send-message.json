@@ -1,0 +1,15 @@
+{
+  "messageName": "createTaskMessage",
+  "processVariables": {
+    "caseId": {
+      "value": "1234567890123456",
+      "type": "String"
+    },
+    "name": {
+      "value": "processApplication",
+      "type": "String"
+    }
+  },
+  "correlationKeys": null,
+  "all": false
+}

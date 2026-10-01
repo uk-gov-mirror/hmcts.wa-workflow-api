@@ -327,8 +327,8 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security-oauth2-resource-server'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-rest'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-flyway'
-  // Temporary Jackson 2 bridge for Feign jackson encoder/decoder and Rest Assured fixtures.
-  // Remove when Feign/tests are on Jackson 3 end-to-end.
+  // Temporary Jackson 2 bridge for Rest Assured / Pact / remaining Jackson 2 call sites.
+  // Remove when those paths are on Jackson 3 end-to-end.
   implementation group: 'org.springframework.boot', name: 'spring-boot-jackson2'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: versions.springDoc
@@ -342,8 +342,9 @@ dependencies {
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '6.0.1'
-  // Align with Spring Cloud OpenFeign 5.0.3 managed feign-core 13.6.1 (13.13 needs JsonEncoder from newer core).
-  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.6.1'
+  // Feign Jackson 3 codecs (JsonMapper). Align feign-core with feign-jackson3; Cloud OpenFeign still manages 13.6.1.
+  implementation group: 'io.github.openfeign', name: 'feign-jackson3', version: '13.13'
+  implementation group: 'io.github.openfeign', name: 'feign-core', version: '13.13'
 
   implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
 

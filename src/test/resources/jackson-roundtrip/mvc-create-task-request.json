@@ -1,0 +1,13 @@
+{
+  "serviceDetails": {
+    "jurisdiction": "WA",
+    "caseType": "WaCaseType"
+  },
+  "caseId": "1234567890123456",
+  "transition": {
+    "preState": "appealStarted",
+    "eventId": "submitAppeal",
+    "postState": "appealSubmitted"
+  },
+  "dueDate": "2020-09-05T13:47:01.250542Z"
+}

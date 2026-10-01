@@ -1,0 +1,10 @@
+{
+  "notes": [
+    {
+      "code": "Code1",
+      "note_type": "warning",
+      "user_id": "someUserId",
+      "content": "Some warning text"
+    }
+  ]
+}

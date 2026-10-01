@@ -1,0 +1,12 @@
+{
+  "variables": {
+    "jurisdiction": {
+      "value": "WA",
+      "type": "String"
+    },
+    "caseType": {
+      "value": "WaCaseType",
+      "type": "String"
+    }
+  }
+}

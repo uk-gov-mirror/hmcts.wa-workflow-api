@@ -1,0 +1,10 @@
+{
+  "id": "proc-1",
+  "definitionId": "wa.definition:1:abc",
+  "businessKey": "1234567890123456",
+  "caseInstanceId": "case-1",
+  "suspended": false,
+  "ended": false,
+  "tenantId": "wa",
+  "unknownCamundaField": "ignored"
+}
