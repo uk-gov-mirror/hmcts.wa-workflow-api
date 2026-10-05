@@ -26,7 +26,9 @@ java:
     image:
       registry: hmctsprod.azurecr.io
       repository: imported/bitnami/postgresql
-      tag: '11.6.0'
+      # Must match chart-java 6.x emptyDir conf mount (creates conf.d). 11.6.0 fails with:
+      # FATAL: configuration file .../postgresql.conf contains errors (missing conf.d)
+      tag: '15.0.0'
     auth:
       username: hmcts
       password: ${GENERIC_HMCTS_YAML_PASS}
@@ -38,6 +40,9 @@ java:
         requests:
           cpu: 25m
       initdb:
+        # ALTER ROLE ... SUPERUSER must run as postgres, not hmcts
+        user: postgres
+        password: ${GENERIC_HMCTS_YAML_PASS}
         scripts:
           init.sql: |
             ALTER ROLE hmcts SUPERUSER;
