@@ -252,6 +252,16 @@ dependencyManagement {
 
     dependency group: 'commons-io', name: 'commons-io', version: '2.22.0'
 
+    // Boot 4 / Cloud BOM manage Groovy 5; Rest Assured 5.x (via Serenity) NPEs on Groovy 5.
+    // Rest Assured 6.0+ is required (see rest-assured#1846).
+    dependencySet(group: 'io.rest-assured', version: '6.0.1') {
+      entry 'rest-assured'
+      entry 'json-path'
+      entry 'xml-path'
+      entry 'rest-assured-common'
+      entry 'spring-mock-mvc'
+    }
+
     // Keep Security 7.1.x ahead of Boot 4.1.1 BOM until Boot absorbs it.
     dependencySet(group: 'org.springframework.security', version: '7.1.0') {
       entry 'spring-security-core'
