@@ -15,22 +15,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.waworkflowapi.clients.model.DmnValue;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.EvaluateDmnService;
 import uk.gov.hmcts.reform.waworkflowapi.clients.service.SendMessageService;
 import uk.gov.hmcts.reform.waworkflowapi.controllers.startworkflow.CreateTaskController;
 import uk.gov.hmcts.reform.waworkflowapi.provider.service.WorkflowProviderTestConfiguration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
@@ -81,13 +72,6 @@ public class WorkflowSendMessageProviderTest {
     }
 
     private void setInitMock() {
-        final DmnValue<?> dmnValue = mock(DmnValue.class);
-        final List<Map<String, DmnValue<?>>> evaluateDmnResponse = new ArrayList<Map<String, DmnValue<?>>>();
-        final Map<String, DmnValue<?>> map = new HashMap<String, DmnValue<?>>();
-        map.put("Key", dmnValue);
-        evaluateDmnResponse.add(map);
-
-        when(evaluateDmnService.evaluateDmn(any(), anyString(),anyString())).thenReturn(evaluateDmnResponse);
         doNothing().when(sendMessageService).createMessage(any());
     }
 }
