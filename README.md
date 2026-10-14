@@ -114,4 +114,3 @@ See the renovate documentation: https://docs.renovatebot.com/configuration-optio
 Renovate schedule syntax using Later can be validated here: https://codepen.io/rationaltiger24/full/ZExQEgK
 
 We use stalebot to clear old PRs away using the github action.  Docs: https://github.com/actions/stale
-
