@@ -44,7 +44,7 @@ module "wa_workflow_api_database_flex" {
     azurerm.postgres_network = azurerm.postgres_network
   }
 
-  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=DTSPO-30107-additional-postgres-admins"
+  source                     = "git@github.com:hmcts/terraform-module-postgresql-flexible?ref=master"
   product                    = var.product
   component                  = var.component
   name                       = local.db_name
